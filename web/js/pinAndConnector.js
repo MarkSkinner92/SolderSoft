@@ -166,9 +166,24 @@ class Tree{
 		tree.setGhostWrapperPosition(ghostWrapper,e.clientX+offsetX,e.clientY+offsetY);
 		ghostWrapper.style.display = 'unset';
 
+		//get bounding boxes and determine placeholder Position
+		this.dragState.neighborId = false;
+		this.dragState.neighbor = undefined;
+		this.dragState.pos = 0; //-1 is above, 0 is on, 1 is below neighbor
+
 		//move all real selected elements into a document fragment
+		//if it's a container, move all of it's children under it too
 		for(let i = 0; i < this.selectedElementsIds.length;i++){
-			this.dragFrag.append(document.getElementById(this.selectedElementsIds[i]));
+			let thisId = this.selectedElementsIds[i];
+			this.dragFrag.append(document.getElementById(thisId));
+
+			if(thisId[0] == 'c'){
+				let pins = tree.fromId(thisId).pins;
+				for(let k = 0; k < pins.length; k++){
+					let thisPin = pins[k];
+					this.dragFrag.append(document.getElementById(thisPin.id));
+				}
+			}
 		}
 
 		window.onmousemove = function(evt){
@@ -177,6 +192,8 @@ class Tree{
 
 		window.onmouseup = this.mouseRelease;
 	}
+
+	//stopdrag
 	mouseRelease(evt){
 		window.onmouseup = undefined;
 		window.onmousemove = undefined;
@@ -193,24 +210,47 @@ class Tree{
 		if(tree.dragState.neighborId && tree.dragState.pos == 0){
 			let parent = tree.fromId(tree.dragState.neighborId);
 			for(let i = 0; i < tree.selectedElementsIds.length; i++){
-				tree.fromId(tree.selectedElementsIds[i]).setParent(parent);
+				let instance = tree.fromId(tree.selectedElementsIds[i]);
+				if(instance.setParent) instance.setParent(parent); //set new parent
 			}
 			parent.expand();
 		}
 
 		//if it was dropped next to a child pin...
+		let proceed = (tree.dragState.neighbor?.parentConnector != undefined);
+		//or it was dropped directly under an open connector...
+		proceed ||= (tree.dragState.neighborId[0] == 'c' && tree.dragState.pos == 1 && tree.dragState.neighbor.expanded);
 		//become a child pin too, with the same parent
-		console.log(tree,tree.dragState,tree.dragState.neighbor);
-		let parent = tree.dragState.neighbor.parentConnector;
-		if(parent != undefined){
+		if(proceed){
+			let parent = tree.dragState.neighbor?.parentConnector || tree.dragState.neighbor;
 			for(let i = 0; i < tree.selectedElementsIds.length; i++){
-				tree.fromId(tree.selectedElementsIds[i]).detatch(); //remove any previous associations
-				tree.fromId(tree.selectedElementsIds[i]).setParent(parent); //set new parent
+				let instance = tree.fromId(tree.selectedElementsIds[i]);
+				if(instance.setParent) instance.setParent(parent); //set new parent
 			}
 		}
 
+		//if it was dropped above a connector
+		let canBeDetatched = (tree.dragState.neighborId[0] == 'c' && tree.dragState.pos == -1);
+		//or below an closed connector...
+		canBeDetatched ||= (tree.dragState.neighborId[0] == 'c' && tree.dragState.pos == 1 && !tree.dragState.neighbor?.expanded);
+		//or beside a detatched pin...
+		canBeDetatched ||= (tree.dragState.neighborId[0] == 'p' && tree.dragState.neighbor?.parentConnector == undefined);
+		//it can be detatched
+		if(canBeDetatched){
+			for(let i = 0; i < tree.selectedElementsIds.length; i++){
+				let instance = tree.fromId(tree.selectedElementsIds[i]);
+				if(instance.detatch) instance.detatch();
+			}
+		}
+
+		tree.dragState.neighborId = false;
+		tree.dragState.neighbor = undefined;
+		tree.dragState.pos = 0; //-1 is above, 0 is on, 1 is below neighbor
+
 		placeHolder.style.display = 'none';
 		tree.orderElementsToScreenOrder();
+
+
 	}
 	mouseDragging(evt,ghostWrapper,offsetX,offsetY){
 		let ytracker = evt.clientY+offsetY;
@@ -223,11 +263,6 @@ class Tree{
 		else if(evt.clientY < window.innerHeight*0.2+30){
 			document.getElementById("treeContainer").scrollBy(0,-5);
 		}
-
-		//get bounding boxes and determine placeholder Position
-		this.dragState.neighborId = false;
-		this.dragState.neighbor = undefined;
-		this.dragState.pos = 0; //-1 is above, 0 is on, 1 is below neighbor
 
 		for(let i = 0; i < this.elements.length; i++){
 			let instance = tree.fromId(this.elements[i].id);
@@ -311,7 +346,33 @@ class Tree{
 		if(above){
 			neighbor.before(placeHolder);
 		}else{
-			neighbor.after(placeHolder);
+			//in the case of a closed connector, paceholder might need to be the lowest of the children
+			if(neighbor.id[0] == 'c'){
+				let instance = this.fromId(neighbor.id);
+				if(!instance.expanded){
+					if(instance.pins.length == 0){
+						neighbor.after(placeHolder);
+					}else{
+						console.log('its a closed con with pins');
+
+						let lowestchild, maxindex = -1;
+						let wrapperChildren = [...this.wrapper.children];
+						for(let i = 0; i < instance.pins.length; i++){
+							let childslot = document.getElementById(instance.pins[i].id);
+							let thisindex = wrapperChildren.indexOf(childslot);
+						//
+							if(thisindex > maxindex){
+								maxindex = thisindex;
+								lowestchild = childslot;
+							}
+						}
+						lowestchild.after(placeHolder);
+					}
+				}
+			}
+			if(neighbor.id[0] != 'c'){
+				neighbor.after(placeHolder);
+			}
 		}
 	}
 
@@ -390,6 +451,13 @@ class Connector {
 		let ele = this.element();
 		Tree.removeClassFromElement(ele,'selected');
 	}
+	removeChild(id){
+		for(let i = this.pins.length-1; i >= 0; i--){
+			if(this.pins[i].id == id){
+				this.pins.splice(i,1);
+			}
+		}
+	}
 }
 Connector.addNew = function(){
 	let newpin = new Connector();
@@ -430,6 +498,7 @@ class Pin {
 		this.element().style.display = "none";
 	}
 	setParent(connector){
+		this.detatch();
 		this.parentConnector = connector;
 		connector.pins.push(this);
 		if(connector.expanded){
@@ -442,9 +511,9 @@ class Pin {
 	}
 	detatch(){
 		if(this.parentConnector){
+			this.parentConnector.removeChild(this.id);
 			this.parentConnector = undefined;
 			this.element().style.marginLeft = "0px";
-			this.show();
 		}
 	}
 	select(){

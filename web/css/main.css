@@ -148,7 +148,7 @@ body {
 	margin-left:5px;
 }
 .selected{
-	background-color: #AAA;
+	background-color: #CCC;
 }
 #dragPlaceholder{
 	user-select: none;
