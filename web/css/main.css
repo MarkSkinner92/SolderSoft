@@ -1,0 +1,229 @@
+body {
+	font-family: sans-serif;
+	margin: 0px;
+	overflow: hidden;
+}
+
+* {
+	box-sizing: border-box;
+}
+.activator{
+	height:40px;
+	width:20px;
+	background-color: grey;
+	left:0px;
+}
+.contents{
+	padding: 8px;
+}
+
+/* topBar */
+.topBar{
+	top:0px;
+	left:0px;
+	height:35px;
+	width:100%;
+	background: #AAA;
+	border-bottom: 2px solid black;
+}
+
+/*UI main panel*/
+.mainPanel{
+	position: fixed;
+	top: 35px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+}
+
+
+/* Left Panel */
+.leftPanel{
+	position: absolute;
+	background: #EEE;
+	height:100%;
+	left:0px;
+	width:300px;
+	top:0px;
+	border-right:2px solid black;
+}
+.leftMenu{
+	background: #CCC;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:35px;
+	padding-top: 8px;
+	text-align: center;
+	border-bottom:2px solid black;
+}
+.leftDragList{
+	padding:5px;
+	height:calc(100% - 70px);
+	overflow-y: auto;
+}
+
+/* Middle Panel */
+.middlePanel{
+	position: absolute;
+	background: #EEE;
+	height:100%;
+	left:300px;
+	width:300px;
+	top:0px;
+	border-right:2px solid black;
+}
+
+/*Preview*/
+.previewPanel{
+	/* background: red; */
+	position: absolute;
+	left: 600px;
+	width: calc(100% - 600px);
+	height: 50%;
+	border-bottom: 2px solid black;
+}
+
+*{
+	font-family: monospace;
+}
+.treeContainer{
+	position: fixed;
+	left:50px;
+	top:50px;
+	width:250px;
+	height:500px;
+	border:2px solid black;
+	padding:5px;
+}
+
+.connector{
+	user-select: none;
+	height:30px;
+	/* background: #a5f9b1; */
+	border-radius: 3px;
+	/* transition: 0.2s; */
+}
+#prefabConnector{
+	display: none;
+}
+.arrow{
+	height:20px;
+	margin-top:5px;
+	margin-left:5px;
+	transform: rotate(-90deg);
+	transition: 0.2s;
+}
+.connectorIcon{
+	height:20px;
+	margin-top:5px;
+	margin-left:0px;
+}
+.name{
+	position: relative;
+  vertical-align: middle;
+  top: -7px;
+  font-size: 14px;
+}
+
+
+.pin{
+	user-select: none;
+	height:30px;
+	/* background: #aaa; */
+	border-radius: 3px;
+	/* margin:1px; */
+	/* transition: 0.2s; */
+}
+#prefabPin{
+	display: none;
+}
+
+.pinIcon{
+	height:20px;
+	margin-top:5px;
+	margin-left:5px;
+}
+.selected{
+	background-color: #AAA;
+}
+#dragPlaceholder{
+	user-select: none;
+	height:10px;
+	/* background: #666; */
+	border-radius: 3px;
+	margin:2px;
+}
+#dragableGhostWrapper{
+	position: fixed;
+	left:0px;
+	top:0px;
+	display: none;
+	width:300px;
+}
+
+/*Wizard screen*/
+.grey{
+	position: fixed;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	background-color: rgba(0,0,0,0.5);
+}
+.wizardContainer{
+	position:relative;
+	top:100px;
+	width:70%;
+	left:15%;
+	height:80%;
+	background: white;
+	border-radius: 10px;
+	padding: 20px;
+}
+.wizardHeader{
+	font-size: 30px;
+	font-weight: bold;
+	display: block;
+	margin-bottom:20px;
+}
+.wizardSubHeader{
+	font-weight: bold;
+	margin-top:25px;
+	display:block;
+}
+.wizardShortTextInput{
+	font-size: 16px;
+  font-size: max(16px, 1em);
+  padding: 0.25em 0.5em;
+  border: 2px solid black;
+  border-radius: 4px;
+	width:100px;
+	background-color: white;
+}
+.wizardMediumTextInput{
+	font-size: 16px;
+  font-size: max(16px, 1em);
+  padding: 0.25em 0.5em;
+  border: 2px solid black;
+  border-radius: 4px;
+	width:200px;
+	background-color: white;
+}
+.addSomeSpaceBelow{
+	padding-bottom: 10px;
+}
+.wizardCancelButton{
+	position: absolute;
+	right:100px;
+	bottom:15px;
+	height:40px;
+	width:100px;
+}
+.wizardOkButton{
+	position: absolute;
+	right:20px;
+	bottom:15px;
+	height:40px;
+	width:60px;
+}

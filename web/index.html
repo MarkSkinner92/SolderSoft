@@ -1,0 +1,100 @@
+<!-- Created by Mark Skinner, Aug 2023. Credit to Toby Zerner for the sliding divs -->
+<!DOCTYPE html>
+<!-- saved from url=(0054)https://tobyzerner.github.io/inclusive-sort/index.html -->
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="css/main.css">
+  </head>
+  <body>
+
+
+    <div class="topBar">
+    </div>
+
+    <div class="mainPanel">
+      <div class="leftPanel deselectAllOnClick" onclick="tree.clickContainer(window.event||event)">
+        <div class="leftMenu">
+          <button onclick="Connector.addNew()">Add Connector</button>
+          <button onclick="Pin.addNew()">Add Pin</button>
+        </div>
+        <div class="leftDragList deselectAllOnClick" id="treeContainer">
+      			<div draggable="true" id="prefabConnector" class="connector element" onmousedown="tree.clickElement(window.event||event,this)"onmouseup="tree.clickElement(window.event||event,this)"ondragstart="tree.dragStart(window.event||event,this)">
+      				<img class="arrow" onclick="tree.identifyByChild(this).toggleExpansionState()" src="icons/arrow.svg">
+      				<img class="connectorIcon" src="icons/connector.svg">
+      				<span class="name" id="connectorName">CON 214</span>
+      			</div>
+
+      			<div draggable="true" id="prefabPin" class="pin element" onmousedown="tree.clickElement(window.event||event,this)"onmouseup="tree.clickElement(window.event||event,this)"ondragstart="tree.dragStart(window.event||event,this)">
+      				<img class="pinIcon" src="icons/pin.svg">
+      				<span class="name" id="pinName">PIN 203</span>
+      			</div>
+
+            <div id="dragPlaceholder">
+            </div>
+        </div>
+
+      </div>
+
+      <div class="middlePanel">
+        <ul id="middlePanelSlotContainer" style="height:calc(100vh - 70px)">
+        </ul>
+      </div>
+
+      <div class="previewPanel" id="previewPanel">
+        <canvas id="previewCanvas" width="400" height="300" style="">
+      </div>
+    </div>
+    <div id='dragableGhostWrapper'></div>
+
+    <div class="grey" id="wizardWindow" style="display:none">
+      <div class="wizardContainer">
+        <div class="addPinWizard hideableWizardWindow">
+          <label class="wizardHeader">Add Pin</label>
+
+          <label class="wizardSubHeader">Name</label>
+          <input id='p-nm' class="wizardMediumTextInput">
+
+          <label class="wizardSubHeader">Position</label>
+          <label >X</label>
+          <input id='p-psx' class="wizardShortTextInput">
+          <label >Y</label>
+          <input id='p-psy' class="wizardShortTextInput">
+
+          <label class="wizardSubHeader">Pitch</label>
+          <label>X</label>
+          <input id='p-ptx'class="wizardShortTextInput">
+          <label>Y</label>
+          <input id='p-pty'class="wizardShortTextInput">
+
+          <label class="wizardSubHeader">Soldering</label>
+
+          <label class="addSomeSpaceBelow">Solder Profile</label>
+          <select id='p-sp'class="wizardShortTextInput"><option>Default</option></select>
+
+          <label>Head Rotation</label>
+          <input id='p-hr' class="wizardShortTextInput">
+        </div>
+        <div class="addConnectorWizard hideableWizardWindow">
+          <label class="wizardHeader">Add Connector</label>
+
+          <label class="wizardSubHeader">Name</label>
+          <input id='c-nm' class="wizardMediumTextInput">
+
+          <label class="wizardSubHeader">Position</label>
+          <label >X</label>
+          <input id='c-psx' class="wizardShortTextInput">
+          <label >Y</label>
+          <input id='c-psy' class="wizardShortTextInput">
+
+        </div>
+        <button class="wizardCancelButton" onclick="closeWizard()">Cancel</button>
+        <script src="js/pinAndConnector.js" charset="utf-8"></script>
+        <button id="wizzardOKbutton"class="wizardOkButton" onclick="closeWizard()">OK</button>
+      </div>
+    </div>
+
+    <script src="js/main.js" charset="utf-8"></script>
+  </body>
+</html>
