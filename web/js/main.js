@@ -11,7 +11,6 @@ function redraw(){
 	var p1 = ctx.transformedPoint(0,0);
 	var p2 = ctx.transformedPoint(canvas.width,canvas.height);
 	var sm = (p2.y-p1.y)/canvas.height;
-	console.log(sm);
 	// ctx.clearRect(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
 
 	ctx.save();

@@ -4,9 +4,15 @@ class Tree{
 		this.elements = [];
 
 		this.selectedElementsIds = [];
-		this.selectionCanBeNested = true; //if selection contains a connector, it should not be dragged into a pin or connector
+		this.selectionIsAllPins = true;
 		this.activeId = undefined; //the last selected element;
 		this.dragFrag = document.createDocumentFragment();
+
+		this.dragState = {
+			neighbor:undefined,
+			neighborId:false,
+			pos:0
+		}
 	}
 
 	fromId(id){
@@ -68,7 +74,9 @@ class Tree{
 						this.removeAllSelectedElements();
 						this.addToSelectedElements(firstID);
 
+						//get all the elements in screen order, filtering out non-elements
 						let elementIds = this.elements.map((item) => item.id);
+
 						let indexOfFirst = elementIds.indexOf(this.selectedElementsIds[0]);//index of first selected
 						let thisIndex = elementIds.indexOf(ele.id)//index of current selected;
 
@@ -78,7 +86,7 @@ class Tree{
 							let max = Math.max(indexOfFirst,thisIndex);
 							for(let i = min; i <= max; i++){
 								//highlight all slots inbetween first selected and current
-								this.addToSelectedElements(this.elements[i].id);
+								this.addToSelectedElements(elementIds[i]);
 							}
 						}
 					}
@@ -87,10 +95,6 @@ class Tree{
 					this.removeAllSelectedElements();
 					this.addToSelectedElements(ele.id);
 				}
-			}
-
-			if(e.buttons == 1){ // mouse down
-
 			}
 		}
 	}
@@ -110,12 +114,34 @@ class Tree{
 	}
 
 	checkSelectionComposition(){
-		this.selectionCanBeNested = true;
+		this.selectionIsAllPins = true;
 		for(let i = 0; i < this.selectedElementsIds.length; i++){
-			if(this.selectedElementsIds[i][0] == 'c') this.selectionCanBeNested = false;
+			if(this.selectedElementsIds[i][0] == 'c') this.selectionIsAllPins = false;
+		}
+	}
+	collapseSelectedConnectors(){
+		for(let i = 0; i < this.selectedElementsIds.length; i++){
+			let id = this.selectedElementsIds[i];
+			if(id[0] == 'c'){
+				tree.fromId(id).collapse();
+			}
 		}
 	}
 
+	orderElementsToScreenOrder(){
+		let elementIds = [...this.wrapper.children]
+			.filter((itm)=> itm.className.includes('element'))
+			.map((item) => item.id);
+
+		let tempArray = [];
+		for(let i = 0; i < elementIds.length; i++){
+			tempArray.push(tree.fromId(elementIds[i]));
+		}
+
+		this.elements = [...tempArray];
+	}
+
+	//startdrag
 	dragStart(e,ele){
 		e.preventDefault();
 
@@ -126,10 +152,10 @@ class Tree{
 		}
 
 		this.checkSelectionComposition();
+		this.collapseSelectedConnectors();
 
 		//hide the default drag ghost
 		e.dataTransfer.setDragImage(event.target, window.outerWidth, window.outerHeight);
-		console.log(e,ele);
 		let rect = ele.getBoundingClientRect();
 		let offsetX = rect.left - e.clientX;
 		let offsetY = rect.top - e.clientY;
@@ -149,18 +175,43 @@ class Tree{
 			tree.mouseDragging(evt,ghostWrapper,offsetX,offsetY);
 		}
 
-		window.onmouseup = function(evt){
-			window.onmouseup = undefined;
-			window.onmousemove = undefined;
-			document.getElementById('dragableGhostWrapper').style.display = 'none';
-
-			//put all dragfrag elements in their proper spot, with proper highrarchy
-			let placeHolder = document.getElementById("dragPlaceholder");
-			placeHolder.after(...tree.dragFrag.childNodes);
-			placeHolder.style.display = 'none';
-		}
+		window.onmouseup = this.mouseRelease;
 	}
+	mouseRelease(evt){
+		window.onmouseup = undefined;
+		window.onmousemove = undefined;
+		document.getElementById('dragableGhostWrapper').style.display = 'none';
 
+		//put all dragfrag elements in their proper spot, with proper highrarchy
+		let placeHolder = document.getElementById("dragPlaceholder");
+		placeHolder.after(...tree.dragFrag.childNodes);
+
+		//update selected elements to reflect behavior in new Position
+
+		//if dropped into a parent connector...
+		//become a child of that parent
+		if(tree.dragState.neighborId && tree.dragState.pos == 0){
+			let parent = tree.fromId(tree.dragState.neighborId);
+			for(let i = 0; i < tree.selectedElementsIds.length; i++){
+				tree.fromId(tree.selectedElementsIds[i]).setParent(parent);
+			}
+			parent.expand();
+		}
+
+		//if it was dropped next to a child pin...
+		//become a child pin too, with the same parent
+		console.log(tree,tree.dragState,tree.dragState.neighbor);
+		let parent = tree.dragState.neighbor.parentConnector;
+		if(parent != undefined){
+			for(let i = 0; i < tree.selectedElementsIds.length; i++){
+				tree.fromId(tree.selectedElementsIds[i]).detatch(); //remove any previous associations
+				tree.fromId(tree.selectedElementsIds[i]).setParent(parent); //set new parent
+			}
+		}
+
+		placeHolder.style.display = 'none';
+		tree.orderElementsToScreenOrder();
+	}
 	mouseDragging(evt,ghostWrapper,offsetX,offsetY){
 		let ytracker = evt.clientY+offsetY;
 		this.setGhostWrapperPosition(ghostWrapper,evt.clientX+offsetX,ytracker);
@@ -174,39 +225,68 @@ class Tree{
 		}
 
 		//get bounding boxes and determine placeholder Position
+		this.dragState.neighborId = false;
+		this.dragState.neighbor = undefined;
+		this.dragState.pos = 0; //-1 is above, 0 is on, 1 is below neighbor
+
 		for(let i = 0; i < this.elements.length; i++){
-			let slot = document.getElementById(this.elements[i].id);
+			let instance = tree.fromId(this.elements[i].id);
+			let slot = instance.element();
 			if(slot){
 				let type = this.elements[i].id[0];
 				let box = slot.getBoundingClientRect();
 
-				//if it's a pin
-				if(type == 'p' || !this.selectionCanBeNested){
-					if(ytracker > box.top && ytracker < box.top+box.height*0.5){
-						this.showPlaceHolder();
-						this.setPlaceHolderPosition(slot,true);
-					}
-					else if(ytracker <= box.bottom && ytracker >= box.top+box.height*0.5){
-						this.showPlaceHolder();
-						this.setPlaceHolderPosition(slot,false);
+				//if the slot in quesiton is either a pin
+				//or it's a connector, and the selecion contains connector(s)
+				if(type == 'p' || !this.selectionIsAllPins){
+					//prevent draging a connector into child pins
+					if(!(!this.selectionIsAllPins && instance.parentConnector != undefined)){
+						//if mouse is over the top half of the pin slot
+						if(ytracker > box.top && ytracker < box.top+box.height*0.5 || (i==0 && ytracker < box.top+box.height*0.5)){
+							this.showPlaceHolder();
+							this.setPlaceHolderPosition(slot,true);
+							this.dragState.neighbor = instance;
+							this.dragState.neighborId = this.elements[i].id;
+							this.dragState.pos = -1;
+						}
+						//if mouse is over the bottom half of the pin slot
+						if(!(type=='c' && instance.expanded && instance.pins?.length > 0)){
+							if(ytracker <= box.bottom && ytracker >= box.top+box.height*0.5 || (i==this.elements.length-1 && ytracker >= box.top+box.height*0.5)){
+								this.showPlaceHolder();
+								this.setPlaceHolderPosition(slot,false);
+								this.dragState.neighbor = instance;
+								this.dragState.neighborId = this.elements[i].id;
+								this.dragState.pos = 1;
+							}
+						}
 					}
 				}
-				//if it's a connector, then detect middle region too for droppables
+
+				//if it's a connector
 				else if(type == 'c'){
 					//if it's in the top 20%
-					if(ytracker > box.top && ytracker < box.top+box.height*0.2){
+					if(ytracker > box.top && ytracker < box.top+box.height*0.2 || (i==0 && ytracker < box.top+box.height*0.2)){
 						this.showPlaceHolder();
 						this.setPlaceHolderPosition(slot,true);
-					}
-					//it's in the bottom 20%
-					else if(ytracker <= box.bottom && ytracker >= box.top+box.height*0.8){
-						this.showPlaceHolder();
-						this.setPlaceHolderPosition(slot,false);
+						this.dragState.neighbor = instance;
+						this.dragState.neighborId = this.elements[i].id;
+						this.dragState.pos = -1;
 					}
 					//it's in the middle
-					else if(ytracker > box.top+box.height*0.2 && ytracker < box.top+box.height*0.8){
+					if(ytracker > box.top+box.height*0.2 && ytracker < box.top+box.height*0.8){
 						this.hidePlaceHolder();
-						// console.log("middle",this.elements[i].id,Math.random());
+						this.setPlaceHolderPosition(slot,false);
+						this.dragState.neighbor = instance;
+						this.dragState.neighborId = this.elements[i].id;
+						this.dragState.pos = 0;
+					}
+					// it's in the bottom 20%
+					if(ytracker <= box.bottom && ytracker >= box.top+box.height*0.8 || (i==this.elements.length-1 && ytracker >= box.top+box.height*0.8)){
+						this.showPlaceHolder();
+						this.setPlaceHolderPosition(slot,false);
+						this.dragState.neighbor = instance;
+						this.dragState.neighborId = this.elements[i].id;
+						this.dragState.pos = 1;
 					}
 				}
 
@@ -226,12 +306,12 @@ class Tree{
 	}
 
 	//tree.setPlaceHolderPosition(document.getElementById(tree.elements[4].id),true);
-	setPlaceHolderPosition(neighbour,above){
+	setPlaceHolderPosition(neighbor,above){
 		let placeHolder = document.getElementById("dragPlaceholder");
 		if(above){
-			neighbour.before(placeHolder);
+			neighbor.before(placeHolder);
 		}else{
-			neighbour.after(placeHolder);
+			neighbor.after(placeHolder);
 		}
 	}
 
@@ -249,12 +329,8 @@ Tree.addClassToElement = function(ele,name){
 	}
 }
 Tree.removeClassFromElement = function(ele,name){
-	ele.className.replace(' '+name,'');
-	ele.className.replace(name,'');
+	ele.className = ele.className.replace(' '+name,'').replace(name,'');
 }
-
-
-
 
 
 
@@ -277,6 +353,10 @@ class Connector {
 		clone.id = this.id;
 		clone.querySelector("#connectorName").innerText = this.name;
 		parent.appendChild(clone);
+	}
+	set newname(name){
+		this.name = name;
+		this.element().querySelector("#connectorName").innerText = this.name;
 	}
 	expand(){
 		this.element().querySelector(".arrow").style.transform = 'rotate(0deg)';
@@ -302,23 +382,20 @@ class Connector {
 	select(){
 		this.selected = true;
 		let ele = this.element();
-		ele.style.border = "2px solid red";
+		Tree.addClassToElement(ele,'selected');
+
 	}
 	deSelect(){
 		this.selected = false;
 		let ele = this.element();
-		ele.style.border = "";
+		Tree.removeClassFromElement(ele,'selected');
 	}
 }
 Connector.addNew = function(){
-	let newpin = new Connector("Unnamed");
+	let newpin = new Connector();
+	newpin.newname = newpin.id;
 	tree.elements.push(newpin);
 }
-
-
-
-
-
 
 
 
@@ -341,6 +418,10 @@ class Pin {
 		clone.id = this.id;
 		clone.querySelector("#pinName").innerText = this.name;
 		parent.appendChild(clone);
+	}
+	set newname(name){
+		this.name = name;
+		this.element().querySelector("#pinName").innerText = this.name;
 	}
 	show(){
 		this.element().style.display = "block";
@@ -369,16 +450,17 @@ class Pin {
 	select(){
 		this.selected = true;
 		let ele = this.element();
-		ele.className += ' selected';
+		Tree.addClassToElement(ele,'selected');
 	}
 	deSelect(){
 		this.selected = false;
 		let ele = this.element();
-		ele.style.border = "";
+		Tree.removeClassFromElement(ele,'selected');
 	}
 }
 Pin.addNew = function(){
-	let newpin = new Pin("Unnamed");
+	let newpin = new Pin();
+	newpin.newname = newpin.id;
 	tree.elements.push(newpin);
 }
 
