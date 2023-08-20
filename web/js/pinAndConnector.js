@@ -453,8 +453,6 @@ class Connector {
 		this.pins = [];
 		this.expanded = false;
 		this.selected = false;
-
-
 	}
 	element(){
 		return document.getElementById(this.id);
@@ -522,12 +520,28 @@ class Connector {
 		}
 	}
 	setPositionX(x){
-		//TODO move all children too
+		let oldposition = this.position.x;
 		this.position.x = x;
+		let delta = this.position.x - oldposition;
+
+		if(config.globalMode){
+			for(let i = 0; i < this.pins.length; i++){
+				let pin = this.pins[i];
+				pin.changePositionX(delta);
+			}
+		}
 	}
 	setPositionY(y){
-		//TODO move all children too
+		let oldposition = this.position.y;
 		this.position.y = y;
+		let delta = this.position.y - oldposition;
+
+		if(config.globalMode){
+			for(let i = 0; i < this.pins.length; i++){
+				let pin = this.pins[i];
+				pin.changePositionY(delta);
+			}
+		}
 	}
 
 	valueChangeGetter(key){
@@ -624,6 +638,11 @@ class Pin {
 	setParent(connector){
 		this.detatch();
 		this.parentConnector = connector;
+		if(!config.globalMode){
+			this.changePositionX(-this.parentConnector.position.x);
+			this.changePositionY(-this.parentConnector.position.y);
+			inspector.reset();
+		}
 		connector.pins.push(this);
 		if(connector.expanded){
 			this.show();
@@ -634,8 +653,15 @@ class Pin {
 		this.element().style.marginLeft = "20px";
 	}
 	detatch(){
+		console.log("detatch");
 		if(this.parentConnector != undefined){
+			console.log("detatch2");
 			this.parentConnector.removeChild(this.id);
+			if(!config.globalMode){ //local mode, add connector's location on when detatching
+				this.changePositionX(this.parentConnector.position.x);
+				this.changePositionY(this.parentConnector.position.y);
+				inspector.reset();
+			}
 			this.parentConnector = undefined;
 			this.element().style.marginLeft = "0px";
 		}
@@ -661,8 +687,14 @@ class Pin {
 	setPositionX(x){
 		this.position.x = x;
 	}
+	changePositionX(delta){
+		this.setPositionX(this.position.x+delta);
+	}
 	setPositionY(y){
 		this.position.y = y;
+	}
+	changePositionY(delta){
+		this.setPositionY(this.position.y+delta);
 	}
 	valueChangeGetter(key){
 		if(key == "enabled") return this.enabled;

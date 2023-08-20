@@ -1,16 +1,22 @@
 class Inspector {
 	constructor() {
-
+		this.openPanels = [];
 	}
 
 	openPanel(id,activeSource,backgroundSources){
+		console.log(id,activeSource,backgroundSources);
 		let element = document.getElementById(id);
 		this.loadPanel(element,activeSource,backgroundSources);
-
 		element.style.display='block';
+
+		this.openPanels[id] = {
+			activeSource:activeSource,
+			backgroundSources:backgroundSources
+		}
 	}
 
 	closePanel(id){
+		delete this.openPanels[id];
 		document.getElementById(id).style.display='none';
 	}
 
@@ -18,6 +24,16 @@ class Inspector {
 		let panels = document.getElementById("middlePanel").querySelectorAll('.inspectorPanel');
 		for(let i = 0; i < panels.length; i++){
 			this.closePanel(panels[i].id);
+		}
+	}
+
+	//close all panels and re-open all
+	reset(){
+		let panels = Object.keys(this.openPanels);
+		console.log(panels);
+		for(let i = 0; i < panels.length; i++){
+			let panel = this.openPanels[panels[i]];
+			this.openPanel(panels[i],panel.activeSource,panel.backgroundSources);
 		}
 	}
 
