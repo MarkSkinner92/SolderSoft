@@ -5,9 +5,33 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg4568"
    version="1.1"
-   viewBox="0 0 320 512">
+   viewBox="0 0 320 512"
+   sodipodi:docname="connector.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1528"
+     inkscape:window-height="836"
+     id="namedview4761"
+     showgrid="false"
+     inkscape:zoom="0.4609375"
+     inkscape:cx="160"
+     inkscape:cy="256"
+     inkscape:window-x="72"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4568" />
   <metadata
      id="metadata4574">
     <rdf:RDF>
@@ -16,7 +40,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -25,25 +49,19 @@
   <!--! Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
   <circle
      r="40.261127"
-     cy="191.22849"
-     cx="93.560829"
-     id="path4578"
-     style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:16.24293137;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-  <circle
-     r="40.261127"
-     cy="191.22849"
-     cx="229.41246"
+     cy="199.22849"
+     cx="159.41246"
      id="path4578-6"
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:16.24293137;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   <circle
      r="40.261127"
-     cy="326.08902"
+     cy="316.08902"
      cx="91.281898"
      id="path4578-7"
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:16.24293137;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   <circle
      r="40.261127"
-     cy="326.08902"
+     cy="316.08902"
      cx="227.13351"
      id="path4578-6-5"
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:16.24293137;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />

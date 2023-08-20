@@ -22,25 +22,118 @@
         <div class="prefabs">
           <div draggable="true" id="prefabConnector" class="connector element" onmousedown="tree.clickElement(window.event||event,this)"onmouseup="tree.clickElement(window.event||event,this)"ondragstart="tree.dragStart(window.event||event,this)">
             <img class="arrow" onclick="tree.identifyByChild(this).toggleExpansionState()" src="icons/arrow.svg">
-            <img class="connectorIcon" src="icons/connector.svg">
+            <img class="icon" src="icons/connector.svg">
             <span class="name" id="connectorName">CON 214</span>
           </div>
 
           <div draggable="true" id="prefabPin" class="pin element" onmousedown="tree.clickElement(window.event||event,this)"onmouseup="tree.clickElement(window.event||event,this)"ondragstart="tree.dragStart(window.event||event,this)">
-            <img class="pinIcon" src="icons/pin.svg">
+            <img class="icon" src="icons/pin.svg">
             <span class="name" id="pinName">PIN 203</span>
           </div>
         </div>
         <div class="leftDragList deselectAllOnClick" id="treeContainer">
-            <div id="dragPlaceholder">
-            </div>
+          <div id='boardElement' class="board" onmouseup="tree.removeAllSelectedElements();board.select();">
+            <img class="icon" src="icons/board.svg">
+            <span class="name">Board</span>
+          </div>
+          <div id="dragPlaceholder">
+          </div>
         </div>
-
       </div>
 
-      <div class="middlePanel">
-        <ul id="middlePanelSlotContainer" style="height:calc(100vh - 70px)">
-        </ul>
+      <div id='middlePanel' class="middlePanel">
+        <div class="middleMenu">
+
+        <label>Pos Mode</label>
+
+        <select onchange="config.setPositioningMode(this.value)">
+          <option value='absolute'>Absolute</option>
+          <option value='realitive'>Realitive</option>
+        </select>
+
+        <select onchange="config.setCoordinateMode(this.value)">
+          <option value='global'>Global</option>
+          <option value='local'>Local</option>
+        </select>
+
+        </div>
+        <div id='boardSetupPanel' class='inspectorPanel'>
+          <label class='panelLabel'>Board Setup</label>
+          <table>
+            <tr>
+              <td>X Position</td>
+              <td><input key='positionx'></td>
+            </tr>
+            <tr>
+              <td>Y Position</td>
+              <td><input key='positiony'></td>
+            </tr>
+            <tr>
+              <td>X Size</td>
+              <td><input key='sizex'></td>
+            </tr>
+            <tr>
+              <td>Y Size</td>
+              <td><input key='sizey'></td>
+            </tr>
+            <tr>
+              <td>Z Size</td>
+              <td><input key='sizez'></td>
+            </tr>
+          </table>
+        </div>
+
+        <div id='generalInfoPanel' class='inspectorPanel'>
+          <label class='panelLabel'>General</label>
+          <table>
+            <tr>
+              <td>Enabled</td>
+              <td><input key='enabled' type='checkbox'></td>
+            </tr>
+            <tr>
+              <td>Name</td>
+              <td><input key='name'></td>
+            </tr>
+          </table>
+        </div>
+
+        <div id='positionPanel' class='inspectorPanel'>
+          <label class='panelLabel'>Position</label>
+          <table>
+            <tr>
+              <td>X Position</td>
+              <td><input key='positionx'></td>
+            </tr>
+            <tr>
+              <td>Y Position</td>
+              <td><input key='positiony'></td>
+            </tr>
+          </table>
+        </div>
+        <div id='pinPanel' class='inspectorPanel'>
+          <label class='panelLabel'>Everything Else</label>
+          <table>
+            <tr>
+              <td>X Pitch</td>
+              <td><input></td>
+            </tr>
+            <tr>
+              <td>Y Pitch</td>
+              <td><input></td>
+            </tr>
+            <tr>
+              <td>Solder Profile</td>
+              <td><select>
+                <option>Default</option>
+                <option>Special</option>
+              </select></td>
+            </tr>
+            <tr>
+              <td>Head Rotation</td>
+              <td><input></td>
+            </tr>
+          </table>
+        </div>
       </div>
 
       <div class="previewPanel" id="previewPanel">
@@ -49,53 +142,10 @@
     </div>
     <div id='dragableGhostWrapper'></div>
 
-    <div class="grey" id="wizardWindow" style="display:none">
-      <div class="wizardContainer">
-        <div class="addPinWizard hideableWizardWindow">
-          <label class="wizardHeader">Add Pin</label>
-
-          <label class="wizardSubHeader">Name</label>
-          <input id='p-nm' class="wizardMediumTextInput">
-
-          <label class="wizardSubHeader">Position</label>
-          <label >X</label>
-          <input id='p-psx' class="wizardShortTextInput">
-          <label >Y</label>
-          <input id='p-psy' class="wizardShortTextInput">
-
-          <label class="wizardSubHeader">Pitch</label>
-          <label>X</label>
-          <input id='p-ptx'class="wizardShortTextInput">
-          <label>Y</label>
-          <input id='p-pty'class="wizardShortTextInput">
-
-          <label class="wizardSubHeader">Soldering</label>
-
-          <label class="addSomeSpaceBelow">Solder Profile</label>
-          <select id='p-sp'class="wizardShortTextInput"><option>Default</option></select>
-
-          <label>Head Rotation</label>
-          <input id='p-hr' class="wizardShortTextInput">
-        </div>
-        <div class="addConnectorWizard hideableWizardWindow">
-          <label class="wizardHeader">Add Connector</label>
-
-          <label class="wizardSubHeader">Name</label>
-          <input id='c-nm' class="wizardMediumTextInput">
-
-          <label class="wizardSubHeader">Position</label>
-          <label >X</label>
-          <input id='c-psx' class="wizardShortTextInput">
-          <label >Y</label>
-          <input id='c-psy' class="wizardShortTextInput">
-
-        </div>
-        <button class="wizardCancelButton" onclick="closeWizard()">Cancel</button>
-        <script src="js/pinAndConnector.js" charset="utf-8"></script>
-        <button id="wizzardOKbutton"class="wizardOkButton" onclick="closeWizard()">OK</button>
-      </div>
-    </div>
-
+    <script src="js/pinAndConnector.js" charset="utf-8"></script>
+    <script src="js/board.js" charset="utf-8"></script>
+    <script src="js/inspector.js" charset="utf-8"></script>
+    <script src="js/config.js" charset="utf-8"></script>
     <script src="js/main.js" charset="utf-8"></script>
   </body>
 </html>

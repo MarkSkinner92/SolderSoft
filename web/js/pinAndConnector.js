@@ -7,7 +7,7 @@ class Tree{
 		this.selectionIsAllPins = true;
 		this.activeId = undefined; //the last selected element;
 		this.dragFrag = document.createDocumentFragment();
-
+		this.selectNestedOnly = false;
 		this.dragState = {
 			neighbor:undefined,
 			neighborId:false,
@@ -34,18 +34,41 @@ class Tree{
 			this.selectedElementsIds.splice(index,1);
 			this.deselectElementById(treeElementId);
 		}
+		this.onSelectionChange();
 	}
 
 	isSelected(treeElementId){
 		return this.selectedElementsIds.includes(treeElementId);
 	}
 
-	addToSelectedElements(treeElementId){
-		if(!this.isSelected(treeElementId)){
-			this.selectedElementsIds.push(treeElementId);
-			this.fromId(treeElementId).select();
-			this.activeId = treeElementId;
+	checkSelectionCompliance(instance){
+		let hasParent = instance.parentConnector != undefined;
+		let listLength = this.selectedElementsIds.length;
+
+		//if nothing is added, go ahead! there is no precident
+		if(listLength == 0){
+			this.selectNestedOnly = hasParent; //if there is at least one in the list with a parent, we will force all
+			return true;
 		}
+
+		//otherwise, make sure the element type matches the precident
+		else{
+			if(hasParent == this.selectNestedOnly) return true;
+			else return false;
+		}
+	}
+
+	addToSelectedElements(treeElementId){
+		board.deSelect();
+		if(!this.isSelected(treeElementId)){
+			let instance = this.fromId(treeElementId);
+			if(tree.checkSelectionCompliance(instance)){
+				instance.select();
+				this.selectedElementsIds.push(treeElementId);
+				this.activeId = treeElementId;
+			}
+		}
+		this.onSelectionChange();
 	}
 
 	deselectElementById(treeElementId){
@@ -53,9 +76,29 @@ class Tree{
 	}
 
 	removeAllSelectedElements(){
+		board.deSelect();
 		for(let i = this.selectedElementsIds.length-1; i >= 0; i--){
 			this.deselectElementById(this.selectedElementsIds[i]);
 			this.selectedElementsIds.splice(i,1);
+		}
+		this.selectNestedOnly = false;
+		this.onSelectionChange();
+	}
+
+	onSelectionChange(){
+		if(this.selectedElementsIds.length == 0){
+			inspector.closeAllPanels();
+		}else{
+			let activeSlotClass = this.fromId(this.activeId);
+			let backgroundClasses = [];
+			for(let i = 0; i < this.selectedElementsIds.length; i++){
+				let id = this.selectedElementsIds[i];
+				if(id != this.activeId){
+					backgroundClasses.push(this.fromId(id));
+				}
+			}
+			inspector.openPanel('generalInfoPanel',activeSlotClass,backgroundClasses);
+			inspector.openPanel('positionPanel',activeSlotClass,backgroundClasses);
 		}
 	}
 
@@ -353,8 +396,6 @@ class Tree{
 					if(instance.pins.length == 0){
 						neighbor.after(placeHolder);
 					}else{
-						console.log('its a closed con with pins');
-
 						let lowestchild, maxindex = -1;
 						let wrapperChildren = [...this.wrapper.children];
 						for(let i = 0; i < instance.pins.length; i++){
@@ -397,13 +438,23 @@ Tree.removeClassFromElement = function(ele,name){
 
 class Connector {
 	constructor(name) {
-		this.name = name;
 		this.id = "c-"+randomIDstring();
+
+		//external
+		this.name = name;
+		this.enabled = true;
+		this.position = {
+			x:0,
+			y:0
+		}
+		//internal
 		let parent = document.getElementById("treeContainer");
 		this.createHTML(parent);
 		this.pins = [];
 		this.expanded = false;
 		this.selected = false;
+
+
 	}
 	element(){
 		return document.getElementById(this.id);
@@ -414,10 +465,6 @@ class Connector {
 		clone.id = this.id;
 		clone.querySelector("#connectorName").innerText = this.name;
 		parent.appendChild(clone);
-	}
-	set newname(name){
-		this.name = name;
-		this.element().querySelector("#connectorName").innerText = this.name;
 	}
 	expand(){
 		this.element().querySelector(".arrow").style.transform = 'rotate(0deg)';
@@ -457,11 +504,83 @@ class Connector {
 				this.pins.splice(i,1);
 			}
 		}
+		if(this.pins.length == 0){
+			if(this.expanded) this.collapse();
+		}
+	}
+
+	setName(name){
+		this.name = name;
+		this.element().querySelector("#connectorName").innerText = this.name;
+	}
+	setEnabled(value){
+		this.enabled = value;
+		this.element().style.opacity = this.enabled ? "100%":"40%";
+
+		for(let i = 0; i < this.pins.length; i++){
+			this.pins[i].setEnabled(this.enabled);
+		}
+	}
+	setPositionX(x){
+		//TODO move all children too
+		this.position.x = x;
+	}
+	setPositionY(y){
+		//TODO move all children too
+		this.position.y = y;
+	}
+
+	valueChangeGetter(key){
+		if(key == "enabled") return this.enabled;
+		else if(key == "name") return this.name;
+		else if(key == "positionx") return this.position.x;
+		else if(key == "positiony") return this.position.y;
+	}
+	valueChangeSetter(key,oldValue,newValue,backgroundSources){
+		console.log(key,oldValue,newValue,backgroundSources);
+		if(key == 'name'){
+			this.setName(newValue);
+			for(let i = 0; i < backgroundSources.length; i++){
+				backgroundSources[i].setName(newValue);
+			}
+		}
+		else if(key == 'enabled'){
+			this.setEnabled(newValue);
+			for(let i = 0; i < backgroundSources.length; i++){
+				backgroundSources[i].setEnabled(newValue);
+			}
+		}
+		else if(key == 'positionx'){
+			newValue = Number(newValue);
+			oldValue = Number(oldValue);
+			this.setPositionX(newValue);
+			for(let i = 0; i < backgroundSources.length; i++){
+				if(config.absoluteMode){
+					backgroundSources[i].setPositionX(newValue);
+				}else{
+					let delta = newValue-oldValue;
+					backgroundSources[i].setPositionX(backgroundSources[i].position.x+delta);
+				}
+			}
+		}
+		else if(key == 'positiony'){
+			newValue = Number(newValue);
+			oldValue = Number(oldValue);
+			this.setPositionY(newValue);
+			for(let i = 0; i < backgroundSources.length; i++){
+				if(config.absoluteMode){
+					backgroundSources[i].setPositionY(newValue);
+				}else{
+					let delta = newValue-oldValue;
+					backgroundSources[i].setPositionY(backgroundSources[i].position.y+delta);
+				}
+			}
+		}
 	}
 }
 Connector.addNew = function(){
 	let newpin = new Connector();
-	newpin.newname = newpin.id;
+	newpin.setName(newpin.id);
 	tree.elements.push(newpin);
 }
 
@@ -471,7 +590,16 @@ Connector.addNew = function(){
 class Pin {
 	constructor(name) {
 		this.id = "p-"+randomIDstring();
+
+		//external
 		this.name = name;
+		this.enabled = true;
+		this.position = {
+			x:0,
+			y:0
+		}
+
+		//internal
 		let parent = document.getElementById("treeContainer");
 		this.createHTML(parent);
 		this.parentConnector = undefined;
@@ -486,10 +614,6 @@ class Pin {
 		clone.id = this.id;
 		clone.querySelector("#pinName").innerText = this.name;
 		parent.appendChild(clone);
-	}
-	set newname(name){
-		this.name = name;
-		this.element().querySelector("#pinName").innerText = this.name;
 	}
 	show(){
 		this.element().style.display = "block";
@@ -510,7 +634,7 @@ class Pin {
 		this.element().style.marginLeft = "20px";
 	}
 	detatch(){
-		if(this.parentConnector){
+		if(this.parentConnector != undefined){
 			this.parentConnector.removeChild(this.id);
 			this.parentConnector = undefined;
 			this.element().style.marginLeft = "0px";
@@ -526,10 +650,71 @@ class Pin {
 		let ele = this.element();
 		Tree.removeClassFromElement(ele,'selected');
 	}
+	setName(name){
+		this.name = name;
+		this.element().querySelector("#pinName").innerText = this.name;
+	}
+	setEnabled(value){
+		this.enabled = value;
+		this.element().style.opacity = this.enabled ? "100%":"40%";
+	}
+	setPositionX(x){
+		this.position.x = x;
+	}
+	setPositionY(y){
+		this.position.y = y;
+	}
+	valueChangeGetter(key){
+		if(key == "enabled") return this.enabled;
+		else if(key == "name") return this.name;
+		else if(key == "positionx") return this.position.x;
+		else if(key == "positiony") return this.position.y;
+	}
+	valueChangeSetter(key,oldValue,newValue,backgroundSources){
+		console.log(key,oldValue,newValue,backgroundSources);
+		if(key == 'name'){
+			this.setName(newValue);
+			for(let i = 0; i < backgroundSources.length; i++){
+				backgroundSources[i].setName(newValue);
+			}
+		}
+		else if(key == 'enabled'){
+			this.setEnabled(newValue);
+			for(let i = 0; i < backgroundSources.length; i++){
+				backgroundSources[i].setEnabled(newValue);
+			}
+		}
+		else if(key == 'positionx'){
+			newValue = Number(newValue);
+			oldValue = Number(oldValue);
+			this.setPositionX(newValue);
+			for(let i = 0; i < backgroundSources.length; i++){
+				if(config.absoluteMode){
+					backgroundSources[i].setPositionX(newValue);
+				}else{
+					let delta = newValue-oldValue;
+					backgroundSources[i].setPositionX(backgroundSources[i].position.x+delta);
+				}
+			}
+		}
+		else if(key == 'positiony'){
+			newValue = Number(newValue);
+			oldValue = Number(oldValue);
+			this.setPositionY(newValue);
+			for(let i = 0; i < backgroundSources.length; i++){
+				if(config.absoluteMode){
+					backgroundSources[i].setPositionY(newValue);
+				}else{
+					let delta = newValue-oldValue;
+					backgroundSources[i].setPositionY(backgroundSources[i].position.y+delta);
+				}
+			}
+		}
+	}
 }
 Pin.addNew = function(){
 	let newpin = new Pin();
-	newpin.newname = newpin.id;
+	newpin.setName(newpin.id);
 	tree.elements.push(newpin);
 }
 
