@@ -15,7 +15,7 @@ class Config {
 			//add connector position to each child
 			for(let i = 0; i < tree.elements.length; i++){
 				let thisElement = tree.elements[i];
-				if(thisElement.id[0] == 'c'){
+				if(thisElement.isConnector()){
 					let connectorPosition = thisElement.position;
 					for(let p = 0; p < thisElement.pins.length; p++){
 						let pin = thisElement.pins[p];
@@ -28,7 +28,7 @@ class Config {
 			//remove connector position from each child
 			for(let i = 0; i < tree.elements.length; i++){
 				let thisElement = tree.elements[i];
-				if(thisElement.id[0] == 'c'){
+				if(thisElement.isConnector()){
 					let connectorPosition = thisElement.position;
 					for(let p = 0; p < thisElement.pins.length; p++){
 						let pin = thisElement.pins[p];

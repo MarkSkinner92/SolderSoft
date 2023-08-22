@@ -110,7 +110,15 @@
             </tr>
           </table>
         </div>
-        <div id='pinPanel' class='inspectorPanel'>
+
+        <div id='setOriginPanel' class='inspectorPanel'>
+          <table>
+            <tr>
+              <td><button onclick="tree.setActiveAsConnectorOrigin()">Set As Connector Origin</button></td>
+            </tr>
+          </table>
+        </div>
+        <!-- <div id='pinPanel' class='inspectorPanel'>
           <label class='panelLabel'>Everything Else</label>
           <table>
             <tr>
@@ -133,7 +141,7 @@
               <td><input></td>
             </tr>
           </table>
-        </div>
+        </div> -->
       </div>
 
       <div class="previewPanel" id="previewPanel">
@@ -146,6 +154,6 @@
     <script src="js/board.js" charset="utf-8"></script>
     <script src="js/inspector.js" charset="utf-8"></script>
     <script src="js/config.js" charset="utf-8"></script>
-    <script src="js/main.js" charset="utf-8"></script>
+    <script src="js/preview.js" charset="utf-8"></script>
   </body>
 </html>

@@ -65,9 +65,9 @@ body {
 .previewPanel{
 	/* background: red; */
 	position: absolute;
-	left: 600px;
-	width: calc(100% - 600px);
-	height: 50%;
+	left: 550px;
+	width: calc(100% - 550px);
+	height: calc(100% - 30px);
 }
 .treeContainer{
 	position: fixed;
@@ -192,4 +192,7 @@ td{
 	width:18px;
 	height:18px;
 	margin:0px;
+}
+.inspectorPanel button{
+	width:100%;
 }

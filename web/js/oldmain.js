@@ -4,6 +4,14 @@
 var canvas = document.getElementById("previewCanvas");
 canvas.width = 800; canvas.height = 600;
 
+let preview = new Preview(canvas);
+
+class Preview{
+	constructor(canvas){
+
+	}
+}
+
 var ctx = canvas.getContext('2d');
 trackTransforms(ctx);
 

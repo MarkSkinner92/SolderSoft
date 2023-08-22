@@ -19,6 +19,31 @@ class Tree{
 		for(let i = 0; i < this.elements.length; i++) if(this.elements[i].id == id) return this.elements[i];
 	}
 
+	setActiveAsConnectorOrigin(){
+		let activeInstance = this.fromId(this.activeId);
+		if(activeInstance.hasParentConnector()){
+			let x = activeInstance.position.x;
+			let y = activeInstance.position.y;
+			activeInstance.parentConnector.setOrigin(x,y);
+		}
+	}
+
+	selectionHasSameParent(){
+		if(this.selectedElementsIds.length == 0) return false;
+		let previousParentId = false;
+		for(let i = 0; i < this.selectedElementsIds.length; i++){
+			let instance = this.fromId(this.selectedElementsIds[i]);
+			if(instance.hasParentConnector()){
+				let thisParentId = instance.parentConnector.id;
+				if(!previousParentId) previousParentId = thisParentId;
+				if(thisParentId != previousParentId) return false;
+			}else{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	identifyByChild(nestedEle){
 		if(!nestedEle) return;
 		let element = nestedEle.closest(".element");
@@ -42,7 +67,7 @@ class Tree{
 	}
 
 	checkSelectionCompliance(instance){
-		let hasParent = instance.parentConnector != undefined;
+		let hasParent = instance.hasParentConnector();
 		let listLength = this.selectedElementsIds.length;
 
 		//if nothing is added, go ahead! there is no precident
@@ -86,9 +111,8 @@ class Tree{
 	}
 
 	onSelectionChange(){
-		if(this.selectedElementsIds.length == 0){
-			inspector.closeAllPanels();
-		}else{
+		inspector.closeAllPanels();
+		if(this.selectedElementsIds.length != 0){
 			let activeSlotClass = this.fromId(this.activeId);
 			let backgroundClasses = [];
 			for(let i = 0; i < this.selectedElementsIds.length; i++){
@@ -97,8 +121,10 @@ class Tree{
 					backgroundClasses.push(this.fromId(id));
 				}
 			}
+
 			inspector.openPanel('generalInfoPanel',activeSlotClass,backgroundClasses);
 			inspector.openPanel('positionPanel',activeSlotClass,backgroundClasses);
+			if(tree.selectionHasSameParent()) inspector.openPanel('setOriginPanel',activeSlotClass,backgroundClasses);
 		}
 	}
 
@@ -292,8 +318,7 @@ class Tree{
 
 		placeHolder.style.display = 'none';
 		tree.orderElementsToScreenOrder();
-
-
+		tree.onSelectionChange();
 	}
 	mouseDragging(evt,ghostWrapper,offsetX,offsetY){
 		let ytracker = evt.clientY+offsetY;
@@ -311,12 +336,12 @@ class Tree{
 			let instance = tree.fromId(this.elements[i].id);
 			let slot = instance.element();
 			if(slot){
-				let type = this.elements[i].id[0];
+				// let type = this.elements[i].id[0];
 				let box = slot.getBoundingClientRect();
 
 				//if the slot in quesiton is either a pin
 				//or it's a connector, and the selecion contains connector(s)
-				if(type == 'p' || !this.selectionIsAllPins){
+				if(instance.isPin() || !this.selectionIsAllPins){
 					//prevent draging a connector into child pins
 					if(!(!this.selectionIsAllPins && instance.parentConnector != undefined)){
 						//if mouse is over the top half of the pin slot
@@ -328,7 +353,7 @@ class Tree{
 							this.dragState.pos = -1;
 						}
 						//if mouse is over the bottom half of the pin slot
-						if(!(type=='c' && instance.expanded && instance.pins?.length > 0)){
+						if(!(instance.isConnector() && instance.expanded && instance.pins?.length > 0)){
 							if(ytracker <= box.bottom && ytracker >= box.top+box.height*0.5 || (i==this.elements.length-1 && ytracker >= box.top+box.height*0.5)){
 								this.showPlaceHolder();
 								this.setPlaceHolderPosition(slot,false);
@@ -340,8 +365,7 @@ class Tree{
 					}
 				}
 
-				//if it's a connector
-				else if(type == 'c'){
+				else if(instance.isConnector()){
 					//if it's in the top 20%
 					if(ytracker > box.top && ytracker < box.top+box.height*0.2 || (i==0 && ytracker < box.top+box.height*0.2)){
 						this.showPlaceHolder();
@@ -390,8 +414,8 @@ class Tree{
 			neighbor.before(placeHolder);
 		}else{
 			//in the case of a closed connector, paceholder might need to be the lowest of the children
-			if(neighbor.id[0] == 'c'){
-				let instance = this.fromId(neighbor.id);
+			let instance = this.fromId(neighbor.id);
+			if(instance.isConnector()){
 				if(!instance.expanded){
 					if(instance.pins.length == 0){
 						neighbor.after(placeHolder);
@@ -401,7 +425,7 @@ class Tree{
 						for(let i = 0; i < instance.pins.length; i++){
 							let childslot = document.getElementById(instance.pins[i].id);
 							let thisindex = wrapperChildren.indexOf(childslot);
-						//
+
 							if(thisindex > maxindex){
 								maxindex = thisindex;
 								lowestchild = childslot;
@@ -411,7 +435,7 @@ class Tree{
 					}
 				}
 			}
-			if(neighbor.id[0] != 'c'){
+			if(instance.isPin()){
 				neighbor.after(placeHolder);
 			}
 		}
@@ -453,7 +477,19 @@ class Connector {
 		this.pins = [];
 		this.expanded = false;
 		this.selected = false;
+		preview.redraw();
 	}
+
+	isPin(){
+		return false;
+	}
+	isConnector(){
+		return true;
+	}
+	hasParentConnector(){
+		return false;
+	}
+
 	element(){
 		return document.getElementById(this.id);
 	}
@@ -544,6 +580,11 @@ class Connector {
 		}
 	}
 
+	setOrigin(x,y){
+		this.position.x = x;
+		this.position.y = y;
+	}
+
 	valueChangeGetter(key){
 		if(key == "enabled") return this.enabled;
 		else if(key == "name") return this.name;
@@ -590,6 +631,7 @@ class Connector {
 				}
 			}
 		}
+		preview.redraw();
 	}
 }
 Connector.addNew = function(){
@@ -618,6 +660,15 @@ class Pin {
 		this.createHTML(parent);
 		this.parentConnector = undefined;
 		this.selected = false;
+	}
+	isPin(){
+		return true;
+	}
+	isConnector(){
+		return false;
+	}
+	hasParentConnector(){
+		return this.parentConnector != undefined;
 	}
 	element(){
 		return document.getElementById(this.id);

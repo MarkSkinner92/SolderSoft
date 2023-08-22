@@ -2,13 +2,13 @@ class Board {
 	constructor() {
 		this.element = document.getElementById('boardElement');
 		this.position = {
-			x:0,
-			y:0
+			x:10,
+			y:10
 		}
 		this.size = {
-			x:0,
-			y:0,
-			z:0
+			x:100,
+			y:80,
+			z:4
 		}
 	}
 	select(){
@@ -23,19 +23,19 @@ class Board {
 
 	valueChangeSetter(key,oldValue,newValue,backgroundSources){
 		if(key == 'positionx'){
-			this.position.x = newValue;
+			this.position.x = Number(newValue);
 		}
 		else if(key == 'positiony'){
-			this.position.y = newValue;
+			this.position.y = Number(newValue);
 		}
 		else if(key == 'sizex'){
-			this.size.x = newValue;
+			this.size.x = Number(newValue);
 		}
 		else if(key == 'sizey'){
-			this.size.y = newValue;
+			this.size.y = Number(newValue);
 		}
 		else if(key == 'sizez'){
-			this.size.z = newValue;
+			this.size.z = Number(newValue);
 		}
 	}
 	valueChangeGetter(key){
