@@ -4,7 +4,6 @@ class Inspector {
 	}
 
 	openPanel(id,activeSource,backgroundSources){
-		console.log(id,activeSource,backgroundSources);
 		let element = document.getElementById(id);
 		this.loadPanel(element,activeSource,backgroundSources);
 		element.style.display='block';
@@ -30,7 +29,6 @@ class Inspector {
 	//close all panels and re-open all
 	reset(){
 		let panels = Object.keys(this.openPanels);
-		console.log(panels);
 		for(let i = 0; i < panels.length; i++){
 			let panel = this.openPanels[panels[i]];
 			this.openPanel(panels[i],panel.activeSource,panel.backgroundSources);

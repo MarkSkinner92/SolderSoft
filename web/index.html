@@ -83,6 +83,22 @@
           </table>
         </div>
 
+        <div id='controlPanel' class='inspectorPanel'>
+          <table>
+            <tr>
+              <td><button onclick="tree.deleteSelection()">Delete</button></td>
+              <td><button onclick="tree.duplicateSelection()">Duplicate</button></td>
+            </tr>
+          </table>
+        </div>
+        <div id='limitedControlPanel' class='inspectorPanel'>
+          <table>
+            <tr>
+              <td><button onclick="tree.deleteSelection()">Delete</button></td>
+            </tr>
+          </table>
+        </div>
+
         <div id='generalInfoPanel' class='inspectorPanel'>
           <label class='panelLabel'>General</label>
           <table>
@@ -110,6 +126,14 @@
             </tr>
           </table>
         </div>
+        <div id='rotationPanel' class='inspectorPanel'>
+          <table>
+            <tr>
+              <td>Rotation&deg; (ccw)</td>
+              <td><input key='rotation'></td>
+            </tr>
+          </table>
+        </div>
 
         <div id='setOriginPanel' class='inspectorPanel'>
           <table>
@@ -118,30 +142,30 @@
             </tr>
           </table>
         </div>
-        <!-- <div id='pinPanel' class='inspectorPanel'>
-          <label class='panelLabel'>Everything Else</label>
+        <div id='solderProfilePanel' class='inspectorPanel'>
+          <label class='panelLabel'>Solder Profile</label>
+          <td><button onclick="solderProfileWindow.openEditor()" style="margin-top:5px;margin-bottom: 5px;">Open Editor</button></td>
           <table>
             <tr>
-              <td>X Pitch</td>
-              <td><input></td>
-            </tr>
-            <tr>
-              <td>Y Pitch</td>
-              <td><input></td>
-            </tr>
-            <tr>
-              <td>Solder Profile</td>
-              <td><select>
-                <option>Default</option>
-                <option>Special</option>
-              </select></td>
-            </tr>
-            <tr>
-              <td>Head Rotation</td>
-              <td><input></td>
+              <td>Select Profile</td>
+              <td>
+                <select>
+                  <option>Default</option>
+                  <option>Special</option>
+                </select>
+              </td>
             </tr>
           </table>
-        </div> -->
+          <hr>
+          <table style="margin-top: 5px;">
+            <tr>
+              <td>Key</td>
+              <td>
+                <input>
+              </td>
+            </tr>
+          </table>
+        </div>
       </div>
 
       <div class="previewPanel" id="previewPanel">
@@ -150,6 +174,64 @@
     </div>
     <div id='dragableGhostWrapper'></div>
 
+    <!-- Solder Profile Editor -->
+    <div class="solderProfileWindow" id="solderProfileWindow">
+      <div class="solderProfileInnerWindow">
+        <div class="solderProfileContainer">
+          <div class="sp_header spi">
+            <p class="sp_title">Solder Profile Editor</p>
+          </div>
+          <div class="sp_profileCtrl spi">
+            <select class='sp_ctrlMenuOption'><option>New Profile...</option> </select>
+            <button class='sp_ctrlMenuOption'>Set as Default</button>
+            <button class='sp_ctrlMenuOption' onclick="solderProfileWindow.deleteActiveProfile()">Delete Profile</button>
+          </div>
+          <div class="sp_profileContainer spi">
+            <div id="sp_default" class="profileSlot" onclick="solderProfileWindow.profileClick(window.event)" style="padding:5px;background:#ddd;border-radius:5px">
+              <input style="margin:0px;width:100px" value="Default">
+            </div>
+          </div>
+          <div class="sp_varCtrl spi">
+            <button class='sp_ctrlMenuOption'>Delete</button>
+            <button class='sp_ctrlMenuOption'>Add Variable</button>
+            <div>
+              <table style="background:#ccc;">
+                <tr>
+                  <td><p style="text-align: center;margin:0px;">UI name</p></td>
+                  <td><p style="text-align: center;margin:0px;line-height:0.75">G-code name</p></td>
+                  <td><p style="text-align: center;margin:0px;line-height:0.75">default value</p></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="div5 spi">
+            <div style="padding:5px;background:#ddd;border-radius:5px">
+              <table>
+                <tr>
+                  <td><input style="width:100%"></td>
+                  <td><input style="width:100%"></td>
+                  <td><input style="width:100%"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="div6 spi">
+            <p style="margin-top: 55px;margin-left: 10px;">G-code Editor</p>
+          </div>
+          <div class="sp_gholder spi">
+            <p contenteditable="true" spellcheck="false" class="sp_garea">
+              G0 X<span class='valid'>{pinX}</span> Y<span class='invalid'>{pinY}</span>
+            </p>
+          </div>
+          <div class="sp_footer">
+            <button class="sp_saveBtn" onclick='solderProfileWindow.closeEditorAndSave()'>Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="js/solderProfileWindow.js" charset="utf-8"></script>
     <script src="js/pinAndConnector.js" charset="utf-8"></script>
     <script src="js/board.js" charset="utf-8"></script>
     <script src="js/inspector.js" charset="utf-8"></script>

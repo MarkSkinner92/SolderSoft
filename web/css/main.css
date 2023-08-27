@@ -196,3 +196,123 @@ td{
 .inspectorPanel button{
 	width:100%;
 }
+
+
+
+
+/* Solder Profile CSS */
+.valid{
+	color:green;
+}
+.invalid{
+	color:red;
+}
+.profileLabelName{
+	margin: 0px;
+	width: 100%;
+	background: #ddd;
+	border: none;
+}
+.solderProfileWindow{
+	/* display: none; */
+	position: fixed;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	background-color: rgba(0, 0, 0, 0.1);
+	border-radius: 5px;
+}
+.solderProfileInnerWindow{
+	position: fixed;
+	left:50px;
+	top:50px;
+	width: calc(100% - 100px);
+	height: calc(100% - 100px);
+	background-color: #f3f3f3;
+	box-shadow: 1px 5px 17px 3px rgba(0,0,0,0.42);
+}
+.solderProfileContainer {
+	display: grid;
+	grid-template-columns: minmax(100px,200px) minmax(200px,0.7fr) 1fr;
+	grid-template-rows: 50px 75px 1fr 40px;
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	height:100%;
+	width:100%;
+}
+
+.spi{
+	/* outline-color: black;
+	outline-width:1px;
+	outline-style:dotted; */
+}
+
+.sp_header { grid-area: 1 / 1 / 2 / 4;
+	background:white;
+	padding: 14px;
+}
+.sp_title{
+	font-size: 20px;
+	margin:0px;
+}
+.sp_profileCtrl{
+	grid-area: 2 / 1 / 3 / 2;
+	padding:5px;
+	background: #CCC;
+}
+
+.sp_profileContainer {
+	grid-area: 3 / 1 / 4 / 2;
+	margin: 5px;
+	background: white;
+	padding:5px;
+}
+.profileSlot{
+	margin-bottom:5px;
+}
+.sp_varCtrl {
+	grid-area: 2 / 2 / 3 / 3;
+	text-align: center;
+	padding: 5px;
+	background: #CCC;
+}
+.sp_ctrlMenuOption{
+	width:100%;
+	margin-bottom: 3px;
+	text-align-last:center;
+}
+.div5 {
+	grid-area: 3 / 2 / 4 / 3;
+	background: white;
+  margin: 5px;
+	padding:5px;
+}
+.div6 {
+	grid-area: 2 / 3 / 3 / 4;
+	background: #CCC;
+}
+.sp_gholder {
+	grid-area: 3 / 3 / 4 / 4;
+	overflow-y: auto;
+	background: white;
+  margin: 5px;
+}
+.sp_garea{
+	width:100%;
+	height:100%;
+	margin: 0px;
+	padding: 5px;
+	font-size: 14px;
+	overflow-wrap: normal;
+}
+.sp_footer {
+	grid-area: 4 / 1 / 5 / 4;
+	text-align: right;
+}
+.sp_saveBtn{
+	margin-top:5px;
+	margin-right:5px;
+	width:70px;
+	height:30px;
+}

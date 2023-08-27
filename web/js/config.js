@@ -16,11 +16,10 @@ class Config {
 			for(let i = 0; i < tree.elements.length; i++){
 				let thisElement = tree.elements[i];
 				if(thisElement.isConnector()){
-					let connectorPosition = thisElement.position;
 					for(let p = 0; p < thisElement.pins.length; p++){
 						let pin = thisElement.pins[p];
-						pin.changePositionX(connectorPosition.x);
-						pin.changePositionY(connectorPosition.y);
+						// this element is a connector, add the position and rotation of connector to pin
+						pin.applyConnectorTransformation(thisElement);
 					}
 				}
 			}
@@ -29,11 +28,9 @@ class Config {
 			for(let i = 0; i < tree.elements.length; i++){
 				let thisElement = tree.elements[i];
 				if(thisElement.isConnector()){
-					let connectorPosition = thisElement.position;
 					for(let p = 0; p < thisElement.pins.length; p++){
 						let pin = thisElement.pins[p];
-						pin.changePositionX(-connectorPosition.x);
-						pin.changePositionY(-connectorPosition.y);
+						pin.retractConnectorTransformation(thisElement);
 					}
 				}
 			}

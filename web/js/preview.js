@@ -196,12 +196,21 @@ class Preview{
 	}
 
 	drawPin(pin){
+		let x = pin.position.x;
+		let y = pin.position.y;
+
+		if(pin.hasParentConnector() && !config.globalMode){
+			let parentPosition = pin.parentConnector.position;
+			x+=parentPosition.x;
+			y+=parentPosition.y;
+		}
+
 		this.ctx.fillStyle = "#000";
 		this.ctx.beginPath();
 
 		this.ctx.arc(
-			this.boardXToWorldX(pin.position.x),
-			this.boardYToWorldY(pin.position.y),
+			this.boardXToWorldX(x),
+			this.boardYToWorldY(y),
 			1,
 			0,
 			2 * Math.PI

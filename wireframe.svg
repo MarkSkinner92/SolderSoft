@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="800mm"
+   height="500mm"
+   viewBox="0 0 800 500"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   sodipodi:docname="wireframe.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="1521.509"
+     inkscape:cy="846.55535"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1528"
+     inkscape:window-height="836"
+     inkscape:window-x="72"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,203)">
+    <rect
+       style="fill:#000000;fill-opacity:0.21000001;stroke:none;stroke-width:2.26499987;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="rect884"
+       width="810.36121"
+       height="508.88116"
+       x="-1.0690781"
+       y="-206.53578"
+       rx="10.000007"
+       ry="10.000007" />
+    <g
+       id="g855"
+       inkscape:transform-center-x="-40.249308"
+       inkscape:transform-center-y="-37.603782" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.26499987;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="rect882"
+       width="678.86456"
+       height="409.45691"
+       x="55.59206"
+       y="-156.28912"
+       rx="5"
+       ry="5" />
+    <rect
+       style="fill:#ffe7d6;fill-opacity:1;stroke:none;stroke-width:2.05704761;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="rect886"
+       width="139.01956"
+       height="299.79083"
+       x="62.744045"
+       y="-84.377953" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:19.08263588px;line-height:1.25;font-family:monospace;-inkscape-font-specification:monospace;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.47706589"
+       x="68.562103"
+       y="-127.03208"
+       id="text920"><tspan
+         sodipodi:role="line"
+         id="tspan918"
+         x="68.562103"
+         y="-127.03208"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:monospace;-inkscape-font-specification:monospace;stroke-width:0.47706589">Solder Profile Editor</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.0868187px;line-height:1.25;font-family:monospace;-inkscape-font-specification:monospace;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.27717045"
+       x="690.86151"
+       y="239.26662"
+       id="text920-7"><tspan
+         sodipodi:role="line"
+         id="tspan918-3"
+         x="690.86151"
+         y="239.26662"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:monospace;-inkscape-font-specification:monospace;stroke-width:0.27717045">Save</tspan></text>
+    <rect
+       style="fill:#ffd6d6;fill-opacity:1;stroke:none;stroke-width:0.65796793;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="rect886-6"
+       width="139.01956"
+       height="30.671785"
+       x="62.744045"
+       y="-115.04974" />
+    <rect
+       style="fill:#ffe7d6;fill-opacity:1;stroke:none;stroke-width:2.55855513;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="rect886-4"
+       width="215.06844"
+       height="299.79083"
+       x="207.96259"
+       y="-84.37796" />
+    <rect
+       style="fill:#ffd6d6;fill-opacity:1;stroke:none;stroke-width:0.81838024;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="rect886-6-7"
+       width="215.06844"
+       height="30.671785"
+       x="207.9626"
+       y="-115.04973" />
+    <rect
+       style="fill:#ffe7d6;fill-opacity:1;stroke:none;stroke-width:3.00136995;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="rect886-4-9"
+       width="295.95535"
+       height="299.79083"
+       x="428.85196"
+       y="-84.377945" />
+    <rect
+       style="fill:#ffd6d6;fill-opacity:1;stroke:none;stroke-width:0.96001917;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       id="rect886-6-7-7"
+       width="295.95535"
+       height="30.671785"
+       x="428.85199"
+       y="-115.04971" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.48191738px;line-height:1.25;font-family:monospace;-inkscape-font-specification:monospace;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2370479"
+       x="214.96822"
+       y="-95.816521"
+       id="text920-7-2"><tspan
+         sodipodi:role="line"
+         id="tspan918-3-2"
+         x="214.96822"
+         y="-95.816521"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:monospace;-inkscape-font-specification:monospace;stroke-width:0.2370479">Add New Variable</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.48191833px;line-height:1.25;font-family:monospace;-inkscape-font-specification:monospace;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2370479"
+       x="323.93658"
+       y="-95.623749"
+       id="text920-7-2-1"><tspan
+         sodipodi:role="line"
+         id="tspan918-3-2-6"
+         x="323.93658"
+         y="-95.623749"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:monospace;-inkscape-font-specification:monospace;stroke-width:0.2370479">Delete Variable</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.48191738px;line-height:1.25;font-family:monospace;-inkscape-font-specification:monospace;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2370479"
+       x="79.30928"
+       y="-100.09442"
+       id="text920-7-2-3"><tspan
+         sodipodi:role="line"
+         id="tspan918-3-2-0"
+         x="79.30928"
+         y="-100.09442"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:monospace;-inkscape-font-specification:monospace;stroke-width:0.2370479">Add New Profile</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.48191738px;line-height:1.25;font-family:monospace;-inkscape-font-specification:monospace;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2370479"
+       x="78.208076"
+       y="-110.70322"
+       id="text920-7-2-3-2"><tspan
+         sodipodi:role="line"
+         id="tspan918-3-2-0-1"
+         x="78.208076"
+         y="-110.70322"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:monospace;-inkscape-font-specification:monospace;stroke-width:0.2370479">Delete Profile</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.48191738px;line-height:1.25;font-family:monospace;-inkscape-font-specification:monospace;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2370479"
+       x="82.112114"
+       y="-90.267036"
+       id="text920-7-2-3-5"><tspan
+         sodipodi:role="line"
+         id="tspan918-3-2-0-0"
+         x="82.112114"
+         y="-90.267036"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:monospace;-inkscape-font-specification:monospace;stroke-width:0.2370479">Set as Default</tspan></text>
+  </g>
+</svg>
