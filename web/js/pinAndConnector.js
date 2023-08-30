@@ -412,6 +412,8 @@
 					if(!(!this.selectionIsAllPins && instance.parentConnector != undefined)){
 						//if mouse is over the top half of the pin slot
 						if(ytracker > box.top && ytracker < box.top+box.height*0.5 || (i==0 && ytracker < box.top+box.height*0.5)){
+							console.log("A");
+
 							this.showPlaceHolder();
 							this.setPlaceHolderPosition(slot,true);
 							this.dragState.neighbor = instance;
@@ -421,6 +423,7 @@
 						//if mouse is over the bottom half of the pin slot
 						if(!(instance.isConnector() && instance.expanded && instance.pins?.length > 0)){
 							if(ytracker <= box.bottom && ytracker >= box.top+box.height*0.5 || (i==this.elements.length-1 && ytracker >= box.top+box.height*0.5)){
+								console.log("B");
 								this.showPlaceHolder();
 								this.setPlaceHolderPosition(slot,false);
 								this.dragState.neighbor = instance;
@@ -434,6 +437,8 @@
 				else if(instance.isConnector()){
 					//if it's in the top 20%
 					if(ytracker > box.top && ytracker < box.top+box.height*0.2 || (i==0 && ytracker < box.top+box.height*0.2)){
+						console.log("C");
+
 						this.showPlaceHolder();
 						this.setPlaceHolderPosition(slot,true);
 						this.dragState.neighbor = instance;
@@ -442,14 +447,18 @@
 					}
 					//it's in the middle
 					if(ytracker > box.top+box.height*0.2 && ytracker < box.top+box.height*0.8){
-						this.hidePlaceHolder();
+						console.log("D");
+
+						this.showPlaceHolder();
 						this.setPlaceHolderPosition(slot,false);
 						this.dragState.neighbor = instance;
 						this.dragState.neighborId = this.elements[i].id;
 						this.dragState.pos = 0;
 					}
 					// it's in the bottom 20%
-					if(ytracker <= box.bottom && ytracker >= box.top+box.height*0.8 || (i==this.elements.length-1 && ytracker >= box.top+box.height*0.8)){
+					if(ytracker < box.bottom && ytracker > box.top+box.height*0.8 || (i==this.elements.length-1 && ytracker >= box.top+box.height*0.8)){
+						console.log("E");
+
 						this.showPlaceHolder();
 						this.setPlaceHolderPosition(slot,false);
 						this.dragState.neighbor = instance;
@@ -757,9 +766,9 @@ class Connector {
 	}
 }
 Connector.addNew = function(){
-	let newpin = new Connector();
-	newpin.setName(newpin.id);
-	tree.elements.push(newpin);
+	let newconnector = new Connector();
+	newconnector.setName(newconnector.id);
+	tree.elements.push(newconnector);
 }
 
 

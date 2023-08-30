@@ -11,6 +11,7 @@ class SolderProfile {
 		this.name = 'unnamed';
 		this.variables = []; //{id:,uiname:,gcodename:,defaultvalue:}
 		this.gcode = "";
+		this.solderingTipId = 'st_default';
 	}
 	getVariableByGcodeName(key){
 		for(let i = 0; i < this.variables.length; i++){
@@ -46,7 +47,70 @@ class SolderProfileWindow {
 		this.defaultProfile = this.activeProfile;
 		this.profiles.push(this.activeProfile);
 		this.loadProfile(this.activeProfile.id);
+
+		this.selectedTipId = 'st_default';
+		this.tips = [document.getElementById(this.selectedTipId)];
 	}
+
+	//tip menu and settings
+	saveAndCloseTipMenu(){
+		//reset the options
+		let newOptions = '';
+		for(let i = 0; i < this.tips.length; i++){
+			newOptions += ("<option value='"+this.tips[i].id+"'>"+this.tips[i].querySelector('.t_name').value+"</option>");
+		}
+		newOptions += ("<option value='editlist'>Edit List...</option>");
+		document.getElementById('solderingTipSelector').innerHTML = newOptions;
+		document.getElementById('solderingTipSelector').value = this.selectedTipId;
+		document.getElementById('solderTipWizard').style.display = 'none';
+
+		this.updateSolderingTipId();
+	}
+	openTipMenu(){
+		this.selectTip(this.tips[0]);
+		document.getElementById('solderTipWizard').style.display = 'block';
+	}
+	tipClick(e){
+		let tipslot = e.srcElement.closest('.st_tipslot');
+		this.selectTip(tipslot);
+	}
+	selectTip(tipslot){
+		this.selectedTipId = tipslot.id;
+		let tipslots = document.getElementById('solderTipWizard').querySelectorAll('.st_tipslot');
+		for(let i = 0; i < tipslots.length; i++){
+			tipslots[i].removeOutline();
+		}
+		tipslot.addOutline();
+	}
+	addTip(){
+		let clone = document.getElementById(this.selectedTipId).cloneNode(true);
+		clone.id = 't_'+randomIDstring();
+		document.getElementById('solderTipBody').appendChild(clone);
+		this.tips.push(clone);
+		this.selectTip(clone);
+	}
+	removeSelectedTip(){
+		if(this.tips.length > 1){
+			document.getElementById(this.selectedTipId).remove();
+			for(let i = this.tips.length-1; i >= 0; i--){
+				if(this.tips[i].id == this.selectedTipId) this.tips.splice(i,1);
+			}
+			this.selectTip(this.tips[this.tips.length-1]);
+		}
+	}
+	solderingTipChange(){
+		let val = document.getElementById('solderingTipSelector').value;
+		if(val == "editlist"){
+			this.openTipMenu();
+		}
+		else{
+			this.updateSolderingTipId();
+		}
+	}
+	updateSolderingTipId(){
+		this.activeProfile.solderingTipId = document.getElementById('solderingTipSelector').value;
+	}
+
 
 	//general control
 	fromId(id){
@@ -235,7 +299,6 @@ class SolderProfileWindow {
 
 	//G-code container
 	registerGcodeChange(){
-		this.gcodeBox.resetSentaxHighlighting();
 		this.activeProfile.gcode = this.gcodeBox.getCode();
 	}
 

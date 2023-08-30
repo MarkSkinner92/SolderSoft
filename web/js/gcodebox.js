@@ -1,25 +1,29 @@
+//https://codepen.io/WebCoder49/details/jOypJOx
+
+Prism.languages.gcode = {
+	'string': {
+		pattern: /\{.+?\}/,
+	},
+
+	'comment': [
+		/(?<=;)[^\n]*/gm,
+		/;/,
+		/\(.+?\)/
+	],
+
+	'number': /[-]{0,1}[\d]*[.]{0,1}[\d]+/g,
+};
+codeInput.registerTemplate("gcode", codeInput.templates.prism(Prism));
+
 class GcodeBox {
 	constructor(element,onchange) {
 		this.element = element;
-		this.element.addEventListener('keyup',onchange);
+		this.element.addEventListener('change',onchange);
 	}
 	setCode(code){
-		this.element.innerHTML = code;
+		this.element.value = code;
 	}
 	getCode(){
-		return this.element.innerText;
-	}
-	resetSentaxHighlighting(){
-		// this.selection = window.getSelection();
-		// console.log(this.selection);
-		//
-		// let gcode = this.element.innerText;
-		//
-		// let attemptedVariables = gcode.match(/{(.*?)}/g);
-		//
-		// if(attemptedVariables) for(let i = 0; i < attemptedVariables.length; i++){
-		// 	let gcode = this.element.innerHTML;
-		// 	this.element.innerHTML = gcode.replaceAll(attemptedVariables[i],"<span class='valid'>"+attemptedVariables[i]+"</span>");
-		// }
+		return this.element.value;
 	}
 }

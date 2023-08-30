@@ -6,6 +6,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="css/main.css">
+
+    <script src="libraries/prism-core.min.js"></script>
+    <script src="libraries/prism-autoloader.min.js"></script>
+    <script src="libraries/prism-line-numbers.min.js"></script>
+    <script src="libraries/code-input.js"></script>
+    <link rel="stylesheet" href="libraries/code-input.css">
+    <link rel="stylesheet" href="libraries/prism-line-numbers2.min.css"/>
+    <link rel="stylesheet" href="libraries/prism.css"/>
+    <link rel="stylesheet" href="libraries/prism-line-numbers.min.css">
   </head>
   <body>
 
@@ -14,16 +23,18 @@
       <div style="float:left; padding:5px">
         <label style="margin-left: 15px; margin-right:15px;">SolderSoft 1.0</label>
       </div>
-      <button class='topBarButton' onclick="config.openConfigMenu()">Config Menu</button>
+      <button class='topBarButton' onclick="config.openConfigMenu()">Config</button>
+      <button class='topBarButton' onclick="config.openConfigMenu()">Jog</button>
+      <button class='topBarButton' onclick="config.openConfigMenu()">Excecution</button>
       <div style="float:right">
-        <label>Port</label>
-        <select style="width:80px">
-          <option>ABC</option>
+        <label>Device</label>
+        <select id='portSelect' style="width:100px">
+          <option>Fetching...</option>
         </select>
         <label>Baud</label>
-        <input style="width:80px" value="9600">
-        <button id='connect'>Connect</button>
-        <label>Status: </label><label class='valid'>OK</label>
+        <input id='baudRate' style="width:80px" value="9600">
+        <button id='serialActionButton' onclick="serial.serialActionButtonClick()">Connect</button>
+        <label>Status: </label><label id='statusElement' class='bad'>Disconnected</label>
       </div>
     </div>
 
@@ -42,7 +53,7 @@
 
           <div draggable="true" id="prefabPin" class="pin element" onmousedown="tree.clickElement(window.event||event,this)"onmouseup="tree.clickElement(window.event||event,this)"ondragstart="tree.dragStart(window.event||event,this)">
             <img class="icon" src="icons/pin.svg">
-            <span class="name" id="pinName">PIN 203</span>
+            <span class="name" id="pinName">pin</span>
           </div>
         </div>
         <div class="leftDragList deselectAllOnClick" id="treeContainer">
@@ -222,11 +233,12 @@
           </div>
           <div class="sp_variableContainer" onclick="solderProfileWindow.deselectAllVariables()">
           </div>
-          <div class="div6">
-            <p style="margin-top: 5px;margin-left: 5px;">G-code to run at every pin with this solder profile. Put variables inside {}. (ex. {rotation}).</p>
+          <div class="div6" style="padding:5px">
+            <label style="margin-right:5px">Soldering Tip</label><select onchange='solderProfileWindow.solderingTipChange()'id='solderingTipSelector'><option value='st_default'>Default</option><option value='editlist'>Edit List...</option></select>
+            <p style="margin: 5px 0px 0px 0px">G-code to run at every pin with this solder profile. Put variables inside {}. (ex. {rotation}).</p>
           </div>
           <div class="sp_gholder">
-            <p id='sp_gcodeBox' contenteditable="true" spellcheck="false" class="sp_garea"></p>
+            <code-input required id="sp_gcodeBox" class="line-numbers" style="width:100%;height:100%" lang="gcode" placeholder="Write G-code here" template="gcode">
           </div>
           <div class="sp_footer">
             <button class="sp_saveBtn" onclick='solderProfileWindow.closeEditorAndSave()'>Save</button>
@@ -241,6 +253,29 @@
           <div class='cf_header'>
             <p class="cf_title">Configuration Menu</p>
           </div>
+          <div class='cf_topicContainer'>
+            <div class="cf_topic" id='cf_startJob' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Start of Job Procedure</label>
+            </div>
+            <div class="cf_topic" id='cf_endJob' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>End of Job Procedure</label>
+            </div>
+            <div class="cf_topic" id='cf_ironOn' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Soldering Iron On Procedure</label>
+            </div>
+            <div class="cf_topic" id='cf_ironOff' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Soldering Iron Off Procedure</label>
+            </div>
+            <div class="cf_topic" id='cf_home' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Homing Procedure</label>
+            </div>
+            <div class="cf_topic" id='cf_clean' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Cleaning Procedure</label>
+            </div>
+          </div>
+          <div class="cf_gholder">
+            <code-input required id="cf_gcodeBox" class="line-numbers" style="width:100%;height:100%" lang="gcode" placeholder="Write G-code here" template="gcode">
+          </div>
           <div class="cf_footer">
             <button class="cf_saveBtn" onclick='config.closeConfigMenuAndSave()'>Save</button>
           </div>
@@ -248,6 +283,30 @@
       </div>
     </div>
 
+    <div class="solderTipWizard" id="solderTipWizard">
+      <div class="solderTipInnerWindow">
+        <div class="solderTipContainer">
+          <div class='st_header'>
+            <p class='st_title'>Solder Tips</p>
+          </div>
+          <div class='st_buttons'>
+            <button onclick='solderProfileWindow.addTip()'>Add Tip</button>
+            <button onclick='solderProfileWindow.removeSelectedTip()'>Remove Tip</button>
+          </div>
+          <div class='st_body' id='solderTipBody'>
+            <div id="st_default" class="st_tipslot" onclick="solderProfileWindow.tipClick(window.event)" style="padding:5px;background:#ddd;border-radius:5px">
+              <input class="t_name" style="margin:0px;width:150px" value="Default">
+            </div>
+          </div>
+          <div class='st_footer'>
+            <button class="st_saveBtn" onclick='solderProfileWindow.saveAndCloseTipMenu()'>Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="js/serial.js" charset="utf-8"></script>
     <script type="text/javascript" src="eel.js"></script>
     <script src="js/gcodebox.js" charset="utf-8"></script>
     <script src="js/solderProfileWindow.js" charset="utf-8"></script>
@@ -256,5 +315,6 @@
     <script src="js/inspector.js" charset="utf-8"></script>
     <script src="js/config.js" charset="utf-8"></script>
     <script src="js/preview.js" charset="utf-8"></script>
+    <script src="js/allIsLoaded.js" charset="utf-8"></script>
   </body>
 </html>

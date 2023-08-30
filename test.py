@@ -1,27 +1,12 @@
-import re
-import subprocess
-from pprint import pprint
+
 import serial
+serial_port = False
 
-#get USB devices
-def getUSBDevices():
-    device_re = re.compile(b"Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
-    df = subprocess.check_output("lsusb")
-    devices = []
-    for i in df.split(b'\n'):
-        if i:
-            info = device_re.match(i)
-            if info:
-                dinfo = info.groupdict()
-                dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
-                devices.append(dinfo)
-    return devices
+print(serial_port is False)
 
-def openPort(port,rate):
-    global ser
-    ser = serial.Serial(port, rate)
+serial_port = serial.Serial('/dev/ttyUSB0', 9600)
+serial_port.close()
 
+serial_port = False
 
-while(ser):
-    print(ser.readline())
-ser.close()
+print(not serial_port is False)

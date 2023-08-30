@@ -3,6 +3,19 @@ class Config {
 		this.absoluteMode = true; //absolute or realitive
 		this.globalMode = true; //global or local
 		this.menu = element;
+		this.selectedKey = false;
+		this.gcodeBox = new GcodeBox(document.getElementById('cf_gcodeBox'),()=>{
+			//onchange
+			this.gcodes[this.selectedKey] = this.gcodeBox.getCode();
+		});
+		this.gcodes = {
+			'startJob':'a',
+			'endJob':'b',
+			'ironOn':'c',
+			'ironOff':'d',
+			'home':'e',
+			'clean':'f',
+		}
 	}
 	setPositioningMode(newMode){
 		this.absoluteMode = (newMode == 'absolute');
@@ -40,15 +53,30 @@ class Config {
 	}
 
 	openConfigMenu(){
+		this.selectTile(this.menu.querySelectorAll('.cf_topic')[0]);
 		this.menu.style.display = 'block';
 	}
 	closeConfigMenuAndSave(){
 		this.menu.style.display = 'none';
 	}
-}
 
-document.getElementById('connect').onclick = function (){
-	eel.connect(9600);
+	clickTile(e){
+		let ele = e.srcElement.closest('.cf_topic');
+		this.selectTile(ele);
+	}
+
+	selectTile(tile){
+		this.selectedKey = false;
+		let eles = this.menu.querySelectorAll('.cf_topic');
+		for(let i = 0; i < eles.length; i++){
+			eles[i].removeOutline();
+		}
+
+		tile.addOutline();
+		this.selectedKey = tile.id.substr(3,tile.id.length);
+		console.log(tile.id.substr(2,tile.id.length));
+		this.gcodeBox.setCode(this.gcodes[this.selectedKey]);
+	}
 }
 
 let config = new Config(document.getElementById('configMenu'));

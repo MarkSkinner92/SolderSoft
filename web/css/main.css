@@ -35,9 +35,7 @@ textarea:focus, input:focus, p:focus{
   position: relative;
   top: -5px;
   border: none;
-  background: #aaa;
-  border-right: solid #777 1px;
-  border-left: solid #777 1px;
+  background: #a2a2a2;
 }
 .topBarButton:hover{
 	filter:brightness(95%);
@@ -45,6 +43,23 @@ textarea:focus, input:focus, p:focus{
 .topBarButton:active{
 	filter:brightness(90%);
 }
+
+.good{
+	color:darkgreen;
+	background-color: lightgreen;
+	padding:5px;
+}
+.warning{
+	color:black;
+	background-color: orange;
+	padding:5px;
+}
+.bad{
+	color:darkred;
+	background-color: red;
+	padding:5px;
+}
+
 
 /*UI main panel*/
 .mainPanel{
@@ -223,14 +238,6 @@ td{
 
 
 /* Solder Profile CSS */
-.valid{
-	color:darkgreen;
-	background-color: lightgreen;
-	padding:5px;
-}
-.invalid{
-	color:red;
-}
 .profileLabelName{
 	margin: 0px;
 	width: 100%;
@@ -319,17 +326,19 @@ td{
 }
 .sp_gholder {
 	grid-area: 3 / 3 / 4 / 4;
-	overflow-y: auto;
 	background: white;
   margin: 5px;
+  overflow: hidden;
 }
-.sp_garea{
+.garea{
 	width:100%;
 	height:100%;
 	margin: 0px;
 	padding: 5px;
 	font-size: 14px;
-	overflow-wrap: normal;
+	resize:none;
+	background: none;
+	border: none;
 }
 .sp_footer {
 	grid-area: 4 / 1 / 5 / 4;
@@ -345,7 +354,7 @@ td{
 
 
 .configWindow{
-	/* display: none; */
+	display: none;
 	position: fixed;
 	left:0px;
 	top:0px;
@@ -356,17 +365,17 @@ td{
 }
 .configInnerWindow{
 	position: fixed;
-	left:50px;
+	left:10%;
 	top:50px;
-	width: calc(100% - 100px);
+	width: 80%;
 	height: calc(100% - 100px);
 	background-color: #f3f3f3;
 	box-shadow: 1px 5px 17px 3px rgba(0,0,0,0.42);
 }
 .configContainer {
 	display: grid;
-	grid-template-columns: minmax(100px,200px) minmax(200px,0.7fr) 1fr;
-	grid-template-rows: 50px 75px 1fr 40px;
+	grid-template-columns: minmax(100px,400px) minmax(400px,1fr);
+	grid-template-rows: 50px 1fr 40px;
 	grid-column-gap: 0px;
 	grid-row-gap: 0px;
 	height:100%;
@@ -380,11 +389,85 @@ td{
 	font-size: 20px;
 	margin:0px;
 }
+.cf_topicContainer{
+	padding:5px;
+	border-right: solid white 5px;
+}
+.cf_topic{
+	width:100%;
+	background: #DEDEDE;
+	padding:10px;
+	border-radius: 5px;
+  margin-bottom: 5px;
+}
+.cf_gcodePanel{
+	grid-area: 2 / 2 / 3 / 3;
+	padding:10px;
+}
+.cf_gholder{
+	overflow: hidden;
+}
 .cf_footer {
-	grid-area: 4 / 1 / 5 / 4;
+	grid-area: 3 / 1 / 3 / 3;
 	text-align: right;
 }
 .cf_saveBtn{
+	margin-top:5px;
+	margin-right:5px;
+	width:70px;
+	height:30px;
+}
+
+.solderTipWizard{
+	display: none;
+	position: fixed;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	background-color: rgba(0, 0, 0, 0.3);
+	border-radius: 5px;
+}
+.solderTipInnerWindow{
+	position: fixed;
+	left:calc(50% - 150px);
+	top:calc(50% - 200px);
+	width: 300px;
+	height: 400px;
+	background-color: #f3f3f3;
+	box-shadow: 1px 5px 17px 3px rgba(0,0,0,0.42);
+}
+.solderTipContainer {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 40px 30px 1fr 40px;
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	height:100%;
+	width:100%;
+}
+.st_header{
+	padding:10px;
+}
+.st_title{
+	font-size: 20px;
+	margin:0px;
+}
+.st_buttons{
+	padding:5px;
+	background:#CCC;
+}
+.st_body{
+	margin: 5px;
+	background: white;
+	padding:5px;
+	overflow-y: auto;
+}
+.st_tipslot{
+	margin-bottom:5px;
+}
+.st_saveBtn{
+	float:right;
 	margin-top:5px;
 	margin-right:5px;
 	width:70px;
