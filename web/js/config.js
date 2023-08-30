@@ -1,7 +1,8 @@
 class Config {
-	constructor() {
+	constructor(element) {
 		this.absoluteMode = true; //absolute or realitive
 		this.globalMode = true; //global or local
+		this.menu = element;
 	}
 	setPositioningMode(newMode){
 		this.absoluteMode = (newMode == 'absolute');
@@ -37,6 +38,17 @@ class Config {
 		}
 		inspector.reset(); // pull all numbers in correct system
 	}
+
+	openConfigMenu(){
+		this.menu.style.display = 'block';
+	}
+	closeConfigMenuAndSave(){
+		this.menu.style.display = 'none';
+	}
 }
 
-let config = new Config();
+document.getElementById('connect').onclick = function (){
+	eel.connect(9600);
+}
+
+let config = new Config(document.getElementById('configMenu'));

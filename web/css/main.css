@@ -2,6 +2,11 @@ body {
 	font-family: sans-serif;
 	margin: 0px;
 	overflow: hidden;
+
+}
+
+textarea:focus, input:focus, p:focus{
+    outline: none;
 }
 
 * {
@@ -22,6 +27,23 @@ body {
 	height:35px;
 	width:100%;
 	background: #AAA;
+	padding:5px;
+}
+
+.topBarButton{
+	height: 35px;
+  position: relative;
+  top: -5px;
+  border: none;
+  background: #aaa;
+  border-right: solid #777 1px;
+  border-left: solid #777 1px;
+}
+.topBarButton:hover{
+	filter:brightness(95%);
+}
+.topBarButton:active{
+	filter:brightness(90%);
 }
 
 /*UI main panel*/
@@ -202,7 +224,9 @@ td{
 
 /* Solder Profile CSS */
 .valid{
-	color:green;
+	color:darkgreen;
+	background-color: lightgreen;
+	padding:5px;
 }
 .invalid{
 	color:red;
@@ -214,7 +238,7 @@ td{
 	border: none;
 }
 .solderProfileWindow{
-	/* display: none; */
+	display: none;
 	position: fixed;
 	left:0px;
 	top:0px;
@@ -240,12 +264,6 @@ td{
 	grid-row-gap: 0px;
 	height:100%;
 	width:100%;
-}
-
-.spi{
-	/* outline-color: black;
-	outline-width:1px;
-	outline-style:dotted; */
 }
 
 .sp_header { grid-area: 1 / 1 / 2 / 4;
@@ -282,11 +300,18 @@ td{
 	margin-bottom: 3px;
 	text-align-last:center;
 }
-.div5 {
+.sp_variableContainer {
 	grid-area: 3 / 2 / 4 / 3;
 	background: white;
   margin: 5px;
 	padding:5px;
+}
+.sp_variable{
+	display:none;
+	padding:5px;
+	background:#ddd;
+	border-radius:5px;
+	margin-bottom: 5px;
 }
 .div6 {
 	grid-area: 2 / 3 / 3 / 4;
@@ -311,6 +336,55 @@ td{
 	text-align: right;
 }
 .sp_saveBtn{
+	margin-top:5px;
+	margin-right:5px;
+	width:70px;
+	height:30px;
+}
+
+
+
+.configWindow{
+	/* display: none; */
+	position: fixed;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	background-color: rgba(0, 0, 0, 0.1);
+	border-radius: 5px;
+}
+.configInnerWindow{
+	position: fixed;
+	left:50px;
+	top:50px;
+	width: calc(100% - 100px);
+	height: calc(100% - 100px);
+	background-color: #f3f3f3;
+	box-shadow: 1px 5px 17px 3px rgba(0,0,0,0.42);
+}
+.configContainer {
+	display: grid;
+	grid-template-columns: minmax(100px,200px) minmax(200px,0.7fr) 1fr;
+	grid-template-rows: 50px 75px 1fr 40px;
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	height:100%;
+	width:100%;
+}
+.cf_header { grid-area: 1 / 1 / 2 / 4;
+	background:white;
+	padding: 14px;
+}
+.cf_title{
+	font-size: 20px;
+	margin:0px;
+}
+.cf_footer {
+	grid-area: 4 / 1 / 5 / 4;
+	text-align: right;
+}
+.cf_saveBtn{
 	margin-top:5px;
 	margin-right:5px;
 	width:70px;

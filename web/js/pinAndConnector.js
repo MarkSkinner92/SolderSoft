@@ -191,7 +191,9 @@
 			if(this.selectedElementsIds.length == 1 && this.fromId(this.selectedElementsIds[0]).isConnector())
 				inspector.openPanel('rotationPanel',activeSlotClass,backgroundClasses);
 			if(this.selectionHasSameParent() && this.selectedElementsIds.length == 1) inspector.openPanel('setOriginPanel',activeSlotClass,backgroundClasses);
-			if(selectionIsAllPins) inspector.openPanel('solderProfilePanel',activeSlotClass,backgroundClasses);
+			if(selectionIsAllPins){
+				inspector.openPanel('solderProfilePanel',activeSlotClass,backgroundClasses);
+			}
 		}
 	}
 
@@ -774,12 +776,15 @@ class Pin {
 			x:0,
 			y:0
 		}
+		this.solderProfile = solderProfileWindow.defaultProfile;
+		this.solderProfileVariables = {};
 
 		//internal
-		let parent = document.getElementById("treeContainer");
-		this.createHTML(parent);
 		this.parentConnector = undefined;
 		this.selected = false;
+
+		let parent = document.getElementById("treeContainer");
+		this.createHTML(parent);
 	}
 
 	remove(){
@@ -878,14 +883,85 @@ class Pin {
 		this.changePositionY(-connector.position.y);
 	}
 
-	valueChangeGetter(key){
-		if(key == "enabled") return this.enabled;
+	valueChangeGetter(key,activeSource,backgroundSources){
+		if(key.substr(0,2) == 'v-'){
+			//vkey is the "key"
+			let vkey = key.substr(2,key.length-1);
+
+			if(!(vkey in this.solderProfileVariables)){
+				this.solderProfileVariables[vkey] = this.solderProfile.getVariableByGcodeName(vkey).defaultvalue;
+			}
+
+			//if all the selected elements are of the same solder profile
+			let commonProfileId = activeSource.solderProfile.id;
+			let allValuesAreSame = true;
+			for(let i = 0; i < backgroundSources.length; i++){
+				let id = backgroundSources[i].solderProfile.id;
+				if(commonProfileId != id){
+					commonProfileId = false;
+					break;
+				}
+			}
+			if(commonProfileId){
+				//if all the backgroundsources share the same value
+				let acval = this.solderProfileVariables[vkey];
+				for(let i = 0; i < backgroundSources.length; i++){
+					let thisBackgroundSource = backgroundSources[i];
+					let val = thisBackgroundSource.solderProfileVariables[vkey] || thisBackgroundSource.solderProfile.getVariableByGcodeName(vkey).defaultvalue;
+					if(acval != val){
+						allValuesAreSame = false;
+						break;
+					}
+				}
+				if(allValuesAreSame){
+					return acval;
+				}else{
+					return "---"
+				}
+			}
+
+			return this.solderProfileVariables[vkey];
+		}else if(key == 'desiredSolderProfileId'){
+			//if all backgroundsources have same solder profile
+			let commonProfileId = activeSource.solderProfile.id;
+			for(let i = 0; i < backgroundSources.length; i++){
+				let id = backgroundSources[i].solderProfile.id;
+				if(commonProfileId != id){
+					commonProfileId = false;
+					break;
+				}
+			}
+			if(commonProfileId){
+				return this.solderProfile.id;
+			}
+			else return "--blank--";
+		}
+		else if(key == "enabled") return this.enabled;
 		else if(key == "name") return this.name;
 		else if(key == "positionx") return this.position.x;
 		else if(key == "positiony") return this.position.y;
 	}
 	valueChangeSetter(key,oldValue,newValue,backgroundSources){
-		if(key == 'name'){
+		if(key.substr(0,2) == 'v-'){
+			let vkey = key.substr(2,key.length-1);
+			if(newValue != '---'){
+				this.solderProfileVariables[vkey] = newValue;
+				for(let i = 0; i < backgroundSources.length; i++){
+					backgroundSources[i].solderProfileVariables[vkey] = newValue;
+				}
+			}
+		}
+		else if(key == 'desiredSolderProfileId'){
+			if(newValue != "--blank--"){
+				let selectedSolderProfile = solderProfileWindow.fromId(newValue);
+				this.solderProfile = selectedSolderProfile
+				for(let i = 0; i < backgroundSources.length; i++){
+					backgroundSources[i].solderProfile = selectedSolderProfile;
+				}
+				inspector.reset();
+			}
+		}
+		else if(key == 'name'){
 			this.setName(newValue);
 			for(let i = 0; i < backgroundSources.length; i++){
 				backgroundSources[i].setName(newValue);

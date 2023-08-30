@@ -1,3 +1,10 @@
+HTMLElement.prototype.addOption = function(name,value){
+  this.innerHTML += "<option value='"+value+"'>"+name+"</option>";
+}
+HTMLElement.prototype.removeOptions = function(){
+  this.innerHTML = "";
+}
+
 class Inspector {
 	constructor() {
 		this.openPanels = [];
@@ -5,6 +12,9 @@ class Inspector {
 
 	openPanel(id,activeSource,backgroundSources){
 		let element = document.getElementById(id);
+		if(id == "solderProfilePanel"){
+			this.updateSolderProfilePanel(activeSource, backgroundSources);
+		}
 		this.loadPanel(element,activeSource,backgroundSources);
 		element.style.display='block';
 
@@ -41,7 +51,7 @@ class Inspector {
 		for(let i = 0; i < allInputs.length; i++){
 			let thisInput = allInputs[i];
 			let key = thisInput.getAttribute('key');
-			let oldValue = activeSource.valueChangeGetter(key)
+			let oldValue = activeSource.valueChangeGetter(key,activeSource,backgroundSources);
 
 			thisInput.setValue(oldValue);
 
@@ -50,6 +60,56 @@ class Inspector {
 				activeSource.valueChangeSetter(key,oldValue,newValue,backgroundSources);
 			};
 		}
+	}
+
+	updateSolderProfilePanel(activeSource, backgroundSources){
+		//update the selector
+		let selector = document.getElementById("solderProfileSelect");
+
+		selector.removeOptions();
+		let options = solderProfileWindow.getListOfProfileNamesAndIds();
+		if(backgroundSources.length > 0){
+			selector.addOption("------","--blank--");
+			console.log('multiple');
+		}
+		for(let i = 0; i < options.length; i++){
+			selector.addOption(options[i][0],options[i][1]);
+		}
+		selector.selectedIndex = 0;
+
+		//update the key value pairs
+		this.removeAllKeyValues();
+
+		let commonProfileId = activeSource.solderProfile.id;
+		for(let i = 0; i < backgroundSources.length; i++){
+			let id = backgroundSources[i].solderProfile.id;
+			if(commonProfileId != id){
+				commonProfileId = false;
+				break;
+			}
+		}
+		if(commonProfileId){
+			for(let i = 0; i < activeSource.solderProfile.variables.length; i++){
+				let variable = activeSource.solderProfile.variables[i];
+				this.addKeyValuePairToSolderProfile(variable);
+			}
+		}
+	}
+	addKeyValuePairToSolderProfile(variable){
+		let table = document.getElementById("spkeyvalues");
+		document.getElementById("hline").style.display = 'block';
+		table.innerHTML +=
+		`<tr id="sp-${variable.id}">
+			<td>${variable.uiname}</td>
+			<td>
+				<input key='v-${variable.gcodename}' value='${variable.defaultvalue}'>
+			</td>
+		</tr>`;
+	}
+	removeAllKeyValues(){
+		document.getElementById("hline").style.display = 'none';
+		let table = document.getElementById("spkeyvalues");
+		table.innerHTML = '';
 	}
 }
 

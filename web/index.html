@@ -11,6 +11,20 @@
 
 
     <div class="topBar">
+      <div style="float:left; padding:5px">
+        <label style="margin-left: 15px; margin-right:15px;">SolderSoft 1.0</label>
+      </div>
+      <button class='topBarButton' onclick="config.openConfigMenu()">Config Menu</button>
+      <div style="float:right">
+        <label>Port</label>
+        <select style="width:80px">
+          <option>ABC</option>
+        </select>
+        <label>Baud</label>
+        <input style="width:80px" value="9600">
+        <button id='connect'>Connect</button>
+        <label>Status: </label><label class='valid'>OK</label>
+      </div>
     </div>
 
     <div class="mainPanel">
@@ -149,21 +163,14 @@
             <tr>
               <td>Select Profile</td>
               <td>
-                <select>
-                  <option>Default</option>
-                  <option>Special</option>
+                <select id='solderProfileSelect' key='desiredSolderProfileId'>
+                  <option value='sp_default'>Default</option>
                 </select>
               </td>
             </tr>
           </table>
-          <hr>
-          <table style="margin-top: 5px;">
-            <tr>
-              <td>Key</td>
-              <td>
-                <input>
-              </td>
-            </tr>
+          <hr id="hline" style="display:none">
+          <table style="margin-top: 5px;" id="spkeyvalues">
           </table>
         </div>
       </div>
@@ -178,22 +185,22 @@
     <div class="solderProfileWindow" id="solderProfileWindow">
       <div class="solderProfileInnerWindow">
         <div class="solderProfileContainer">
-          <div class="sp_header spi">
+          <div class="sp_header">
             <p class="sp_title">Solder Profile Editor</p>
           </div>
-          <div class="sp_profileCtrl spi">
-            <select class='sp_ctrlMenuOption'><option>New Profile...</option> </select>
-            <button class='sp_ctrlMenuOption'>Set as Default</button>
+          <div class="sp_profileCtrl">
+            <select id="sp_newProfile" class='sp_ctrlMenuOption' onmousedown="solderProfileWindow.updateListOfProfiles()" onchange="solderProfileWindow.newProfile()"><option>New Profile...</option> </select>
+            <button onclick="solderProfileWindow.setAsDefaultProfile()" class='sp_ctrlMenuOption'>Set as Default</button>
             <button class='sp_ctrlMenuOption' onclick="solderProfileWindow.deleteActiveProfile()">Delete Profile</button>
           </div>
-          <div class="sp_profileContainer spi">
+          <div class="sp_profileContainer">
             <div id="sp_default" class="profileSlot" onclick="solderProfileWindow.profileClick(window.event)" style="padding:5px;background:#ddd;border-radius:5px">
-              <input style="margin:0px;width:100px" value="Default">
+              <input class="sps_name" onchange="solderProfileWindow.profileNameChangeTrigger(window.event)" style="margin:0px;width:100px" value="Default">
             </div>
           </div>
-          <div class="sp_varCtrl spi">
-            <button class='sp_ctrlMenuOption'>Delete</button>
-            <button class='sp_ctrlMenuOption'>Add Variable</button>
+          <div class="sp_varCtrl">
+            <button class='sp_ctrlMenuOption' onclick="solderProfileWindow.addVariable()">Add Variable</button>
+            <button class='sp_ctrlMenuOption' onclick="solderProfileWindow.deleteSelectedVariable()">Delete Variable</button>
             <div>
               <table style="background:#ccc;">
                 <tr>
@@ -204,24 +211,22 @@
               </table>
             </div>
           </div>
-          <div class="div5 spi">
-            <div style="padding:5px;background:#ddd;border-radius:5px">
-              <table>
-                <tr>
-                  <td><input style="width:100%"></td>
-                  <td><input style="width:100%"></td>
-                  <td><input style="width:100%"></td>
-                </tr>
-              </table>
-            </div>
+          <div id='sp_variableTemplate' class="sp_variable" onclick="solderProfileWindow.variableClick(window.event)">
+            <table>
+              <tr>
+                <td><input onchange="solderProfileWindow.variableChange(window.event)"key='uiname'style="width:100%"></td>
+                <td><input onchange="solderProfileWindow.variableChange(window.event)"key='gcodename'style="width:100%"></td>
+                <td><input onchange="solderProfileWindow.variableChange(window.event)"key='defaultvalue'style="width:100%"></td>
+              </tr>
+            </table>
           </div>
-          <div class="div6 spi">
-            <p style="margin-top: 55px;margin-left: 10px;">G-code Editor</p>
+          <div class="sp_variableContainer" onclick="solderProfileWindow.deselectAllVariables()">
           </div>
-          <div class="sp_gholder spi">
-            <p contenteditable="true" spellcheck="false" class="sp_garea">
-              G0 X<span class='valid'>{pinX}</span> Y<span class='invalid'>{pinY}</span>
-            </p>
+          <div class="div6">
+            <p style="margin-top: 5px;margin-left: 5px;">G-code to run at every pin with this solder profile. Put variables inside {}. (ex. {rotation}).</p>
+          </div>
+          <div class="sp_gholder">
+            <p id='sp_gcodeBox' contenteditable="true" spellcheck="false" class="sp_garea"></p>
           </div>
           <div class="sp_footer">
             <button class="sp_saveBtn" onclick='solderProfileWindow.closeEditorAndSave()'>Save</button>
@@ -230,7 +235,21 @@
       </div>
     </div>
 
+    <div class="configWindow" id="configMenu">
+      <div class="configInnerWindow">
+        <div class="configContainer">
+          <div class='cf_header'>
+            <p class="cf_title">Configuration Menu</p>
+          </div>
+          <div class="cf_footer">
+            <button class="cf_saveBtn" onclick='config.closeConfigMenuAndSave()'>Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <script type="text/javascript" src="eel.js"></script>
+    <script src="js/gcodebox.js" charset="utf-8"></script>
     <script src="js/solderProfileWindow.js" charset="utf-8"></script>
     <script src="js/pinAndConnector.js" charset="utf-8"></script>
     <script src="js/board.js" charset="utf-8"></script>

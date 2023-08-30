@@ -1,5 +1,3 @@
-import eel
-import serial
 import re
 import subprocess
 from pprint import pprint
@@ -24,10 +22,6 @@ def openPort(port,rate):
     ser = serial.Serial(port, rate)
 
 
-eel.init('web')
-
-@eel.expose
-def connect(rate):
-    openPort('/dev/ttyUSB0',rate)
-
-eel.start('index.html', size=(1200, 800), position=(0,0))
+while(ser):
+    print(ser.readline())
+ser.close()
