@@ -55,7 +55,7 @@ textarea:focus, input:focus, p:focus{
 	padding:5px;
 }
 .bad{
-	color:darkred;
+	color:black;
 	background-color: red;
 	padding:5px;
 }
@@ -77,7 +77,7 @@ textarea:focus, input:focus, p:focus{
 	background: #EEE;
 	height:100%;
 	left:0px;
-	width:250px;
+	width:220px;
 	top:0px;
 	/* border-right:2px solid #fff; */
 }
@@ -102,10 +102,57 @@ textarea:focus, input:focus, p:focus{
 .previewPanel{
 	/* background: red; */
 	position: absolute;
-	left: 550px;
-	width: calc(100% - 550px);
-	height: calc(100% - 30px);
+	left: 470px;
+	width: calc(100% - 470px);
+	height: calc(100% - 350px);
 }
+
+.execPanel{
+	background: #E5E4E5;
+	position: absolute;
+	right:0px;
+	bottom:0px;
+	width:calc(100% - 470px);
+	height:350px;
+	padding:5px;
+	display: inline-flex;
+}
+.execSelectorPanel{
+	height: 100%;
+	width: 120px;
+	border-right: 10px solid #eee;
+	margin-right: 10px;
+	overflow-x:auto;
+	overflow-y:hidden;
+}
+.execButton{
+	width:100%;
+	margin-bottom:5px;
+}
+.jogPanel{
+	position:relative;
+	width:510px;
+	height:300px;
+	border-right: 10px solid #eee;
+	margin-right: 10px;
+}
+.jogBtn{
+	position:absolute;
+	width:30px;
+	height:30px;
+	padding:0px;
+}
+.execControlPanel{
+	height: 100%;
+	width: 120px;
+	border-right: 10px solid #eee;
+	margin-right: 10px;
+	overflow-x:auto;
+	overflow-y:hidden;
+}
+
+
+
 .treeContainer{
 	position: fixed;
 	left:50px;
@@ -185,8 +232,8 @@ textarea:focus, input:focus, p:focus{
 	position: absolute;
 	background: #EEE;
 	height:100%;
-	left:250px;
-	width:300px;
+	left:220px;
+	width:250px;
 	top:0px;
 }
 .middleMenu{

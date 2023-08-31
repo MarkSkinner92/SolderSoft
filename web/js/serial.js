@@ -90,6 +90,10 @@ class Serial {
 			this.setStatus("Connected","good");
 		}
 	}
+
+	sendGcode(code){
+		eel.sendGcode(code+'\n');
+	}
 }
 
 let serial = new Serial();
