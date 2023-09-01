@@ -26,4 +26,7 @@ class GcodeBox {
 	getCode(){
 		return this.element.value;
 	}
+	wipe(){
+		this.setCode('');
+	}
 }

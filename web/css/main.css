@@ -5,7 +5,7 @@ body {
 
 }
 
-textarea:focus, input:focus, p:focus{
+*:focus{
     outline: none;
 }
 
@@ -28,6 +28,14 @@ textarea:focus, input:focus, p:focus{
 	width:100%;
 	background: #AAA;
 	padding:5px;
+}
+.fileMenu{
+	height: 35px;
+  position: relative;
+  top: -5px;
+  border: none;
+  background: #a2a2a2;
+	width:60px;
 }
 
 .topBarButton{
@@ -115,7 +123,7 @@ textarea:focus, input:focus, p:focus{
 	width:calc(100% - 470px);
 	height:350px;
 	padding:5px;
-	display: inline-flex;
+	display: -webkit-box;
 }
 .execSelectorPanel{
 	height: 100%;
@@ -150,8 +158,24 @@ textarea:focus, input:focus, p:focus{
 	overflow-x:auto;
 	overflow-y:hidden;
 }
-
-
+.serialMonitor{
+	display: grid;
+	grid-template-columns: 1fr 45px;
+	grid-template-rows: 1fr 30px;
+	grid-gap: 5px;
+	height:300px;
+}
+.serialOutput{
+	grid-area: 1 / 1 / 2 / 3;
+	resize:none;
+	white-space: pre;
+}
+.serialSendButton{
+	grid-area: 2 / 2 / 2 / 2;
+}
+.serialInput{
+	grid-area: 2 / 1 / 2 / 2;
+}
 
 .treeContainer{
 	position: fixed;
@@ -519,4 +543,19 @@ td{
 	margin-right:5px;
 	width:70px;
 	height:30px;
+}
+
+#banner{
+	position:absolute;
+	left:calc(50% - 250px);
+	top:-80px;
+	background:rgb(247 236 83 / 78%);
+	width:500px;
+	height:60px;
+	border-radius: 5px;
+	padding:15px;
+	transition-duration: 0.2s;
+}
+#bannerText{
+	font-size:20px;
 }

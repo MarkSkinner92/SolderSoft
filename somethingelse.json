@@ -1,0 +1,36 @@
+{
+  "path": "/home/mark/Desktop/SolderSoft/somethingelse.json",
+  "solderProfileWindow": {
+    "profiles": [
+      {
+        "id": "sp_default",
+        "name": "Default",
+        "variables": [],
+        "gcode": "",
+        "solderingTipId": "st_default"
+      }
+    ],
+    "activeProfile": {
+      "id": "sp_default",
+      "name": "Default",
+      "variables": [],
+      "gcode": "",
+      "solderingTipId": "st_default"
+    },
+    "defaultProfile": {
+      "id": "sp_default",
+      "name": "Default",
+      "variables": [],
+      "gcode": "",
+      "solderingTipId": "st_default"
+    },
+    "selectedTipId": "st_default",
+    "selectedVariableId": false,
+    "tips": [
+      {
+        "id": "st_default",
+        "name": "Default"
+      }
+    ]
+  }
+}

@@ -1,5 +1,4 @@
 //this file runs after everything has been loaded in
-
 window.addEventListener("load", (event) => {
 	board.select();
 	serial.fetchUSBPorts();

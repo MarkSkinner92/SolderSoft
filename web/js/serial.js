@@ -6,6 +6,8 @@ class Serial {
 		this.connected = false;
 		this.attemptingToConnect = false;
 		this.attemptingToDisconnect = false;
+
+		this.serialMonitors = [];
 	}
 
 	async connect(){
@@ -27,6 +29,10 @@ class Serial {
 		this.connected = false;
 		this.setActionButtonText();
 		this.setStatus("Not connected","bad");
+	}
+
+	registerSerialMonitor(sm){
+		this.serialMonitors.push(sm);
 	}
 
 	serialActionButtonClick(){
@@ -82,8 +88,8 @@ class Serial {
 	}
 
 	recieveLine(line){
-		console.log(line);
-		if(line == "start"){
+		this.sendToSerialMonitors(line);
+		if(line == "start" || line == "ok"){
 			this.connected = true;
 			this.attemptingToConnect = false;
 			this.setActionButtonText();
@@ -91,9 +97,72 @@ class Serial {
 		}
 	}
 
+	sendToSerialMonitors(line){
+		console.log(line);
+		for(let i = 0; i < this.serialMonitors.length; i++){
+			let monitor = this.serialMonitors[i];
+			monitor.put(line);
+		};
+	}
+
 	sendGcode(code){
-		eel.sendGcode(code+'\n');
+		if(window.hasOwnProperty('eel')) eel.sendGcode(code+'\n');
 	}
 }
 
 let serial = new Serial();
+
+class SerialMonitor {
+	constructor(output,input,send) {
+		this.output = output;
+		this.input = input;
+		this.send = send;
+		this.history = [];
+		this.historyIndex = 0;
+
+		this.onSendClick = this.onSendClick.bind(this);
+		this.onKeyUp = this.onKeyUp.bind(this);
+
+		this.send.onclick = this.onSendClick;
+		this.input.onkeyup = this.onKeyUp;
+	}
+
+	onSendClick(){
+		let value = this.input.value;
+		serial.sendGcode(value);
+		this.history.unshift(value);
+		if(this.history.length >= 30) this.history.pop();
+		this.input.value = '';
+	}
+
+	onKeyUp(e){
+		console.log(e);
+		if(e.key == 'ArrowUp'){
+			this.historyIndex++;
+			if(this.historyIndex < this.history.length && this.historyIndex >= 0){
+				this.input.value = this.history[this.historyIndex];
+			}
+			else this.input.value = '';
+		}else if(e.key == 'ArrowDown'){
+			this.historyIndex--;
+			if(this.historyIndex < this.history.length && this.historyIndex >= 0){
+				this.input.value = this.history[this.historyIndex];
+			}
+			else this.input.value = '';
+		}else if(e.key == 'Enter'){
+			this.historyIndex = -1;
+			this.onSendClick();
+		}
+	}
+
+	put(line){
+		this.output.value += (line+'\n');
+	}
+}
+
+let serialMonitor = new SerialMonitor(
+	document.getElementById('sm_output'),
+	document.getElementById('sm_input'),
+	document.getElementById('sm_send')
+);
+serial.registerSerialMonitor(serialMonitor);

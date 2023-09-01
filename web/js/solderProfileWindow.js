@@ -6,12 +6,12 @@ HTMLElement.prototype.removeOutline = function(){
 }
 
 class SolderProfile {
-	constructor(id) {
-		this.id = id;
-		this.name = 'unnamed';
-		this.variables = []; //{id:,uiname:,gcodename:,defaultvalue:}
-		this.gcode = "";
-		this.solderingTipId = 'st_default';
+	constructor(cf) {
+		this.id = cf.id;
+		this.name = cf.name || 'Unnamed';
+		this.variables = cf.variables || []; //{id:,uiname:,gcodename:,defaultvalue:}
+		this.gcode = cf.gcode || "";
+		this.solderingTipId = cf.solderingTipId || 'st_default';
 	}
 	getVariableByGcodeName(key){
 		for(let i = 0; i < this.variables.length; i++){
@@ -27,8 +27,21 @@ class SolderProfile {
 			}
 		}
 	}
-	setName(name){
-		this.name = name;
+	package(){
+		let json = {};
+		json.id = this.id;
+		json.name = this.name;
+		json.variables = this.variables;
+		json.gcode = this.gcode;
+		json.solderingTipId = this.solderingTipId;
+		return json;
+	}
+	unpackage(pkg){
+		this.id = pkg.id;
+		this.name = pkg.name;
+		this.variables = pkg.variables;
+		this.gcode = pkg.gcode;
+		this.solderingTipId = pkg.solderingTipId;
 	}
 }
 
@@ -42,19 +55,61 @@ class SolderProfileWindow {
 		});
 
 		this.profiles = []; //array of SolderProfile
-		this.activeProfile = new SolderProfile("sp_default");
-		this.activeProfile.setName("Default");
+		this.activeProfile = new SolderProfile({
+			id:"sp_default",
+			name:"Default"
+		});
+		this.createUIforProfile(this.activeProfile);
 		this.defaultProfile = this.activeProfile;
 		this.profiles.push(this.activeProfile);
 		this.loadProfile(this.activeProfile.id);
 
 		this.selectedTipId = 'st_default';
-		this.tips = [document.getElementById(this.selectedTipId)];
+		this.tips = [this.createTipElement({
+			cloneParentId:'st_prefab',
+			id: this.selectedTipId,
+			name: 'Default'
+		})];
+	}
+
+	//reduce class into necesary information to rebuild it
+	package(){
+		let json = {};
+		json.profiles = this.packageProfiles();
+		json.activeProfile = this.activeProfile.package();
+		json.defaultProfile = this.defaultProfile.package();
+		json.selectedTipId = this.selectedTipId;
+		json.selectedVariableId = this.selectedVariableId;
+		json.tips = this.packageTips();
+		return json;
+	}
+
+	wipe(){
+		for(let i = this.profiles.length-1; i >= 0; i--){
+			this.spliceFromProfiles(this.profiles[i].id);
+		}
+		this.removeAllVariableSlots();
+		this.gcodeBox.wipe();
+		this.wipeTips();
+	}
+	unpackage(json){
+		this.wipe();
+		this.unpackageProfiles(json.profiles);
+		this.activeProfile.unpackage(json.activeProfile);
+		this.defaultProfile.unpackage(json.defaultProfile);
+		this.selectedTipId = json.selectedTipId;
+		this.selectedVariableId = json.selectedVariableId;
+		this.unpackageTips(json.tips);
 	}
 
 	//tip menu and settings
 	saveAndCloseTipMenu(){
 		//reset the options
+		document.getElementById('solderTipWizard').style.display = 'none';
+		this.updateTipSelector();
+		this.updateSolderingTipId();
+	}
+	updateTipSelector(){
 		let newOptions = '';
 		for(let i = 0; i < this.tips.length; i++){
 			newOptions += ("<option value='"+this.tips[i].id+"'>"+this.tips[i].querySelector('.t_name').value+"</option>");
@@ -62,9 +117,6 @@ class SolderProfileWindow {
 		newOptions += ("<option value='editlist'>Edit List...</option>");
 		document.getElementById('solderingTipSelector').innerHTML = newOptions;
 		document.getElementById('solderingTipSelector').value = this.selectedTipId;
-		document.getElementById('solderTipWizard').style.display = 'none';
-
-		this.updateSolderingTipId();
 	}
 	openTipMenu(){
 		this.selectTip(this.tips[0]);
@@ -83,11 +135,23 @@ class SolderProfileWindow {
 		tipslot.addOutline();
 	}
 	addTip(){
-		let clone = document.getElementById(this.selectedTipId).cloneNode(true);
-		clone.id = 't_'+randomIDstring();
-		document.getElementById('solderTipBody').appendChild(clone);
-		this.tips.push(clone);
-		this.selectTip(clone);
+		let newTip = this.createTipElement({
+			cloneParentId: this.selectedTipId,
+			id: 't_'+randomIDstring(),
+			name: 'Unnamed'
+		});
+
+		this.tips.push(newTip);
+		this.selectTip(newTip);
+	}
+	createTipElement(cf){
+		let element = document.getElementById(cf.cloneParentId || 'st_prefab').cloneNode(true);
+		element.id = cf.id || 'st_default';
+		element.querySelector('.t_name').value = cf.name || 'Default';
+		element.style.display = '';
+		document.getElementById('solderTipBody').appendChild(element);
+		console.log(element);
+		return element;
 	}
 	removeSelectedTip(){
 		if(this.tips.length > 1){
@@ -97,6 +161,13 @@ class SolderProfileWindow {
 			}
 			this.selectTip(this.tips[this.tips.length-1]);
 		}
+	}
+	wipeTips(){
+		for(let i = this.tips.length-1; i >= 0; i--){
+			this.tips[i].remove();
+			this.tips.splice(i,1);
+		}
+		this.updateTipSelector();
 	}
 	solderingTipChange(){
 		let val = document.getElementById('solderingTipSelector').value;
@@ -109,6 +180,24 @@ class SolderProfileWindow {
 	}
 	updateSolderingTipId(){
 		this.activeProfile.solderingTipId = document.getElementById('solderingTipSelector').value;
+	}
+	packageTips(){
+		let tips = [];
+		for(let i = 0; i < this.tips.length; i++){
+			tips.push({
+				id:this.tips[i].id,
+				name:this.tips[i].querySelector('.t_name').value
+			})
+		}
+		return tips;
+	}
+	unpackageTips(_tips){
+		_tips.forEach((tip) => {
+			tip.cloneParentId = 'st_prefab';
+			this.tips.push(this.createTipElement(tip));
+		});
+		this.selectTip(this.tips[this.tips.length-1]);
+		this.updateTipSelector();
 	}
 
 
@@ -140,6 +229,18 @@ class SolderProfileWindow {
 		//load in the Gcode
 		this.gcodeBox.setCode(this.activeProfile.gcode);
 	}
+	unpackageProfiles(pfs){
+		for(let i = 0; i < pfs.length; i++){
+			this.addProfileFromPackage(pfs[i]);
+		}
+	}
+	packageProfiles(){
+		let arr = [];
+		this.profiles.forEach((profile) => {
+			arr.push(profile.package())
+		});
+		return arr;
+	}
 	getListOfProfileNamesAndIds(){
 		let slots = this.getAllProfileSlots();
 		let names = [];
@@ -151,7 +252,7 @@ class SolderProfileWindow {
 	profileNameChangeTrigger(e){
 		let profileSlot = e.srcElement.closest('.profileSlot');
 		let solderProfile = this.fromId(profileSlot.id);
-		solderProfile.setName(e.srcElement.value);
+		solderProfile.name = e.srcElement.value;
 	}
 	updateListOfProfiles(){
 		let html = "<option value='0'>New Profile...</option>";
@@ -169,13 +270,38 @@ class SolderProfileWindow {
 
 		// let templateInstance = this.fromId(idOfTemplateProfile);
 		let templateSlot = this.getProfileSlotById(idOfTemplateProfile);
-		let clone = templateSlot.cloneNode(true);
-		this.profileSlotContainer.appendChild(clone);
-		templateSlot.after(clone);
-		clone.id = 'sp_'+randomIDstring();
+		let newId = 'sp_'+randomIDstring();
 
-		let newInstance = new SolderProfile(clone.id);
+		let newInstance = new SolderProfile({
+			id:newId
+		});
+
+		//insert the profile in the correct spot
+		let templatePosition = 0;
+		for(let i = 0; i < this.profiles.length; i++){
+			if(this.profiles[i].id == idOfTemplateProfile){
+				templatePosition = i;
+			}
+		}
+		this.profiles.splice(templatePosition+1, 0, newInstance);
+
+		this.createUIforProfile(newInstance,templateSlot);
+		this.loadProfile(newInstance.id);
+	}
+
+	createUIforProfile(instance,templateSlot){
+		let clone = (templateSlot || document.getElementById('sp_prefab')).cloneNode(true);
+		clone.style.display = '';
+		clone.id = instance.id;
+		this.profileSlotContainer.appendChild(clone);
+		clone.querySelector('.sps_name').value = instance.name;
+		if(templateSlot) templateSlot.after(clone);
+	}
+
+	addProfileFromPackage(pkg){
+		let newInstance = new SolderProfile(pkg);
 		this.profiles.push(newInstance);
+		this.createUIforProfile(newInstance);
 		this.loadProfile(newInstance.id);
 	}
 
