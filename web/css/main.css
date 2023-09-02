@@ -336,7 +336,7 @@ td{
 }
 .solderProfileContainer {
 	display: grid;
-	grid-template-columns: minmax(100px,200px) minmax(200px,0.7fr) 1fr;
+	grid-template-columns: minmax(150px,250px) minmax(200px,0.7fr) 1fr;
 	grid-template-rows: 50px 75px 1fr 40px;
 	grid-column-gap: 0px;
 	grid-row-gap: 0px;
@@ -400,6 +400,13 @@ td{
 	background: white;
   margin: 5px;
   overflow: hidden;
+}
+#gTemplateError{
+	color:red;
+	position: absolute;
+  bottom: 50px;
+  margin-left: 10px;
+  white-space: nowrap;
 }
 .garea{
 	width:100%;

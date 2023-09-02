@@ -1,35 +1,144 @@
 {
-  "path": "",
+  "path": "/home/mark/Desktop/SolderSoft/core.json",
   "solderProfileWindow": {
     "profiles": [
       {
         "id": "sp_default",
         "name": "Default",
-        "variables": [],
+        "variables": [
+          {
+            "id": "v-075ac6",
+            "uiname": "Rotation",
+            "gcodename": "rot",
+            "defaultvalue": "90"
+          }
+        ],
         "gcode": "",
         "solderingTipId": "st_default"
+      },
+      {
+        "id": "sp_e7805e",
+        "name": "Fat",
+        "variables": [
+          {
+            "id": "v-21f36a",
+            "uiname": "Rotation",
+            "gcodename": "rot",
+            "defaultvalue": "90"
+          },
+          {
+            "id": "v-e9ee22",
+            "uiname": "Height",
+            "gcodename": "height",
+            "defaultvalue": "10"
+          },
+          {
+            "id": "v-2720fd",
+            "uiname": "Extra Hold Time",
+            "gcodename": "eht",
+            "defaultvalue": "0"
+          }
+        ],
+        "gcode": "",
+        "solderingTipId": "t_18cea5"
       }
     ],
-    "activeProfile": {
-      "id": "sp_default",
-      "name": "Default",
-      "variables": [],
-      "gcode": "",
-      "solderingTipId": "st_default"
-    },
-    "defaultProfile": {
-      "id": "sp_default",
-      "name": "Default",
-      "variables": [],
-      "gcode": "",
-      "solderingTipId": "st_default"
-    },
-    "selectedTipId": "st_default",
+    "activeProfileId": "sp_default",
+    "defaultProfileId": "sp_default",
+    "selectedTipId": "t_18cea5",
     "selectedVariableId": false,
     "tips": [
       {
         "id": "st_default",
-        "name": "Default"
+        "name": "Default tip"
+      },
+      {
+        "id": "t_18cea5",
+        "name": "FAT tip"
+      }
+    ]
+  },
+  "tree": {
+    "packagedElements": [
+      {
+        "id": "c-0d9056",
+        "type": "connector",
+        "name": "Example Connector",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "pinIds": [],
+        "expanded": false
+      },
+      {
+        "id": "c-c5e01f",
+        "type": "connector",
+        "name": "another connector",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "pinIds": [
+          "p-390728",
+          "p-befa81",
+          "p-390728",
+          "p-befa81"
+        ],
+        "expanded": true
+      },
+      {
+        "id": "p-390728",
+        "type": "pin",
+        "name": "pin inside",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "solderProfileId": "sp_e7805e",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "rot": "2",
+          "height": "2",
+          "eht": "2"
+        }
+      },
+      {
+        "id": "p-befa81",
+        "type": "pin",
+        "name": "Another pin inside",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "rot": "5"
+        }
+      },
+      {
+        "id": "p-e077a4",
+        "type": "pin",
+        "name": "pin outside",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "solderProfileId": "sp_e7805e",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "rot": "90",
+          "height": "10",
+          "eht": "0"
+        }
       }
     ]
   }

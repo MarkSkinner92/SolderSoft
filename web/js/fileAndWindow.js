@@ -2,15 +2,22 @@ class ProjectManager {
 	constructor() {
 		this.activePath = '';
 	}
-	loadJSONpackage(json){
+	unpackage(json){
 		this.activePath = json.path;
 		let nameparts = this.activePath.split('/');
 		this.setEditingInfo("Editing: "+nameparts[nameparts.length-1]);
+
 		solderProfileWindow.unpackage(json.solderProfileWindow);
+		tree.unpackage(json.tree);
+		config.unpackage(json.config);
+		board.unpackage(json.board);
 	}
 	package(){
 		let json = {path: this.activePath};
 		json.solderProfileWindow = solderProfileWindow.package();
+		json.tree = tree.package();
+		json.config = config.package();
+		json.board = board.package();
 		console.log(json);
 		return json;
 	}
@@ -106,7 +113,7 @@ class FileManager {
 			setTimeout(projectManager.hideBanner,500);
 			return;
 		}
-		projectManager.loadJSONpackage(contents);
+		projectManager.unpackage(contents);
 	}
 	async getFile() {
 		let result = await eel.openJSONfile()();

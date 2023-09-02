@@ -11,6 +11,16 @@ class Board {
 			z:4
 		}
 	}
+	package(){
+		return {
+			position:this.position,
+			size:this.size
+		}
+	}
+	unpackage(json){
+		this.position = json.position;
+		this.size = json.size;
+	}
 	select(){
 		Tree.addClassToElement(this.element,'selected');
 		inspector.openPanel('boardSetupPanel',this);

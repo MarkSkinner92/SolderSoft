@@ -21,6 +21,57 @@
 		this.mouseRelease = this.mouseRelease.bind(this);
 	}
 
+	package(){
+		let json = {};
+		let packagedElements = [];
+		for(let i = 0; i < this.elements.length; i++){
+			packagedElements.push(this.elements[i].package());
+		}
+		json.packagedElements = packagedElements;
+		return json;
+	}
+	wipe(){
+		for(let i = 0; i < this.elements.length; i++){
+			this.elements[i].remove();
+		}
+		this.elements = [];
+		this.selectedElementsIds = [];
+		this.selectionIsAllPins = true;
+		this.activeId = undefined; //the last selected element;
+		this.selectNestedOnly = false;
+		this.dragState = {
+			neighbor:undefined,
+			neighborId:false,
+			pos:0
+		}
+	}
+	unpackage(json){
+		this.wipe();
+		let packagedElements = json.packagedElements;
+		//unpackage all elements
+		for(let i = 0; i < packagedElements.length; i++){
+			this.elements.push(this.unpackageElement(packagedElements[i]));
+		}
+		//then link them together in a highrarchal way
+		for(let i = this.elements.length-1; i >= 0; i--){
+			let ele = this.elements[i];
+			if(ele.type == 'pin'){
+				if(packagedElements[i].parentConnectorId) ele.linkParent(this.fromId(packagedElements[i].parentConnectorId));
+			}else if(ele.type == 'connector'){
+				for(let k = 0; k < packagedElements[i].pinIds.length; k++){
+					ele.linkPins(packagedElements[i].pinIds);
+				}
+			}
+		}
+	}
+	unpackageElement(json){
+		if(json.type == 'pin'){
+			return new Pin(json);
+		}else if(json.type == 'connector'){
+			return new Connector(json);
+		}
+	}
+
 	fromId(id){
 		for(let i = 0; i < this.elements.length; i++) if(this.elements[i].id == id) return this.elements[i];
 	}
@@ -536,28 +587,53 @@ Tree.removeClassFromElement = function(ele,name){
 
 
 class Connector {
-	constructor(name) {
-		this.id = "c-"+randomIDstring();
+	constructor(cf) {
+		this.type = 'connector';
+		this.id = cf.id || "c-"+randomIDstring();
 
 		//external
-		this.name = name;
-		this.enabled = true;
-		this.position = {
+		this.name = cf.hasOwnProperty("name") ? cf.name : "Unnamed";
+		this.enabled = cf.hasOwnProperty("enabled") ? cf.enabled : true;
+		this.position = cf.hasOwnProperty("position") ? cf.position : {
 			x:0,
 			y:0
 		}
-		this.rotation = 0; //degrees
+		this.rotation = cf.hasOwnProperty("rotation") ? cf.rotation : 0;
 		//internal
 		let parent = document.getElementById("treeContainer");
-		this.createHTML(parent);
 		this.pins = [];
-		this.expanded = false;
+		this.expanded = cf.hasOwnProperty("expanded") ? cf.expanded : false;
 		this.selected = false;
-		preview.redraw();
+
+		//!! only used for unpackaging. USE THIS.PINS INSTEAD !!
+		this.createHTML(parent);
 	}
 
+	package(){
+		let json = {};
+		json.id = this.id;
+		json.type = this.type;
+		json.name = this.name;
+		json.enabled = this.enabled;
+		json.position = this.position;
+		json.rotation = this.rotation;
+		json.pinIds = [];
+
+		for(let i = 0; i < this.pins.length; i++){
+			json.pinIds.push(this.pins[i].id);
+		}
+
+		json.expanded = this.expanded;
+		return json;
+	}
 	remove(){
 		this.element().remove();
+	}
+	//use on unpackaging. to be run after all pins have been created, so the tree has pins to reference
+	linkPins(pinIds){
+		pinIds.forEach((pinId) => {
+			this.pins.push(tree.fromId(pinId));
+		});
 	}
 
 	isPin(){
@@ -579,6 +655,9 @@ class Connector {
 		clone.id = this.id;
 		clone.querySelector("#connectorName").innerText = this.name;
 		parent.appendChild(clone);
+
+
+		if(this.expanded) this.expand();
 	}
 	expand(){
 		this.element().querySelector(".arrow").style.transform = 'rotate(0deg)';
@@ -766,8 +845,9 @@ class Connector {
 	}
 }
 Connector.addNew = function(){
-	let newconnector = new Connector();
-	newconnector.setName(newconnector.id);
+	let newconnector = new Connector({
+		name:''
+	});
 	tree.elements.push(newconnector);
 }
 
@@ -775,25 +855,45 @@ Connector.addNew = function(){
 
 
 class Pin {
-	constructor(name) {
-		this.id = "p-"+randomIDstring();
+	constructor(cf) {
+		this.type = 'pin';
+		this.id = cf.id || "p-"+randomIDstring();
 
 		//external
-		this.name = name;
-		this.enabled = true;
-		this.position = {
+		this.name = cf.hasOwnProperty("name") ? cf.name : "Unnamed";
+		this.enabled = cf.hasOwnProperty("enabled") ? cf.enabled : true;
+		this.position = cf.hasOwnProperty("position") ? cf.position : {
 			x:0,
 			y:0
 		}
-		this.solderProfile = solderProfileWindow.defaultProfile;
-		this.solderProfileVariables = {};
+		this.solderProfile = cf.hasOwnProperty("solderProfileId") ? solderProfileWindow.fromId(cf.solderProfileId) : solderProfileWindow.defaultProfile;
+		this.solderProfileVariables = cf.hasOwnProperty("solderProfileVariables") ? cf.solderProfileVariables : {};
 
 		//internal
 		this.parentConnector = undefined;
+
 		this.selected = false;
 
 		let parent = document.getElementById("treeContainer");
 		this.createHTML(parent);
+	}
+
+	package(){
+		let json = {};
+		json.id = this.id;
+		json.type = this.type;
+		json.name = this.name;
+		json.enabled = this.enabled;
+		json.position = this.position;
+		json.solderProfileId = this.solderProfile.id;
+		json.parentConnectorId = this.parentConnector ? this.parentConnector.id : false;
+		json.solderProfileVariables = this.solderProfileVariables;
+		return json;
+	}
+	//to be run after
+	linkParent(parentId){
+		this.parentConnector = tree.fromId(parentId);
+		this.setIndent(true);
 	}
 
 	remove(){
@@ -818,6 +918,8 @@ class Pin {
 		clone.id = this.id;
 		clone.querySelector("#pinName").innerText = this.name;
 		parent.appendChild(clone);
+
+		this.setEnabled(this.enabled)
 	}
 	show(){
 		this.element().style.display = "block";
@@ -839,7 +941,7 @@ class Pin {
 		else{
 			this.hide();
 		}
-		this.element().style.marginLeft = "20px";
+		this.setIndent(true);
 	}
 	detatch(){
 		if(this.parentConnector != undefined){
@@ -849,8 +951,11 @@ class Pin {
 				inspector.reset();
 			}
 			this.parentConnector = undefined;
-			this.element().style.marginLeft = "0px";
+			this.setIndent(false)
 		}
+	}
+	setIndent(indent){
+		this.element().style.marginLeft = indent ? "20px" : "0px";
 	}
 	select(){
 		this.selected = true;
@@ -1011,8 +1116,9 @@ class Pin {
 	}
 }
 Pin.addNew = function(){
-	let newpin = new Pin();
-	newpin.setName(newpin.id);
+	let newpin = new Pin({
+		name:''
+	});
 	tree.elements.push(newpin);
 }
 

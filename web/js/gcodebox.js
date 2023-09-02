@@ -18,7 +18,7 @@ codeInput.registerTemplate("gcode", codeInput.templates.prism(Prism));
 class GcodeBox {
 	constructor(element,onchange) {
 		this.element = element;
-		this.element.addEventListener('change',onchange);
+		this.element.addEventListener('keyup',onchange);
 	}
 	setCode(code){
 		this.element.value = code;

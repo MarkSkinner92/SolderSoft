@@ -9,12 +9,12 @@ class Config {
 			this.gcodes[this.selectedKey] = this.gcodeBox.getCode();
 		});
 		this.gcodes = {
-			'startJob':'a',
-			'endJob':'b',
-			'ironOn':'c',
-			'ironOff':'d',
-			'home':'e',
-			'clean':'f',
+			'startJob':'',
+			'endJob':'',
+			'ironOn':'',
+			'ironOff':'',
+			'home':'',
+			'clean':'',
 		}
 	}
 	setPositioningMode(newMode){
@@ -76,6 +76,15 @@ class Config {
 		this.selectedKey = tile.id.substr(3,tile.id.length);
 		console.log(tile.id.substr(2,tile.id.length));
 		this.gcodeBox.setCode(this.gcodes[this.selectedKey]);
+	}
+
+	package(){
+		return {
+			this.config = this.gcodes;
+		}
+	}
+	unpackage(json){
+		this.gcodes = json.config;
 	}
 }
 

@@ -10,8 +10,21 @@ class SolderProfile {
 		this.id = cf.id;
 		this.name = cf.name || 'Unnamed';
 		this.variables = cf.variables || []; //{id:,uiname:,gcodename:,defaultvalue:}
-		this.gcode = cf.gcode || "";
+		this.gcode = cf.gcode || "G0 X{pinX} Y{pinY}; move to the pin's center position\n\n(put something here to move the Z up)\n(to avoid collisions as it moves to the next pin)";
 		this.solderingTipId = cf.solderingTipId || 'st_default';
+		this.color = cf.color || '#84009c';
+	}
+	setColor(value) {
+		if(document.getElementById(this.id)) document.getElementById(this.id).querySelector('.sps_color').value = value;
+		this.color = value;
+	}
+	getColor(){
+		if(document.getElementById(this.id)) return document.getElementById(this.id).querySelector('.sps_color').value;
+	}
+	addColorChangeTrigger(element){
+		element.addEventListener('change',(e)=>{
+			this.color = e.target.value;
+		})
 	}
 	getVariableByGcodeName(key){
 		for(let i = 0; i < this.variables.length; i++){
@@ -34,6 +47,7 @@ class SolderProfile {
 		json.variables = this.variables;
 		json.gcode = this.gcode;
 		json.solderingTipId = this.solderingTipId;
+		json.color = this.color;
 		return json;
 	}
 	unpackage(pkg){
@@ -42,6 +56,44 @@ class SolderProfile {
 		this.variables = pkg.variables;
 		this.gcode = pkg.gcode;
 		this.solderingTipId = pkg.solderingTipId;
+		this.color = json.color;
+	}
+	getValueOfGParam(expression,vars){
+		let keys = Object.keys(vars);
+
+		let realExpression = expression;
+		keys.forEach((key) => {
+			realExpression = realExpression.replaceAll(key,vars[key]);
+		});
+
+		try{
+			let result = eval(realExpression);
+			if(isNaN(result)){
+				return {
+					success:false,
+					value:"Error: expression "+expression+" evaluates to non-number"
+				};
+			}
+			return {
+				success:true,
+				value:result
+			};
+		}catch(e){
+			return {
+				success:false,
+				value:"Error in expression "+expression+": "+e.message.split('\n')[0]
+			};
+		}
+	}
+	//return a pretend object for testing gcode for sentax errors
+	getVariableObject(){
+		let obj = {};
+		obj.pinX = 0;
+		obj.pinY = 0;
+		this.variables.forEach((variable) => {
+			obj[variable.gcodename] = variable.defaultvalue;
+		});
+		return obj;
 	}
 }
 
@@ -57,7 +109,8 @@ class SolderProfileWindow {
 		this.profiles = []; //array of SolderProfile
 		this.activeProfile = new SolderProfile({
 			id:"sp_default",
-			name:"Default"
+			name:"Default",
+			color:"#84009c"
 		});
 		this.createUIforProfile(this.activeProfile);
 		this.defaultProfile = this.activeProfile;
@@ -76,8 +129,8 @@ class SolderProfileWindow {
 	package(){
 		let json = {};
 		json.profiles = this.packageProfiles();
-		json.activeProfile = this.activeProfile.package();
-		json.defaultProfile = this.defaultProfile.package();
+		json.activeProfileId = this.activeProfile.id;
+		json.defaultProfileId = this.defaultProfile.id;
 		json.selectedTipId = this.selectedTipId;
 		json.selectedVariableId = this.selectedVariableId;
 		json.tips = this.packageTips();
@@ -95,8 +148,8 @@ class SolderProfileWindow {
 	unpackage(json){
 		this.wipe();
 		this.unpackageProfiles(json.profiles);
-		this.activeProfile.unpackage(json.activeProfile);
-		this.defaultProfile.unpackage(json.defaultProfile);
+		this.activeProfile = this.fromId(json.activeProfileId);
+		this.defaultProfile = this.fromId(json.defaultProfileId);
 		this.selectedTipId = json.selectedTipId;
 		this.selectedVariableId = json.selectedVariableId;
 		this.unpackageTips(json.tips);
@@ -228,6 +281,10 @@ class SolderProfileWindow {
 
 		//load in the Gcode
 		this.gcodeBox.setCode(this.activeProfile.gcode);
+		this.testGcodeSyntax();
+
+		//load in the correct solder profile id
+		document.getElementById('solderingTipSelector').value = this.activeProfile.solderingTipId;
 	}
 	unpackageProfiles(pfs){
 		for(let i = 0; i < pfs.length; i++){
@@ -294,6 +351,8 @@ class SolderProfileWindow {
 		clone.style.display = '';
 		clone.id = instance.id;
 		this.profileSlotContainer.appendChild(clone);
+		instance.setColor(instance.color);
+		instance.addColorChangeTrigger(clone);
 		clone.querySelector('.sps_name').value = instance.name;
 		if(templateSlot) templateSlot.after(clone);
 	}
@@ -360,6 +419,7 @@ class SolderProfileWindow {
 		}
 		this.selectedVariableId = false;
 		variableElement.remove();
+		this.testGcodeSyntax();
 	}
 	selectVariable(element){
 		this.deselectAllVariables();
@@ -401,6 +461,7 @@ class SolderProfileWindow {
 		for(let i = allVariables.length-1; i >= 0; i--){
 			allVariables[i].remove();
 		}
+		this.testGcodeSyntax();
 	}
 	loadVariables(solderProfile){
 		console.log(solderProfile);
@@ -421,11 +482,31 @@ class SolderProfileWindow {
 		let key = evt.srcElement.getAttribute('key');
 		let value = evt.srcElement.value;
 		this.activeProfile.setVariableValue(id,key,value);
+		this.testGcodeSyntax();
 	}
 
 	//G-code container
 	registerGcodeChange(){
 		this.activeProfile.gcode = this.gcodeBox.getCode();
+		this.testGcodeSyntax();
+	}
+	testGcodeSyntax(){
+		let varObject = this.activeProfile.getVariableObject();
+		let variables = this.activeProfile.gcode.match(/\{.+?\}/g);
+		let errMsg = '';
+		for(let i = 0; i < variables.length; i++){
+			let variable = variables[i];
+			let exp = variable.substr(1,variable.length-2);
+			let result = this.activeProfile.getValueOfGParam(exp,varObject);
+			if(!result.success){
+				errMsg = result.value;
+				break;
+			}
+		}
+		this.exposeGcodeError(errMsg);
+	}
+	exposeGcodeError(errorMsg){
+		document.getElementById("gTemplateError").innerText = errorMsg;
 	}
 
 	//bottom menu

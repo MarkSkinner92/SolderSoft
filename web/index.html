@@ -1,6 +1,5 @@
-<!-- Created by Mark Skinner, Aug 2023. Credit to Toby Zerner for the sliding divs -->
+<!-- Created by Mark Skinner, Aug 2023 -->
 <!DOCTYPE html>
-<!-- saved from url=(0054)https://tobyzerner.github.io/inclusive-sort/index.html -->
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -278,6 +277,7 @@
           </div>
           <div id="sp_prefab" class="profileSlot" onclick="solderProfileWindow.profileClick(window.event)" style="display:none;padding:5px;background:#ddd;border-radius:5px">
             <input class="sps_name" onchange="solderProfileWindow.profileNameChangeTrigger(window.event)" style="margin:0px;width:100px" value="Default">
+            <input class="sps_color" type="color" value='#84009c'></input>
           </div>
           <div class="sp_profileContainer">
           </div>
@@ -310,6 +310,7 @@
             <p style="margin: 5px 0px 0px 0px">G-code to run at every pin with this solder profile. Put variables inside {}. (ex. {rotation}).</p>
           </div>
           <div class="sp_gholder">
+            <label id='gTemplateError'></label>
             <code-input required id="sp_gcodeBox" class="line-numbers" style="width:100%;height:100%" lang="gcode" placeholder="Write G-code here" template="gcode">
           </div>
           <div class="sp_footer">
@@ -384,9 +385,9 @@
     </div>
 
 
-    <script src="js/jogAndExcecution.js" charset="utf-8"></script>
-    <script src="js/serial.js" charset="utf-8"></script>
     <script type="text/javascript" src="eel.js"></script>
+    <script src="js/jog.js" charset="utf-8"></script>
+    <script src="js/serial.js" charset="utf-8"></script>
     <script src="js/gcodebox.js" charset="utf-8"></script>
     <script src="js/solderProfileWindow.js" charset="utf-8"></script>
     <script src="js/pinAndConnector.js" charset="utf-8"></script>
@@ -394,6 +395,7 @@
     <script src="js/inspector.js" charset="utf-8"></script>
     <script src="js/config.js" charset="utf-8"></script>
     <script src="js/preview.js" charset="utf-8"></script>
+    <script src="js/excecution.js" charset="utf-8"></script>
     <script src="js/fileAndWindow.js" charset="utf-8"></script>
     <script src="js/allIsLoaded.js" charset="utf-8"></script>
   </body>
