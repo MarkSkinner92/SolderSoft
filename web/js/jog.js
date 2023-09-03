@@ -2,28 +2,28 @@ class Jog {
 	constructor() {
 	}
 	fanOn(){
-		serial.sendGcode("M106 P0 S255");
+		serial.writeLine("M106 P0 S255");
 	}
 	fanOff(){
-		serial.sendGcode("M107");
+		serial.writeLine("M107");
 	}
 	fanOff(){
-		serial.sendGcode("M107");
+		serial.writeLine("M107");
 	}
 	jogX(amt){
-		serial.sendGcode("G91"); //realitive mode
-		serial.sendGcode("G0 X"+amt);
+		serial.writeLine("G91"); //realitive mode
+		serial.writeLine("G0 X"+amt);
 	}
 	jogY(amt){
-		serial.sendGcode("G91"); //realitive mode
-		serial.sendGcode("G0 Y"+amt);
+		serial.writeLine("G91"); //realitive mode
+		serial.writeLine("G0 Y"+amt);
 	}
 	jogZ(amt){
-		serial.sendGcode("G91"); //realitive mode
-		serial.sendGcode("G0 Z"+amt);
+		serial.writeLine("G91"); //realitive mode
+		serial.writeLine("G0 Z"+amt);
 	}
 	setServo(angle){
-		serial.sendGcode("M280 P0 S"+angle);
+		serial.writeLine("M280 P0 S"+angle);
 	}
 	servoSliderEvent(e){
 		let value = e.target.value;
@@ -38,3 +38,18 @@ class Jog {
 }
 
 let jog = new Jog();
+
+
+function openExecPanel(panelClass){
+	let panels = document.getElementById('execContainer').children;
+	for(let i = 0; i < panels.length; i++){
+		panels[i].style.display = 'none';
+	}
+
+	let elements = document.getElementsByClassName(panelClass);
+	for(let i = 0; i < elements.length; i++){
+		elements[i].style.display = '';
+	}
+}
+
+openExecPanel('executionPanel');

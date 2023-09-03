@@ -11,6 +11,7 @@ class ProjectManager {
 		tree.unpackage(json.tree);
 		config.unpackage(json.config);
 		board.unpackage(json.board);
+		inspector.reset();
 	}
 	package(){
 		let json = {path: this.activePath};

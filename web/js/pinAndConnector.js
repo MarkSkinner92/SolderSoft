@@ -816,12 +816,7 @@ class Connector {
 			oldValue = Number(oldValue);
 			this.setPositionX(newValue);
 			for(let i = 0; i < backgroundSources.length; i++){
-				if(config.absoluteMode){
-					backgroundSources[i].setPositionX(newValue);
-				}else{
-					let delta = newValue-oldValue;
-					backgroundSources[i].setPositionX(backgroundSources[i].position.x+delta);
-				}
+				backgroundSources[i].setPositionX(newValue);
 			}
 		}
 		else if(key == 'positiony'){
@@ -829,12 +824,7 @@ class Connector {
 			oldValue = Number(oldValue);
 			this.setPositionY(newValue);
 			for(let i = 0; i < backgroundSources.length; i++){
-				if(config.absoluteMode){
-					backgroundSources[i].setPositionY(newValue);
-				}else{
-					let delta = newValue-oldValue;
-					backgroundSources[i].setPositionY(backgroundSources[i].position.y+delta);
-				}
+				backgroundSources[i].setPositionY(newValue);
 			}
 		}else if(key == 'rotation'){
 			newValue = Number(newValue);
@@ -894,6 +884,21 @@ class Pin {
 	linkParent(parentId){
 		this.parentConnector = tree.fromId(parentId);
 		this.setIndent(true);
+	}
+
+	getGlobalPosition(){
+		let gp = {
+			x:this.position.x,
+			y:this.position.y
+		}
+
+		if(this.hasParentConnector() && !config.globalMode){
+			let parentPosition = this.parentConnector.position;
+			gp.x+=parentPosition.x;
+			gp.y+=parentPosition.y;
+		}
+
+		return gp;
 	}
 
 	remove(){
@@ -1092,12 +1097,7 @@ class Pin {
 			oldValue = Number(oldValue);
 			this.setPositionX(newValue);
 			for(let i = 0; i < backgroundSources.length; i++){
-				if(config.absoluteMode){
-					backgroundSources[i].setPositionX(newValue);
-				}else{
-					let delta = newValue-oldValue;
-					backgroundSources[i].setPositionX(backgroundSources[i].position.x+delta);
-				}
+				backgroundSources[i].setPositionX(newValue);
 			}
 		}
 		else if(key == 'positiony'){
@@ -1105,12 +1105,7 @@ class Pin {
 			oldValue = Number(oldValue);
 			this.setPositionY(newValue);
 			for(let i = 0; i < backgroundSources.length; i++){
-				if(config.absoluteMode){
-					backgroundSources[i].setPositionY(newValue);
-				}else{
-					let delta = newValue-oldValue;
-					backgroundSources[i].setPositionY(backgroundSources[i].position.y+delta);
-				}
+				backgroundSources[i].setPositionY(newValue);
 			}
 		}
 	}

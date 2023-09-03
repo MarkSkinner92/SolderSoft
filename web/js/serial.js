@@ -88,24 +88,25 @@ class Serial {
 	}
 
 	recieveLine(line){
-		this.sendToSerialMonitors(line);
 		if(line == "start" || line == "ok"){
+			excecution.recievedok = true;
 			this.connected = true;
 			this.attemptingToConnect = false;
+			console.log("setting status good");
 			this.setActionButtonText();
 			this.setStatus("Connected","good");
 		}
+		this.sendToSerialMonitors(line);
 	}
 
 	sendToSerialMonitors(line){
-		console.log(line);
 		for(let i = 0; i < this.serialMonitors.length; i++){
 			let monitor = this.serialMonitors[i];
 			monitor.put(line);
 		};
 	}
 
-	sendGcode(code){
+	writeLine(code){
 		if(window.hasOwnProperty('eel')) eel.sendGcode(code+'\n');
 	}
 }
@@ -129,7 +130,7 @@ class SerialMonitor {
 
 	onSendClick(){
 		let value = this.input.value;
-		serial.sendGcode(value);
+		serial.writeLine(value);
 		this.history.unshift(value);
 		if(this.history.length >= 30) this.history.pop();
 		this.input.value = '';

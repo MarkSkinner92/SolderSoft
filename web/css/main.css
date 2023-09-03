@@ -54,17 +54,17 @@ body {
 
 .good{
 	color:darkgreen;
-	background-color: lightgreen;
+	background-color: #a5e4ad;
 	padding:5px;
 }
 .warning{
 	color:black;
-	background-color: orange;
+	background-color: #e3e4a5;
 	padding:5px;
 }
 .bad{
 	color:black;
-	background-color: red;
+	background-color: #e4a5a5;
 	padding:5px;
 }
 
@@ -158,12 +158,19 @@ body {
 	overflow-x:auto;
 	overflow-y:hidden;
 }
+.execContainer{
+	width: calc(100% - 125px);
+	display: -webkit-box;
+	height:100%;
+	padding:5px;
+}
 .serialMonitor{
 	display: grid;
 	grid-template-columns: 1fr 45px;
 	grid-template-rows: 1fr 30px;
 	grid-gap: 5px;
 	height:300px;
+	width:100%;
 }
 .serialOutput{
 	grid-area: 1 / 1 / 2 / 3;
@@ -175,6 +182,42 @@ body {
 }
 .serialInput{
 	grid-area: 2 / 1 / 2 / 2;
+}
+
+.executionPanel{
+	width: 100%;
+	height: 100%;
+	padding: 5px;
+}
+.exWrapper{
+	border-radius: 5px;
+	padding: 10px;
+	margin-bottom: 5px;
+	width: 100%;
+	background-color: #eee;
+}
+.progressBarShell{
+	width:100%;
+	height:20px;
+	background-color: #CCC;
+}
+.progressBarInside{
+	height:100%;
+	width:0%;
+	left:0px;
+	background-color: #7bc584;
+	transition: 0.1s;
+}
+.exStatusTr{
+	height:30px;
+}
+.exWrapperTable{
+	height:100%;
+	min-width: 240px;
+}
+.exWrapperTable button{
+	margin:5px;
+	display: block;
 }
 
 .treeContainer{

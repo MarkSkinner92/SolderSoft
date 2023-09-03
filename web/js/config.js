@@ -1,6 +1,5 @@
 class Config {
 	constructor(element) {
-		this.absoluteMode = true; //absolute or realitive
 		this.globalMode = true; //global or local
 		this.menu = element;
 		this.selectedKey = false;
@@ -9,16 +8,13 @@ class Config {
 			this.gcodes[this.selectedKey] = this.gcodeBox.getCode();
 		});
 		this.gcodes = {
-			'startJob':'',
-			'endJob':'',
+			'startJob':'G0 Z20\nM400\nG0 X0 Y0\nM400',
+			'endJob':'G0 X0 Y0',
 			'ironOn':'',
 			'ironOff':'',
 			'home':'',
 			'clean':'',
 		}
-	}
-	setPositioningMode(newMode){
-		this.absoluteMode = (newMode == 'absolute');
 	}
 	setCoordinateMode(newMode){
 		let previouslyGlobalMode = this.globalMode;
@@ -80,7 +76,7 @@ class Config {
 
 	package(){
 		return {
-			this.config = this.gcodes;
+			config:this.gcodes
 		}
 	}
 	unpackage(json){

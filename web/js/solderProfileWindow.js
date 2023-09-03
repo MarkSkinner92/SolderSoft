@@ -85,6 +85,35 @@ class SolderProfile {
 			};
 		}
 	}
+
+	compileGcode(pin){
+		let varObject = pin.solderProfileVariables;
+
+		let globalPosition = pin.getGlobalPosition();
+
+		varObject.pinX = globalPosition.x;
+		varObject.pinY = globalPosition.y;
+
+		let code = this.gcode+'';
+		let subsitutions = code.match(/\{.+?\}/g);
+		let errMsg = false;
+		for(let i = 0; i < subsitutions.length; i++){
+			let variable = subsitutions[i];
+			let exp = variable.substr(1,variable.length-2);
+			let result = this.getValueOfGParam(exp,varObject);
+			if(result.success){
+				code = code.replaceAll(variable,result.value);
+			}
+			else{
+				errMsg = result.value;
+				break;
+			}
+		}
+		return {
+			code:code,
+			flag:errMsg
+		}
+	}
 	//return a pretend object for testing gcode for sentax errors
 	getVariableObject(){
 		let obj = {};

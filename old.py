@@ -10,9 +10,11 @@ import time
 from pprint import pprint
 import serial.tools.list_ports
 
+eel.init('web')
+
 serial_port = False
-writeout_que = queue.Queue();
-serial_que = queue.Queue();
+serial_que = queue.Queue()
+writeout_que = queue.Queue()
 
 #get USB devices
 def getUSBDevices():
@@ -28,35 +30,13 @@ def openPort(port,rate):
     serial_port.write("M114\n".encode('ascii')) #get status
     serial_que.put(serial_port)
 
-def serialThread(writeout_que,serial_que):
-    ser = False
-    while True:
-        try:
-            tmp = serial_que.get(timeout=0.001)
-            if tmp is False:
-                ser.close()
-            else:
-                ser = tmp
-        except queue.Empty:
-            pass
-
-        if ser is not False:
-            if ser.is_open:
-                inWaiting = ser.inWaiting()
-                if inWaiting > 0:
-                    reading = ser.read(inWaiting).decode('ascii')
-                    handle_data(reading)
-
-                if writeout_que.qsize() > 0:
-                    dataToSend = writeout_que.get(timeout = 0.01)
-                    ser.write(dataToSend.encode('ascii'))
-        eel.sleep(0.01)
 
 buffer = []
 def handle_data(data):
     global buffer
     if(data.encode('ascii') != b''):
         for element in data:
+            #newline, or "ok"
             if(element == '\n'):
                 mergedBuffer = "".join(buffer)
                 print("data recieved",mergedBuffer)
@@ -65,10 +45,48 @@ def handle_data(data):
             else:
                 buffer.append(element)
 
+def read_from_port():
+    ser = False
+    tmp = False
+    dataToSend = False
+    while True:
+        # print("running",i)
+        try:
+            tmp = serial_que.get(timeout=0.001)
+            if tmp is False:
+                ser.close()
+                # print('shutting down from thread')
+            else:
+                ser = tmp
+        except queue.Empty:
+            pass
+
+        try:
+            if not ser is False:
+                if ser.is_open:
+                    inWaiting = ser.inWaiting()
+                    if inWaiting > 0:
+                        reading = ser.read(inWaiting).decode('ascii')
+                        handle_data(reading)
+
+                    dataToSend = writeout_que.get(timeout=0.001)
+                    ser.write(dataToSend.encode('ascii'))
+                    dataToSend = False
+
+        except queue.Empty:
+            dataToSend = False
+            pass
+    eel.sleep(1)
+
 @eel.expose
 def sendGcode(code):
     writeout_que.put(code)
     print("sending:",code)
+
+# thread = threading.Thread(target=read_from_port, args=(serial_que,writeout_que))
+# thread.setDaemon(True)
+# thread.start()
+eel.spawn(read_from_port,serial_que,writeout_que)
 
 @eel.expose
 def connect(port,rate):
@@ -145,6 +163,7 @@ def savePackageAs(pkg,wildcard="*"):
             outfile.close()
     return {"status":"cancel"}
 
-eel.spawn(serialThread, writeout_que, serial_que)
-eel.init('web')
-eel.start('index.html', size=(1350, 750))
+while True:
+    eel.sleep(1)
+
+eel.start('index.html', size=(1350, 750), block=False)

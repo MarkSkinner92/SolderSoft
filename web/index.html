@@ -73,12 +73,7 @@
       <div id='middlePanel' class="middlePanel">
         <div class="middleMenu">
 
-        <label>Pos Mode</label>
-
-        <select onchange="config.setPositioningMode(this.value)">
-          <option value='absolute'>Absolute</option>
-          <option value='realitive'>Realitive</option>
-        </select>
+        <label>Coordinates</label>
 
         <select onchange="config.setCoordinateMode(this.value)">
           <option value='global'>Global</option>
@@ -195,69 +190,119 @@
       </div>
       <div class="execPanel" id="execPanel">
         <div class='execSelectorPanel'>
-          <button class='execButton'>Jog Controls</button>
-          <button class='execButton'>Excecution Controls</button>
-          <button class='execButton'>Serial Monitor</button>
+          <button onclick="openExecPanel('jogcontrols')" class='execButton'>Jog Controls</button>
+          <button onclick="openExecPanel('executionPanel')" class='execButton'>Excecution Controls</button>
+          <button onclick="openExecPanel('serialMonitor')" class='execButton'>Serial Monitor</button>
         </div>
-        <div class='execControlPanel jogcontrols'>
-          <button class='execButton'>Iron ON</button>
-          <button class='execButton'>Iron OFF</button>
-          <button onclick="jog.fanOn()" class='execButton'>Fan ON</button>
-          <button onclick="jog.fanOff()" class='execButton'>Fan OFF</button>
-          <button class='execButton'>Servo ON</button>
-          <button class='execButton'>Servo OFF</button>
-        </div>
-        <div class='jogPanel jogcontrols'>
-          <button onclick="jog.jogY(100)" style="left:100px;top:0px;width:100px"class='jogBtn'>+Y</button>
-          <button onclick="jog.jogY(10)" style="left:115px;top:35px;width:70px"class='jogBtn'>+Y</button>
-          <button onclick="jog.jogY(1)" style="left:125px;top:70px;width:50px"class='jogBtn'>+Y</button>
-          <button onclick="jog.jogY(0.1)" style="left:135px;top:105px;"class='jogBtn'>+Y</button>
+        <div class="execContainer" id="execContainer">
+          <div class='execControlPanel jogcontrols'>
+            <button onclick="jog.motorsOff()"class='execButton'>MOTORS OFF</button>
+            <button onclick="jog.ironOn()"class='execButton'>Iron ON</button>
+            <button onclick="jog.ironOff()"class='execButton'>Iron OFF</button>
+            <button onclick="jog.fanOn()" class='execButton'>Fan ON</button>
+            <button onclick="jog.fanOff()" class='execButton'>Fan OFF</button>
+            <button onclick="jog.servoOn()"class='execButton'>Servo ON</button>
+            <button onclick="jog.servoOff()"class='execButton'>Servo OFF</button>
+          </div>
+          <div class='jogPanel jogcontrols'>
+            <button onclick="jog.jogY(100)" style="left:100px;top:0px;width:100px"class='jogBtn'>+Y</button>
+            <button onclick="jog.jogY(10)" style="left:115px;top:35px;width:70px"class='jogBtn'>+Y</button>
+            <button onclick="jog.jogY(1)" style="left:125px;top:70px;width:50px"class='jogBtn'>+Y</button>
+            <button onclick="jog.jogY(0.1)" style="left:135px;top:105px;"class='jogBtn'>+Y</button>
 
-          <button onclick="jog.jogY(-0.1)" style="left:135px;top:165px;"class='jogBtn'>-Y</button>
-          <button onclick="jog.jogY(-1)" style="left:125px;top:200px;width:50px"class='jogBtn'>-Y</button>
-          <button onclick="jog.jogY(-10)" style="left:115px;top:235px;width:70px"class='jogBtn'>-Y</button>
-          <button onclick="jog.jogY(-100)" style="left:100px;top:270px;width:100px"class='jogBtn'>-Y</button>
+            <button onclick="jog.jogY(-0.1)" style="left:135px;top:165px;"class='jogBtn'>-Y</button>
+            <button onclick="jog.jogY(-1)" style="left:125px;top:200px;width:50px"class='jogBtn'>-Y</button>
+            <button onclick="jog.jogY(-10)" style="left:115px;top:235px;width:70px"class='jogBtn'>-Y</button>
+            <button onclick="jog.jogY(-100)" style="left:100px;top:270px;width:100px"class='jogBtn'>-Y</button>
 
-          <button onclick="jog.jogX(-100)" style="top:100px;left:0px;height:100px"class='jogBtn'>-X</button>
-          <button onclick="jog.jogX(-10)" style="top:115px;left:35px;height:70px"class='jogBtn'>-X</button>
-          <button onclick="jog.jogX(-1)" style="top:125px;left:70px;height:50px"class='jogBtn'>-X</button>
-          <button onclick="jog.jogX(-0.1)" style="top:135px;left:105px;"class='jogBtn'>-X</button>
+            <button onclick="jog.jogX(-100)" style="top:100px;left:0px;height:100px"class='jogBtn'>-X</button>
+            <button onclick="jog.jogX(-10)" style="top:115px;left:35px;height:70px"class='jogBtn'>-X</button>
+            <button onclick="jog.jogX(-1)" style="top:125px;left:70px;height:50px"class='jogBtn'>-X</button>
+            <button onclick="jog.jogX(-0.1)" style="top:135px;left:105px;"class='jogBtn'>-X</button>
 
-          <button onclick="jog.jogX(0.1)" style="top:135px;left:165px;"class='jogBtn'>+X</button>
-          <button onclick="jog.jogX(1)" style="top:125px;left:200px;height:50px"class='jogBtn'>+X</button>
-          <button onclick="jog.jogX(10)" style="top:115px;left:235px;height:70px"class='jogBtn'>+X</button>
-          <button onclick="jog.jogX(100)" style="top:100px;left:270px;height:100px"class='jogBtn'>+X</button>
+            <button onclick="jog.jogX(0.1)" style="top:135px;left:165px;"class='jogBtn'>+X</button>
+            <button onclick="jog.jogX(1)" style="top:125px;left:200px;height:50px"class='jogBtn'>+X</button>
+            <button onclick="jog.jogX(10)" style="top:115px;left:235px;height:70px"class='jogBtn'>+X</button>
+            <button onclick="jog.jogX(100)" style="top:100px;left:270px;height:100px"class='jogBtn'>+X</button>
 
-          <button style="left:0px;top:210px;width:90px;height:90px"class='jogBtn'>Home All</button>
-          <button style="left:210px;top:210px;width:90px;height:90px"class='jogBtn'>Home X</button>
-          <button style="left:0px;top:0px;width:90px;height:90px"class='jogBtn'>Home Y</button>
-          <button style="left:210px;top:0px;width:90px;height:90px"class='jogBtn'>Home Z</button>
+            <button style="left:0px;top:210px;width:90px;height:90px"class='jogBtn'>Home All</button>
+            <button style="left:210px;top:210px;width:90px;height:90px"class='jogBtn'>Home X</button>
+            <button style="left:0px;top:0px;width:90px;height:90px"class='jogBtn'>Home Y</button>
+            <button style="left:210px;top:0px;width:90px;height:90px"class='jogBtn'>Home Z</button>
 
-          <button onclick="jog.jogZ(10)" style="left:325px;top:65px;width:70px"class='jogBtn'>+Z</button>
-          <button onclick="jog.jogZ(1)" style="left:335px;top:100px;width:50px"class='jogBtn'>+Z</button>
-          <button onclick="jog.jogZ(0.1)" style="left:345px;top:135px;"class='jogBtn'>+Z</button>
+            <button onclick="jog.jogZ(10)" style="left:325px;top:65px;width:70px"class='jogBtn'>+Z</button>
+            <button onclick="jog.jogZ(1)" style="left:335px;top:100px;width:50px"class='jogBtn'>+Z</button>
+            <button onclick="jog.jogZ(0.1)" style="left:345px;top:135px;"class='jogBtn'>+Z</button>
 
-          <button onclick="jog.jogZ(-0.1)" style="left:345px;top:195px;"class='jogBtn'>-Z</button>
-          <button onclick="jog.jogZ(-1)" style="left:335px;top:230px;width:50px"class='jogBtn'>-Z</button>
-          <button onclick="jog.jogZ(-10)" style="left:325px;top:265px;width:70px"class='jogBtn'>-Z</button>
+            <button onclick="jog.jogZ(-0.1)" style="left:345px;top:195px;"class='jogBtn'>-Z</button>
+            <button onclick="jog.jogZ(-1)" style="left:335px;top:230px;width:50px"class='jogBtn'>-Z</button>
+            <button onclick="jog.jogZ(-10)" style="left:325px;top:265px;width:70px"class='jogBtn'>-Z</button>
 
-          <button style="left:440px;top:135px;"class='jogBtn'>+E</button>
-          <button style="left:430px;top:100px;width:50px"class='jogBtn'>+E</button>
-          <button style="left:420px;top:65px;width:70px"class='jogBtn'>+E</button>
+            <button style="left:440px;top:135px;"class='jogBtn'>+E</button>
+            <button style="left:430px;top:100px;width:50px"class='jogBtn'>+E</button>
+            <button style="left:420px;top:65px;width:70px"class='jogBtn'>+E</button>
 
-          <button style="left:440px;top:195px;"class='jogBtn'>-E</button>
-          <button style="left:430px;top:230px;width:50px"class='jogBtn'>-E</button>
-          <button style="left:420px;top:265px;width:70px"class='jogBtn'>-E</button>
+            <button style="left:440px;top:195px;"class='jogBtn'>-E</button>
+            <button style="left:430px;top:230px;width:50px"class='jogBtn'>-E</button>
+            <button style="left:420px;top:265px;width:70px"class='jogBtn'>-E</button>
 
-          <label style='position:absolute;left:320px;top:15px;width:170px'>Head Rotation</label>
-          <input id='servoAngleInput' value='90' onchange="jog.servoInputEvent(window.event)" style='position:absolute;left:430px;top:13px;width:60px;text-align:center'>
-          <input id='jogServoSlider' value='90' onchange="jog.servoSliderEvent(window.event)" style='position:absolute;left:320px;top:35px;width:170px' type="range" min="0" max="180" value="50" class="slider" id="myRange">
-
-        </div>
-        <div class='serialMonitor jogcontrols'>
-          <textarea id='sm_output' readonly class='serialOutput'></textarea>
-          <input id='sm_input' placeholder = "G-code command" class='serialInput'></input>
-          <button id='sm_send' class='serialSendButton'>Send</button>
+            <label style='position:absolute;left:320px;top:15px;width:170px'>Head Rotation</label>
+            <input id='servoAngleInput' value='90' onchange="jog.servoInputEvent(window.event)" style='position:absolute;left:430px;top:13px;width:60px;text-align:center'>
+            <input id='jogServoSlider' value='90' onchange="jog.servoSliderEvent(window.event)" style='position:absolute;left:320px;top:35px;width:170px' type="range" min="0" max="180" value="50" class="slider" id="myRange">
+          </div>
+          <div class='serialMonitor jogcontrols'>
+            <textarea id='sm_output' readonly class='serialOutput'></textarea>
+            <input id='sm_input' placeholder = "G-code command (press Enter to submit, arrow keys for history)" class='serialInput'></input>
+            <button id='sm_send' class='serialSendButton'>Send</button>
+          </div>
+          <div class='executionPanel'>
+            <div class='exWrapper'style="white-space: nowrap">
+              <label>Job setup: Include</label>
+              <select class='exSelect' id="exSelect" onchange="excecution.changeSelector(window.event)">
+                <option value="all">All pins/connectors</option>
+                <option value="select">Only selected pins/connectors</option>
+              </select>
+              <label>Status:</label>
+              <label id='exStatusText'class='bad'>Stopped</label>
+            </div>
+            <div class='exWrapper exStatusPanel' style='display:none'>
+              <table style="border-spacing:0px 10px">
+                <tr>
+                  <th style='width:calc(100% - 150px)'></th>
+                  <th style='width:150px'></th>
+                </tr>
+                <tr class='exStatusTr expinprogressstatus'>
+                  <td><div id='pinProgress' class='progressBarShell'><div class='progressBarInside'></div></div></td>
+                  <td><label id='pinProgressBarText'>0/0 Pins</label></td>
+                </tr>
+                <tr class='exStatusTr excodeprogressstatus'>
+                  <td><div id='codeProgress' class='progressBarShell'><div class='progressBarInside' style="background-color:#88499c"></div></div></td>
+                  <td><label id='codeProgressBarText'>0/0 Instructions</label></td>
+                </tr>
+              </table>
+            </div>
+            <table style='border-spacing:10px'>
+              <tr>
+                <td style='vertical-align:top'>
+                  <div class='exWrapper exWrapperTable'>
+                    <button onclick="excecution.startContinuous()" class='exStartBtn'>Start continuous</button>
+                    <button onclick="excecution.startNextInstruction()" class='exStartBtn'>Start next instruction</button>
+                    <button onclick="excecution.startNextPin()" class='exStartBtn'>Start next pin</button>
+                    <button onclick="excecution.startNextConnector()" class='exStartBtn'>Start next connector</button>
+                    <button onclick="excecution.startTipClean()" class='exTipClean'>Start a tip clean</button>
+                  </div>
+                </td>
+                <td style='vertical-align:top'>
+                  <div class='exWrapper exWrapperTable'>
+                    <button onclick="excecution.pauseAfterInstruction()"class='exPauseBtn'>Pause after instruction</button>
+                    <button onclick="excecution.pauseAfterPin()"class='exPauseBtn expin'>Pause after pin</button>
+                    <button onclick="excecution.pauseAfterConnector()"class='exPauseBtn excon'>Pause after connector</button>
+                    <button onclick="excecution.stopAndCancel()"class='exStopBtn'>Stop and cancel job</button>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -307,7 +352,7 @@
           </div>
           <div class="div6" style="padding:5px">
             <label style="margin-right:5px">Soldering Tip</label><select onchange='solderProfileWindow.solderingTipChange()'id='solderingTipSelector'><option value='st_default'>Default</option><option value='editlist'>Edit List...</option></select>
-            <p style="margin: 5px 0px 0px 0px">G-code to run at every pin with this solder profile. Put variables inside {}. (ex. {rotation}).</p>
+            <p style="margin: 5px 0px 0px 0px">Put variables inside {}. anything inside {} will be evaulated as JavaScript. ex. {height*2+5} or {Math.sin(rotation)*5}</p>
           </div>
           <div class="sp_gholder">
             <label id='gTemplateError'></label>

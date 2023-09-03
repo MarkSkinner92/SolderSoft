@@ -28,7 +28,6 @@ class Preview{
 			if (this.dragStart){
 				var pt = this.ctx.transformedPoint(this.lastX,this.lastY);
 				this.ctx.translate(pt.x-this.dragStart.x,pt.y-this.dragStart.y);
-				this.redraw();
 			}
 		};
 
@@ -38,7 +37,6 @@ class Preview{
 			var factor = Math.pow(this.scaleFactor,clicks);
 			this.ctx.scale(factor,factor);
 			this.ctx.translate(-pt.x,-pt.y);
-			this.redraw();
 		}
 		this.mouseup = function(evt){
 			this.dragStart = null;
@@ -124,39 +122,39 @@ class Preview{
 		this.ctx.lineWidth = 2*this.sm;
 		this.ctx.strokeStyle = "#DDD";
 		//horizontal lines
-		for(let y = 0,i=0; y < this.p2.y; y+=10,i++){
-			if(y == 0) continue;
-			this.ctx.beginPath();
-			this.ctx.moveTo(this.p1.x,y);
-			this.ctx.lineTo(this.p2.x,y);
-			this.ctx.closePath();
-			this.ctx.stroke();
-		}
-		for(let y = 0,i=0; y > this.p1.y; y-=10,i++){
-			if(y == 0) continue;
-			this.ctx.beginPath();
-			this.ctx.moveTo(this.p1.x,y);
-			this.ctx.lineTo(this.p2.x,y);
-			this.ctx.closePath();
-			this.ctx.stroke();
-		}
-		//vertical lines
-		for(let x = 0,i=0; x < this.p2.x; x+=10,i++){
-			if(x == 0) continue;
-			this.ctx.beginPath();
-			this.ctx.moveTo(x,this.p1.y);
-			this.ctx.lineTo(x,this.p2.y);
-			this.ctx.closePath();
-			this.ctx.stroke();
-		}
-		for(let x = 0,i=0; x > this.p1.x; x-=10,i++){
-			if(x == 0) continue;
-			this.ctx.beginPath();
-			this.ctx.moveTo(x,this.p1.y);
-			this.ctx.lineTo(x,this.p2.y);
-			this.ctx.closePath();
-			this.ctx.stroke();
-		}
+		// for(let y = 0,i=0; y < this.p2.y; y+=10,i++){
+		// 	if(y == 0) continue;
+		// 	this.ctx.beginPath();
+		// 	this.ctx.moveTo(this.p1.x,y);
+		// 	this.ctx.lineTo(this.p2.x,y);
+		// 	this.ctx.closePath();
+		// 	this.ctx.stroke();
+		// }
+		// for(let y = 0,i=0; y > this.p1.y; y-=10,i++){
+		// 	if(y == 0) continue;
+		// 	this.ctx.beginPath();
+		// 	this.ctx.moveTo(this.p1.x,y);
+		// 	this.ctx.lineTo(this.p2.x,y);
+		// 	this.ctx.closePath();
+		// 	this.ctx.stroke();
+		// }
+		// //vertical lines
+		// for(let x = 0,i=0; x < this.p2.x; x+=10,i++){
+		// 	if(x == 0) continue;
+		// 	this.ctx.beginPath();
+		// 	this.ctx.moveTo(x,this.p1.y);
+		// 	this.ctx.lineTo(x,this.p2.y);
+		// 	this.ctx.closePath();
+		// 	this.ctx.stroke();
+		// }
+		// for(let x = 0,i=0; x > this.p1.x; x-=10,i++){
+		// 	if(x == 0) continue;
+		// 	this.ctx.beginPath();
+		// 	this.ctx.moveTo(x,this.p1.y);
+		// 	this.ctx.lineTo(x,this.p2.y);
+		// 	this.ctx.closePath();
+		// 	this.ctx.stroke();
+		// }
 
 		//Draw Axis lines
 		this.ctx.lineWidth = 2*this.sm;
@@ -195,19 +193,42 @@ class Preview{
 		return board.position.x+x;
 	}
 
-	drawPin(pin){
-		let x = pin.position.x;
-		let y = pin.position.y;
+	getPathOfPins(){
+		let path = [[this.boardXToWorldX(0),this.boardYToWorldY(0)]];
+		for(let i = 0; i < tree.elements.length; i++){
+			let thisElement = tree.elements[i];
+			if(thisElement.isPin() && thisElement.enabled){
+				let pos = thisElement.getGlobalPosition();
+				path.push([pos.x,pos.y]);
+			}
+		}
+		return path;
+	}
 
-		if(pin.hasParentConnector() && !config.globalMode){
-			let parentPosition = pin.parentConnector.position;
-			x+=parentPosition.x;
-			y+=parentPosition.y;
+	drawPin(pin){
+		let pos = pin.getGlobalPosition();
+		let x = pos.x;
+		let y = pos.y;
+
+		if(pin.enabled){
+			if(pin.selected || pin.parentConnector?.selected){
+				this.ctx.fillStyle = "#CCC";
+				this.ctx.beginPath();
+				this.ctx.arc(
+					this.boardXToWorldX(x),
+					this.boardYToWorldY(y),
+					3,
+					0,
+					2 * Math.PI
+				);
+				this.ctx.closePath();
+				this.ctx.fill();
+			}
 		}
 
-		this.ctx.fillStyle = "#000";
+		if(pin.enabled) this.ctx.fillStyle = pin.solderProfile.color;
+		else this.ctx.fillStyle = '#DDD';
 		this.ctx.beginPath();
-
 		this.ctx.arc(
 			this.boardXToWorldX(x),
 			this.boardYToWorldY(y),
@@ -215,7 +236,6 @@ class Preview{
 			0,
 			2 * Math.PI
 		);
-
 		this.ctx.closePath();
 		this.ctx.fill();
 	}
@@ -226,99 +246,50 @@ class Preview{
 		this.sm = (this.p2.y-this.p1.y)/canvas.height;
 
 		this.clearCanvas();
-		//draw the grid
+		//draw the grid and axis lines
 		this.drawBackground();
 
 		this.drawboard();
 
 		for(let i = 0; i < tree.elements.length; i++){
 			let thisElement = tree.elements[i];
-			//if it's a pin
 			if(thisElement.isPin()){
 				this.drawPin(thisElement);
 			}
 		}
 
-		//for all connectors
-		//this.drawConnector()
-
-		//draw home
-		// this.ctx.fillStyle = "#00F";
-		// this.ctx.beginPath();
-		// this.ctx.arc(setup.home.x, setup.home.y, 5, 0, 2 * Math.PI);
-		// this.ctx.closePath();
-		// this.ctx.fill();
-		// this.ctx.fillStyle = "#000";
-		// this.ctx.beginPath();
-		// this.ctx.arc(setup.home.x, setup.home.y, 1, 0, 2 * Math.PI);
-		// this.ctx.closePath();
-		// this.ctx.fill();
-
-		// //draw board
-		// this.ctx.lineWidth = 1;
-		// this.ctx.strokeStyle = "#000";
-		// this.ctx.strokeRect(0,0,board.width,board.height);
-		//
-		// for(let i = 0; i < connections.length; i++){
-			// 	let thisConnection = connections[i];
-			// 	this.ctx.fillStyle = "#F00";
-			// 	this.ctx.beginPath();
-			// 	this.ctx.arc(thisConnection.x, thisConnection.y, 2, 0, 2 * Math.PI);
-			// 	this.ctx.closePath();
-			// 	this.ctx.fill();
-			// }
-
+		let path = this.getPathOfPins();
+		this.ctx.strokeStyle = '#F00';
+		this.ctx.beginPath();
+		this.ctx.moveTo(path[0][0]-board.position.x,path[0][1]+board.position.y);
+		for(let i = 1; i < path.length; i++){
+			this.ctx.lineTo(this.boardXToWorldX(path[i][0]),this.boardYToWorldY(path[i][1]));
 		}
-		resizeCanvas(w,h){
-			this.canvas.width = w;
-			this.canvas.height = h;
-			this.trackTransforms(this.ctx);
-		}
+		this.ctx.stroke();
 
-		fillElement(ele){
-			let box = ele.getBoundingClientRect();
-			this.resizeCanvas(box.width,box.height-2);
-		}
+	}
+	resizeCanvas(w,h){
+		this.canvas.width = w;
+		this.canvas.height = h;
+		this.trackTransforms(this.ctx);
+	}
+
+	fillElement(ele){
+		let box = ele.getBoundingClientRect();
+		this.resizeCanvas(box.width,box.height-2);
+	}
 }
 
 var canvas = document.getElementById("previewCanvas");
 canvas.width = 800; canvas.height = 600;
-
 let preview = new Preview(canvas);
-// setInterval(preview.redraw,100);
-
 preview.fillElement(document.getElementById("previewPanel"));
-preview.ctx.setTransform(3,0,0,3,30,canvas.height-30);
-preview.redraw();
 
 window.addEventListener("resize", (event) => {
 	let ot = preview.ctx.getTransform();
 	preview.fillElement(document.getElementById("previewPanel"));
 	preview.ctx.setTransform(ot.a,ot.b,ot.c,ot.d,ot.e,ot.f);
-	preview.redraw();
 });
-
-
-//WIZARD CODE
-function closeWizard(){
-	document.getElementById("wizardWindow").style.display = "none";
-}
-function openWizard(className,functonToRunOnOK,param){
-	let ww = document.getElementById("wizardWindow");
-	ww.style.display = "unset";
-	let eles = ww.querySelectorAll(".hideableWizardWindow");
-	for(let i = 0; i < eles.length; i++){
-		eles[i].style.display = "none";
-	}
-	if(className) ww.querySelector("."+className).style.display = "unset";
-	document.getElementById("wizzardOKbutton").onclick = function(){
-		if(functonToRunOnOK) functonToRunOnOK(param);
-		else{
-			console.log("Error: No function to run on OK");
-		}
-		closeWizard();
-	}
-}
 
 //untility functions
 function randomIDstring() {
