@@ -13,12 +13,20 @@
             "defaultvalue": "10"
           }
         ],
-        "gcode": "G0 X{pinX} Y{pinY}; move to the pin's center position\nM400\nG0 Z10\nG0 Z0\nM400\n(put something here to move the Z up)\n(to avoid collisions as it moves to the next pin)",
+        "gcode": "G0 X{pinX} Y{pinY}; move to the pin's center position\nM400\nG0 Z10\nG0 Z0\nM400",
         "solderingTipId": "st_default",
         "color": "#84009c"
+      },
+      {
+        "id": "sp_869a59",
+        "name": "Josh",
+        "variables": [],
+        "gcode": "G0 X{pinX} Y{pinY}; move to the pin's center position\nM400\nM280 P0 S180\nM280 P0 S90\n(put something here to move the Z up)\n(to avoid collisions as it moves to the next pin)",
+        "solderingTipId": "st_default",
+        "color": "#38ac06"
       }
     ],
-    "activeProfileId": "sp_default",
+    "activeProfileId": "sp_869a59",
     "defaultProfileId": "sp_default",
     "selectedTipId": "st_default",
     "selectedVariableId": false,
@@ -95,14 +103,15 @@
         "parentConnectorId": false,
         "solderProfileVariables": {
           "pinX": 20,
-          "pinY": 20
+          "pinY": 20,
+          "fake": "10"
         }
       }
     ]
   },
   "config": {
     "config": {
-      "startJob": "G90",
+      "startJob": "G90\nG0 X0 Y0 Z0",
       "endJob": "G0 X0 Y0\nM400",
       "ironOn": "",
       "ironOff": "",

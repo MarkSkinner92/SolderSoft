@@ -212,6 +212,14 @@
 		this.onSelectionChange();
 	}
 
+	focusOnElement(instance){
+		this.removeAllSelectedElements();
+		this.addToSelectedElements(instance.id);
+		if(instance.hasParentConnector()){
+			instance.parentConnector.expand();
+		}
+	}
+
 	onSelectionChange(){
 		inspector.closeAllPanels();
 		if(this.selectedElementsIds.length != 0){

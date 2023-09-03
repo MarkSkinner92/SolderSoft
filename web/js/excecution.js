@@ -9,9 +9,13 @@ class Excecution {
 
 		this.pinStack = [];
 		this.pinStackIndex = 0;
+		this.instructionStackIndex = 0;
+
+		this.pauseInstructionIndex = -1;
+		this.pausePinIndex = -1;
+
 		this.gbuffer = []; //[{code:,flag:}]
 		this.recievedok = true;
-		this.waitUntilReady.bind(this);
 	}
 	setStatus(msg,type,name){
 		let ele = document.getElementById('exStatusText');
@@ -86,12 +90,12 @@ class Excecution {
 		}
 	}
 
-	async executeGbuffer(options){
+	async executeGbuffer(name){
 		let originalLengthOfGbuffer = this.gbuffer.length;
 
 		while(this.gbuffer.length > 0){
 			this.excecuteRichLine(this.gbuffer.shift());
-			this.setProgressBar('codeProgress',originalLengthOfGbuffer-this.gbuffer.length,originalLengthOfGbuffer,options.name || 'instructions');
+			this.setProgressBar('codeProgress',originalLengthOfGbuffer-this.gbuffer.length,originalLengthOfGbuffer,name || 'instructions');
 			await this.waitUntilReady(this,100);
 		}
 	}
@@ -101,6 +105,7 @@ class Excecution {
 		this.hideClass('expinprogressstatus');
 		this.addStringCodeToGbuffer(config.gcodes.startJob);
 		await this.executeGbuffer('start job instructions');
+		this.gbuffer = [];
 	}
 	async executeEndOfJob(){
 		this.hideClass('expinprogressstatus');
@@ -116,17 +121,30 @@ class Excecution {
 	//ms is interval to check
 	waitUntilReady(instance,ms) {
 		return new Promise((resolve, reject) => {
+			// let timeoutCounter = 0;
 			function checkReadyState(){
 				console.log("checking...");
 				if(instance.readyForNextLine()) {
 					resolve(ms)
 				}else{
+					// timeoutCounter++;
 					setTimeout(checkReadyState,ms);
 				}
 			}
 			checkReadyState();
 		})
 	}
+
+
+	// ms is interval to check
+	// waitUntilReady(instance,ms) {
+	// 	return new Promise((resolve, reject) => {
+	// 		function checkReadyState(){
+	// 			resolve(ms)
+	// 		}
+	// 		setTimeout(checkReadyState,ms);
+	// 	});
+	// }
 
 	readyForNextLine(){
 		console.log("checking ready state");
@@ -138,7 +156,70 @@ class Excecution {
 		this.recievedok = false;
 	}
 
-	async startContinuous(){
+	async beginExecutionLoop(){
+		this.showClass('exStatusPanel');
+		//if execution is is starting on the first instruction of the first pin, run the init sequence
+		if(this.pinStackIndex == 0 && this.instructionStackIndex == 0){
+			await this.executeStartOfJob();
+		}
+
+		this.showClass('expinprogressstatus');
+		while(this.shouldProcedeWithPin()){
+			this.setProgressBar('pinProgress',this.pinStackIndex,this.pinStack.length,'pins');
+			if(this.gbuffer.length == 0){
+				this.addPinToGbuffer(this.pinStack[this.pinStackIndex]);
+				tree.focusOnElement(this.pinStack[this.pinStackIndex]);
+				this.instructionStackIndex = 0;
+			}
+			while(this.shouldProcedeWithInstruction()){
+				this.excecuteRichLine(this.gbuffer[this.instructionStackIndex]);
+				this.setProgressBar('codeProgress',this.instructionStackIndex,this.gbuffer.length,'instructions');
+				await this.waitUntilReady(this,100);
+
+				this.instructionStackIndex++;
+				this.setProgressBar('codeProgress',this.instructionStackIndex,this.gbuffer.length,'instructions');
+			}
+			if(this.gbuffer.length == this.instructionStackIndex){
+				if(this.pauseInstructionIndex != -1){
+					this.pauseInstructionIndex -= this.gbuffer.length;
+				}
+				this.pinStackIndex++;
+				this.gbuffer = [];
+				this.instructionStackIndex = 0;
+				this.setProgressBar('pinProgress',this.pinStackIndex,this.pinStack.length,'pins');
+			}else{
+				break;
+			}
+		}
+
+		//if execution is finished all the instructions of the last pin, wrap it up
+		if(this.pinStackIndex == this.pinStack.length && this.instructionStackIndex == 0){
+			await this.executeEndOfJob();
+		}else{
+			//if the program reaches this point wthout stoping the execution,
+			// it must be paused, thus requiring user input
+			this.setStatus('Waiting for user action','warning','waitingForUser');
+			this.enableClass('exStopBtn');
+			this.disableClass('exPauseBtn');
+			this.enableClass('exStartBtn');
+			this.enableClass('exTipClean');
+		}
+	}
+
+	shouldProcedeWithPin(){
+		let condition = this.pinStackIndex < this.pausePinIndex; //If we're not going to pause at that index
+		condition ||= this.pausePinIndex == -1; //or we don't have any intention of pausing
+		condition &&= this.pinStackIndex < this.pinStack.length//and a pin at this index exists
+		return condition;
+	}
+	shouldProcedeWithInstruction(){
+		let condition = this.instructionStackIndex < this.pauseInstructionIndex; //If we're not going to pause at that index
+		condition ||= this.pauseInstructionIndex == -1; //or we don't have any intention of pausing
+		condition &&= this.instructionStackIndex < this.gbuffer.length//and a pin at this index exists
+		return condition;
+	}
+
+	startContinuous(){
 		this.ensureLock();
 		this.setStatus('Running continuously','good','startContinuous');
 		this.enableClass('exPauseBtn');
@@ -146,19 +227,10 @@ class Excecution {
 		this.disableClass('exStartBtn');
 		this.disableClass('exSelect');
 
-		if(this.pinStackIndex == 0) await executeStartOfJob();
-
-		this.showClass('expinprogressstatus');
-		while(this.pinStackIndex < this.pinStack.length){
-			this.addPinToGbuffer(this.pinStack[this.pinStackIndex]);
-
-			await this.executeGbuffer('instructions');
-			this.setProgressBar('pinProgress',this.pinStackIndex+1,this.pinStack.length,'pins');
-
-			this.pinStackIndex++;
-		}
-
-		await executeEndOfJob();
+		//specify no intention of pausing until finished
+		this.pausePinIndex = -1;
+		this.pauseInstructionIndex = -1;
+		this.beginExecutionLoop();
 	}
 
 	startNextInstruction(){
@@ -169,6 +241,11 @@ class Excecution {
 		this.disableClass('exStartBtn');
 		this.disableClass('exSelect');
 		this.showClass('exStatusPanel');
+
+		//specify pause at next instruction
+		this.pausePinIndex = -1;
+		this.pauseInstructionIndex = this.instructionStackIndex+1;
+		this.beginExecutionLoop();
 	}
 	startNextPin(){
 		this.ensureLock();
@@ -180,6 +257,11 @@ class Excecution {
 		this.disableClass('exSelect');
 		this.enableClass('exStopBtn');
 		this.showClass('exStatusPanel');
+
+		//specify pause at next pin
+		this.pausePinIndex = this.pinStackIndex+1;
+		this.pauseInstructionIndex = -1;
+		this.beginExecutionLoop();
 	}
 	startNextConnector(){
 		this.ensureLock();
@@ -200,17 +282,21 @@ class Excecution {
 	pauseAfterInstruction(){
 		this.setStatus('Pausing after instruction...','warning','pausedAfterInstruction');
 		this.disableClass('exPauseBtn');
+		this.pauseInstructionIndex = this.instructionStackIndex+1;
+		this.pausePinIndex = -1;
 	}
 	pauseAfterPin(){
 		this.setStatus('Pausing after pin...','warning','pausedAfterPin');
 		this.disableClass('exPauseBtn');
+		this.pausePinIndex = this.pinStackIndex+1;
+		this.pauseInstructionIndex = -1;
 	}
 	pauseAfterConnector(){
 		this.setStatus('Pausing after connector...','warning','pausedAfterConnector');
 		this.disableClass('exPauseBtn');
 	}
 	stopAndCancel(){
-		this.setStatus('Stopped','bad','notInProgress');
+		this.setStatus('Not running','bad','notInProgress');
 		this.disableClass('exPauseBtn');
 		this.disableClass('exStopBtn');
 		this.enableClass('exTipClean');
@@ -218,10 +304,14 @@ class Excecution {
 		this.enableClass('exStartBtn');
 		this.enableClass('exSelect');
 		this.hideClass('exStatusPanel');
+		tree.removeAllSelectedElements();
 
-		this.pinStackIndex = 0;
 		this.pinStack = [];
-		this.gbuffer = [];
+		this.pinStackIndex = 0;
+		this.instructionStackIndex = 0;
+		this.pauseInstructionIndex = -1;
+		this.pausePinIndex = -1;
+		this.gbuffer = []; //[{code:,flag:}]
 		this.recievedok = true;
 	}
 
