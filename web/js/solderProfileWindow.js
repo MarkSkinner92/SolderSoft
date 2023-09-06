@@ -1,10 +1,3 @@
-HTMLElement.prototype.addOutline = function(){
-	this.style.boxShadow = "0px 0px 0px 2px black";
-}
-HTMLElement.prototype.removeOutline = function(){
-  this.style.boxShadow = "none";
-}
-
 class SolderProfile {
 	constructor(cf) {
 		this.id = cf.id;
@@ -113,6 +106,10 @@ class SolderProfile {
 			code:code,
 			flag:errMsg
 		}
+	}
+
+	getSolderTipName(){
+		return document.getElementById(this.solderingTipId).querySelector('.t_name').value;
 	}
 	//return a pretend object for testing gcode for sentax errors
 	getVariableObject(){

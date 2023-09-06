@@ -6,6 +6,7 @@ import queue
 import sys
 import json
 import time
+import os
 
 from pprint import pprint
 import serial.tools.list_ports
@@ -144,6 +145,28 @@ def savePackageAs(pkg,wildcard="*"):
             return {"status":"failed","path":path}
             outfile.close()
     return {"status":"cancel"}
+
+def getPathToConnectorLibrary():
+    return os.path.join(os.getcwd(),"Connector Library","connectors.json")
+
+@eel.expose
+def fetchConnectorLibrary():
+    try:
+        f = open(getPathToConnectorLibrary())
+        fj = json.load(f)
+        f.close()
+        return fj
+    except:
+        return
+
+
+@eel.expose
+def updateConnectorLibrary(lib):
+    json_object = json.dumps(lib, indent=2)
+    path = os.path.realpath(os.getcwd())
+    outfile = open(getPathToConnectorLibrary(),'w+')
+    outfile.write(json_object)
+    outfile.close()
 
 eel.spawn(serialThread, writeout_que, serial_que)
 eel.init('web')

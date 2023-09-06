@@ -121,40 +121,6 @@ class Preview{
 	drawBackground(){
 		this.ctx.lineWidth = 2*this.sm;
 		this.ctx.strokeStyle = "#DDD";
-		//horizontal lines
-		// for(let y = 0,i=0; y < this.p2.y; y+=10,i++){
-		// 	if(y == 0) continue;
-		// 	this.ctx.beginPath();
-		// 	this.ctx.moveTo(this.p1.x,y);
-		// 	this.ctx.lineTo(this.p2.x,y);
-		// 	this.ctx.closePath();
-		// 	this.ctx.stroke();
-		// }
-		// for(let y = 0,i=0; y > this.p1.y; y-=10,i++){
-		// 	if(y == 0) continue;
-		// 	this.ctx.beginPath();
-		// 	this.ctx.moveTo(this.p1.x,y);
-		// 	this.ctx.lineTo(this.p2.x,y);
-		// 	this.ctx.closePath();
-		// 	this.ctx.stroke();
-		// }
-		// //vertical lines
-		// for(let x = 0,i=0; x < this.p2.x; x+=10,i++){
-		// 	if(x == 0) continue;
-		// 	this.ctx.beginPath();
-		// 	this.ctx.moveTo(x,this.p1.y);
-		// 	this.ctx.lineTo(x,this.p2.y);
-		// 	this.ctx.closePath();
-		// 	this.ctx.stroke();
-		// }
-		// for(let x = 0,i=0; x > this.p1.x; x-=10,i++){
-		// 	if(x == 0) continue;
-		// 	this.ctx.beginPath();
-		// 	this.ctx.moveTo(x,this.p1.y);
-		// 	this.ctx.lineTo(x,this.p2.y);
-		// 	this.ctx.closePath();
-		// 	this.ctx.stroke();
-		// }
 
 		//Draw Axis lines
 		this.ctx.lineWidth = 2*this.sm;
@@ -205,7 +171,10 @@ class Preview{
 		return path;
 	}
 
+	//standard pitch is around 0.5mm
 	drawPin(pin){
+		this.ctx.lineCap = "round";
+
 		let pos = pin.getGlobalPosition();
 		let x = pos.x;
 		let y = pos.y;
@@ -217,7 +186,7 @@ class Preview{
 				this.ctx.arc(
 					this.boardXToWorldX(x),
 					this.boardYToWorldY(y),
-					3,
+					1.5,
 					0,
 					2 * Math.PI
 				);
@@ -232,7 +201,7 @@ class Preview{
 		this.ctx.arc(
 			this.boardXToWorldX(x),
 			this.boardYToWorldY(y),
-			1,
+			0.7,
 			0,
 			2 * Math.PI
 		);
@@ -290,8 +259,3 @@ window.addEventListener("resize", (event) => {
 	preview.fillElement(document.getElementById("previewPanel"));
 	preview.ctx.setTransform(ot.a,ot.b,ot.c,ot.d,ot.e,ot.f);
 });
-
-//untility functions
-function randomIDstring() {
-  return (((1+Math.random())*0x1000000)|0).toString(16).substring(1);
-}

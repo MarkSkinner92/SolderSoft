@@ -19,6 +19,7 @@
 		this.dragStart = this.dragStart.bind(this);
 		this.mouseDragging = this.mouseDragging.bind(this);
 		this.mouseRelease = this.mouseRelease.bind(this);
+		this.lastClientY = 0;
 	}
 
 	package(){
@@ -117,7 +118,52 @@
 	}
 
 	duplicateSelection(){
-		//TODO
+		let selectedElementPackages = [];
+		for(let i = 0; i < this.selectedElementsIds.length; i++){
+			let instance = this.fromId(this.selectedElementsIds[i]);
+
+			if(instance.isConnector()){
+				let parentPackage = copyObject(instance.package(true));
+				parentPackage.pinIds = [];
+				let childrenToPush = [];
+				for(let k = 0; k < instance.pins.length; k++){
+					let childinstance = instance.pins[k];
+					let childPackage = copyObject(childinstance.package(true));
+					parentPackage.pinIds.push(childPackage.id);
+					childPackage.parentConnectorId = parentPackage.id;
+					childrenToPush.push(childPackage);
+				}
+				selectedElementPackages.push(parentPackage);
+				for(let k = 0; k < childrenToPush.length; k++){
+					selectedElementPackages.push(childrenToPush[k]);
+				}
+			}else{
+				selectedElementPackages.push(instance.package(true));
+			}
+		}
+
+		for(let i = 0; i < selectedElementPackages.length; i++){
+			let unpackaged = this.unpackageElement(selectedElementPackages[i]);
+			let parentId = selectedElementPackages[i].parentConnectorId;
+			console.log(unpackaged);
+			tree.elements.push(unpackaged);
+			if(parentId) unpackaged.setParent(tree.fromId(parentId));
+		}
+	}
+
+	saveSelectionToLibrary(){
+		//TODO package selected elements. open a addConnectorSlot wizard with piped data
+		let connector = tree.fromId(this.selectedElementsIds[0]);
+		let packagedElements = [];
+		packagedElements.push(connector.package());
+		for(let i = 0; i < connector.pins.length; i++){
+			packagedElements.push(connector.pins[i].package());
+		}
+		let options = {
+			name:connector.name,
+			prefabData:packagedElements
+		}
+		addToLibraryWizard.open(options);
 	}
 
 	setActiveAsConnectorOrigin(){
@@ -247,8 +293,10 @@
 			inspector.openPanel('generalInfoPanel',activeSlotClass,backgroundClasses);
 			inspector.openPanel('positionPanel',activeSlotClass,backgroundClasses);
 
-			if(this.selectedElementsIds.length == 1 && this.fromId(this.selectedElementsIds[0]).isConnector())
+			if(this.selectedElementsIds.length == 1 && this.fromId(this.selectedElementsIds[0]).isConnector()){
+				inspector.openPanel('saveToLibraryPanel',activeSlotClass,backgroundClasses);
 				inspector.openPanel('rotationPanel',activeSlotClass,backgroundClasses);
+			}
 			if(this.selectionHasSameParent() && this.selectedElementsIds.length == 1) inspector.openPanel('setOriginPanel',activeSlotClass,backgroundClasses);
 			if(selectionIsAllPins){
 				inspector.openPanel('solderProfilePanel',activeSlotClass,backgroundClasses);
@@ -326,6 +374,7 @@
 	}
 
 	orderElementsToScreenOrder(){
+		console.log("ordering");
 		let elementIds = [...this.wrapper.children]
 			.filter((itm)=> itm.className.includes('element'))
 			.map((item) => item.id);
@@ -336,8 +385,23 @@
 		}
 
 		this.elements = [...tempArray];
-	}
 
+		//order all the individual pin arrays for all the connectors
+		//go through in screen order
+		let parents = {}; //object key:parentconnectorid. value: array of children in screen order
+		for(let i = 0; i < this.elements.length; i++){
+			let instance = this.elements[i];
+			if(instance.hasParentConnector()){
+				if(!parents[instance.parentConnector.id]) parents[instance.parentConnector.id] = [];
+				parents[instance.parentConnector.id].push(instance);
+			}
+		}
+		let parentIds = Object.keys(parents);
+		for(let i = 0; i < parentIds.length; i++){
+			console.log(this.fromId(parentIds[i]),parents[parentIds[i]]);
+			this.fromId(parentIds[i]).pins = parents[parentIds[i]];
+		}
+	}
 
 	//stopdrag
 	mouseRelease(evt){
@@ -399,7 +463,6 @@
 	}
 	//startdrag
 	dragStart(e,ele){
-		console.log(this,this.ghostWrapper);
 		e.preventDefault();
 
 		//if the targeted drag element is not selected, select it only
@@ -450,11 +513,12 @@
 		this.setGhostWrapperPosition(evt.clientX+this.offsetX,ytracker);
 
 		//Scroll if too close to the edges
-		if(evt.clientY > window.innerHeight*0.8){
-			document.getElementById("treeContainer").scrollBy(0,5);
+		console.log(this.lastScreenY,evt.screenY);
+		if(evt.clientY > window.innerHeight*0.9){
+			document.getElementById("treeContainer").scrollBy(0,Math.abs(evt.clientY-window.innerHeight*0.9));
 		}
-		else if(evt.clientY < window.innerHeight*0.2+30){
-			document.getElementById("treeContainer").scrollBy(0,-5);
+		else if(evt.clientY < window.innerHeight*0.1+30){
+			document.getElementById("treeContainer").scrollBy(0,-Math.abs(evt.clientY-window.innerHeight*0.1+30));
 		}
 
 		for(let i = 0; i < this.elements.length; i++){
@@ -528,6 +592,7 @@
 
 			}
 		}
+		this.lastScreenY = evt.screenY;
 	}
 
 	setGhostWrapperPosition(l,t){
@@ -617,9 +682,9 @@ class Connector {
 		this.createHTML(parent);
 	}
 
-	package(){
+	package(withUniqueIds){
 		let json = {};
-		json.id = this.id;
+		json.id = withUniqueIds ? "c-"+randomIDstring() : this.id;
 		json.type = this.type;
 		json.name = this.name;
 		json.enabled = this.enabled;
@@ -876,9 +941,9 @@ class Pin {
 		this.createHTML(parent);
 	}
 
-	package(){
+	package(withUniqueIds){
 		let json = {};
-		json.id = this.id;
+		json.id = withUniqueIds ? "p-"+randomIDstring() : this.id;
 		json.type = this.type;
 		json.name = this.name;
 		json.enabled = this.enabled;

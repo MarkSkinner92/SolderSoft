@@ -7,10 +7,13 @@ document.addEventListener("DOMContentLoaded", function(event){
 	preview.ctx.setTransform(3,0,0,3,30,370);
 	redrawPreviewWindow();
 
-	eel.expose(recieveSerialLine); // Expose this function to Python
+	if(_usingeel){
+		eel.expose(recieveSerialLine);
+	}
   function recieveSerialLine(x) {
 		serial.recieveLine(x);
   }
+	connectorLibrary.pullFromLibrary();
 });
 
 function redrawPreviewWindow(){

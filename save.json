@@ -1,32 +1,17 @@
 {
-  "path": "/home/mark/Desktop/SolderSoft/save.json",
+  "path": "",
   "solderProfileWindow": {
     "profiles": [
       {
         "id": "sp_default",
         "name": "Default",
-        "variables": [
-          {
-            "id": "v-1dd514",
-            "uiname": "Fake",
-            "gcodename": "fake",
-            "defaultvalue": "10"
-          }
-        ],
-        "gcode": "G0 X{pinX} Y{pinY}; move to the pin's center position\nM400\nG0 Z10\nG0 Z0\nM400",
+        "variables": [],
+        "gcode": "G0 X{pinX} Y{pinY}; move to the pin's center position\n\n(put something here to move the Z up)\n(to avoid collisions as it moves to the next pin)",
         "solderingTipId": "st_default",
         "color": "#84009c"
-      },
-      {
-        "id": "sp_869a59",
-        "name": "Josh",
-        "variables": [],
-        "gcode": "G0 X{pinX} Y{pinY}; move to the pin's center position\nM400\nM280 P0 S180\nM280 P0 S90\n(put something here to move the Z up)\n(to avoid collisions as it moves to the next pin)",
-        "solderingTipId": "st_default",
-        "color": "#38ac06"
       }
     ],
-    "activeProfileId": "sp_869a59",
+    "activeProfileId": "sp_default",
     "defaultProfileId": "sp_default",
     "selectedTipId": "st_default",
     "selectedVariableId": false,
@@ -40,83 +25,72 @@
   "tree": {
     "packagedElements": [
       {
-        "id": "p-3ec59b",
-        "type": "pin",
-        "name": "L1",
+        "id": "c-3bd07e",
+        "type": "connector",
+        "name": "cool",
         "enabled": true,
         "position": {
-          "x": 20,
-          "y": 30
+          "x": 0,
+          "y": 0
         },
-        "solderProfileId": "sp_default",
-        "parentConnectorId": false,
-        "solderProfileVariables": {
-          "pinX": 20,
-          "pinY": 30,
-          "fake": "10"
-        }
+        "rotation": 0,
+        "pinIds": [
+          "p-3b0350",
+          "p-dd26ff",
+          "p-c21474"
+        ],
+        "expanded": true
       },
       {
-        "id": "p-52a6ca",
+        "id": "p-3b0350",
         "type": "pin",
-        "name": "L2",
+        "name": "a",
         "enabled": true,
         "position": {
-          "x": 50,
-          "y": 40
+          "x": 0,
+          "y": 0
         },
         "solderProfileId": "sp_default",
-        "parentConnectorId": false,
-        "solderProfileVariables": {
-          "pinX": 50,
-          "pinY": 40,
-          "fake": "10"
-        }
+        "parentConnectorId": "c-3bd07e",
+        "solderProfileVariables": {}
       },
       {
-        "id": "p-90db4d",
+        "id": "p-dd26ff",
         "type": "pin",
-        "name": "L3",
-        "enabled": true,
+        "name": "b",
+        "enabled": false,
         "position": {
-          "x": 40,
-          "y": 30
+          "x": 0,
+          "y": 0
         },
         "solderProfileId": "sp_default",
-        "parentConnectorId": false,
-        "solderProfileVariables": {
-          "pinX": 40,
-          "pinY": 30,
-          "fake": "10"
-        }
+        "parentConnectorId": "c-3bd07e",
+        "solderProfileVariables": {}
       },
       {
-        "id": "p-de613a",
+        "id": "p-c21474",
         "type": "pin",
-        "name": "L4",
+        "name": "",
         "enabled": true,
         "position": {
-          "x": 20,
-          "y": 20
+          "x": 0,
+          "y": 0
         },
         "solderProfileId": "sp_default",
-        "parentConnectorId": false,
-        "solderProfileVariables": {
-          "pinX": 20,
-          "pinY": 20,
-          "fake": "10"
-        }
+        "parentConnectorId": "c-3bd07e",
+        "solderProfileVariables": {}
       }
     ]
   },
   "config": {
     "config": {
-      "startJob": "G90\nG0 X0 Y0 Z0",
-      "endJob": "G0 X0 Y0\nM400",
+      "startJob": "G0 Z20\nM400\nG0 X0 Y0\nM400",
+      "endJob": "G0 X0 Y0",
       "ironOn": "",
       "ironOff": "",
-      "home": "",
-      "clean": ""
+      "tipChange": "G0 Z20\nM400\nG0 X0 Y0\nM400",
+      "home": "G0 Z20\nM400\nG0 X0 Y0\nM400",
+      "clean": "G0 Z20\nM400\nG0 X0 Y0\nM400"
     }
   },
   "board": {

@@ -30,22 +30,22 @@
       <button class='topBarButton' onclick="config.openConfigMenu()">Config</button>
       <label id='editingInfo' style="position:relative;top:-5px;">Editing: Unsaved project</label>
 
-      <div style="float:right">
-        <label>Device</label>
-        <select id='portSelect' style="width:100px">
-          <option>Fetching...</option>
-        </select>
-        <label>Baud</label>
-        <input id='baudRate' style="width:80px" value="9600">
-        <button id='serialActionButton' onclick="serial.serialActionButtonClick()">Connect</button>
-        <label>Status: </label><label id='statusElement' class='bad'>Disconnected</label>
-      </div>
+    </div>
+    <div style="position:absolute;right:10px;top:7px;background:#AAA">
+      <label>Device</label>
+      <select id='portSelect' style="width:100px">
+        <option>Fetching...</option>
+      </select>
+      <label>Baud</label>
+      <input id='baudRate' style="width:80px" value="9600">
+      <button id='serialActionButton' onclick="serial.serialActionButtonClick()">Connect</button>
+      <label>Status: </label><label id='statusElement' class='bad'>Disconnected</label>
     </div>
 
     <div class="mainPanel">
       <div class="leftPanel deselectAllOnClick" onclick="tree.clickContainer(window.event||event)">
         <div class="leftMenu">
-          <button onclick="Connector.addNew()">Add Connector</button>
+          <button onclick="connectorWizard.open()">Add Connector</button>
           <button onclick="Pin.addNew()">Add Pin</button>
         </div>
         <div class="prefabs">
@@ -75,7 +75,7 @@
 
         <label>Coordinates</label>
 
-        <select onchange="config.setCoordinateMode(this.value)">
+        <select id='coordMode' onchange="config.setCoordinateMode(this.value)">
           <option value='global'>Global</option>
           <option value='local'>Local</option>
         </select>
@@ -114,6 +114,10 @@
               <td><button onclick="tree.duplicateSelection()">Duplicate</button></td>
             </tr>
           </table>
+
+        </div>
+        <div id='saveToLibraryPanel' class='inspectorPanel'>
+          <button onclick="tree.saveSelectionToLibrary()">Save to library</button>
         </div>
         <div id='limitedControlPanel' class='inspectorPanel'>
           <table>
@@ -191,7 +195,7 @@
       <div class="execPanel" id="execPanel">
         <div class='execSelectorPanel'>
           <button onclick="openExecPanel('jogcontrols')" class='execButton'>Jog Controls</button>
-          <button onclick="openExecPanel('executionPanel')" class='execButton'>Excecution Controls</button>
+          <button onclick="openExecPanel('executionPanel')" class='execButton'>Execution Controls</button>
           <button onclick="openExecPanel('serialMonitor')" class='execButton'>Serial Monitor</button>
         </div>
         <div class="execContainer" id="execContainer">
@@ -258,12 +262,12 @@
           <div class='executionPanel'>
             <div class='exWrapper'style="white-space: nowrap">
               <label>Job setup: Include</label>
-              <select class='exSelect' id="exSelect" onchange="excecution.changeSelector(window.event)">
+              <select class='exSelect' id="exSelect" onchange="execution.changeSelector(window.event)">
                 <option value="all">All pins/connectors</option>
                 <option value="select">Only selected pins/connectors</option>
               </select>
               <label>Status:</label>
-              <label id='exStatusText'class='bad'>Not running</label>
+              <label id='exStatusText'class='bad'>Not connected</label>
             </div>
             <div class='exWrapper exStatusPanel' style='display:none'>
               <table style="border-spacing:0px 10px">
@@ -285,19 +289,20 @@
               <tr>
                 <td style='vertical-align:top'>
                   <div class='exWrapper exWrapperTable'>
-                    <button onclick="excecution.startContinuous()" class='exStartBtn'>Start continuous</button>
-                    <button onclick="excecution.startNextInstruction()" class='exStartBtn'>Start next instruction</button>
-                    <button onclick="excecution.startNextPin()" class='exStartBtn'>Start next pin</button>
-                    <button onclick="excecution.startNextConnector()" class='exStartBtn'>Start next connector</button>
-                    <button onclick="excecution.startTipClean()" class='exTipClean'>Start a tip clean</button>
+                    <button onclick="execution.startContinuous()" class='exStartBtn'>Start continuous</button>
+                    <button onclick="execution.startNextInstruction()" class='exStartBtn'>Start next instruction</button>
+                    <button onclick="execution.startNextPin()" class='exStartBtn'>Start next pin</button>
+                    <button onclick="execution.startNextConnector()" class='exStartBtn'>Start next connector</button>
+                    <button onclick="execution.startTipClean()" class='exTip'>Start a tip clean</button>
+                    <button onclick="execution.startTipChange()" class='exTip'>Start a tip change</button>
                   </div>
                 </td>
                 <td style='vertical-align:top'>
                   <div class='exWrapper exWrapperTable'>
-                    <button onclick="excecution.pauseAfterInstruction()"class='exPauseBtn'>Pause after instruction</button>
-                    <button onclick="excecution.pauseAfterPin()"class='exPauseBtn expin'>Pause after pin</button>
-                    <button onclick="excecution.pauseAfterConnector()"class='exPauseBtn excon'>Pause after connector</button>
-                    <button onclick="excecution.stopAndCancel()"class='exStopBtn'>Stop and cancel job</button>
+                    <button onclick="execution.pauseAfterInstruction()"class='exPauseBtn'>Pause after instruction</button>
+                    <button onclick="execution.pauseAfterPin()"class='exPauseBtn expin'>Pause after pin</button>
+                    <button onclick="execution.pauseAfterConnector()"class='exPauseBtn excon'>Pause after connector</button>
+                    <button onclick="execution.endJob()"class='exStopBtn'>End job</button>
                   </div>
                 </td>
               </tr>
@@ -387,6 +392,9 @@
             <div class="cf_topic" id='cf_home' onclick="config.clickTile(window.event)">
               <label class='cf_topicLabel'>Homing Procedure</label>
             </div>
+            <div class="cf_topic" id='cf_tipChange' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>tip Change Procedure</label>
+            </div>
             <div class="cf_topic" id='cf_clean' onclick="config.clickTile(window.event)">
               <label class='cf_topicLabel'>Cleaning Procedure</label>
             </div>
@@ -423,6 +431,109 @@
       </div>
     </div>
 
+    <div class="connectorWizard" id="connectorWizard">
+      <div class='connectorWizardCenter'>
+        <div class='connectorWizardCenterInside'>
+          <div class="connectorInnerWindow">
+            <div class="connectorContainer">
+              <div class='st_header'>
+                <p class='st_title'>Create Connector</p>
+              </div>
+              <div class='cn_body' id=''>
+                <table class='cn_table'>
+                  <tr>
+                    <td>Name</td>
+                    <td><input name="name"></input></td>
+                  </tr>
+                  <tr>
+                    <td>X Origin</td>
+                    <td><input name="xorigin"></input></td>
+                  </tr>
+                  <tr>
+                    <td>Y origin</td>
+                    <td><input name="yorigin"></input></td>
+                  </tr>
+                  <tr>
+                    <td>X pin count</td>
+                    <td><input name="xcount"></input></td>
+                  </tr>
+                  <tr>
+                    <td>Y pin count</td>
+                    <td><input name="ycount"></input></td>
+                  </tr>
+                  <tr>
+                    <td>X pitch</td>
+                    <td><input name="xpitch"></input></td>
+                  </tr>
+                  <tr>
+                    <td>Y pitch</td>
+                    <td><input name="ypitch"></input></td>
+                  </tr>
+                  <tr>
+                    <td>Rotation (deg ccw)</td>
+                    <td><input name="rotation"></input></td>
+                  </tr>
+                </table>
+              </div>
+              <div class='cn_footer'>
+                <button class="cn_saveBtn" style='width:130px' onclick='connectorWizard.addConnector()'>Add Connector</button>
+                <button class="cn_saveBtn" onclick='connectorWizard.cancel()'>Cancel</button>
+                <button class="cn_saveBtn" style='width:120px' onclick='connectorWizard.resetValues()'>Reset Values</button>
+              </div>
+            </div>
+          </div>
+          <div class="connectorLibraryInnerWindow">
+            <div class="connectorLibraryContainer">
+              <div class='st_header'>
+                <p class='st_title' style="width: 250px;display: inline;">Choose from Library</p>
+                <button onclick="connectorLibrary.pushToLibrary()">Save Library</button>
+                <button onclick="connectorLibrary.pullFromLibrary()">Refresh</button>
+              </div>
+              <table class='cn_slot' id='cn_prefab' onclick='connectorLibrary.selectByClickEvent(window.event)'>
+                <tr>
+                  <td class="cn_s1"><label class='cn_name'>Name</label></td>
+                  <td class="cn_s2"><label class='cn_description'>this is a description of the specific connector. you can put anything here</label></td>
+                </tr>
+              </table>
+              <div class='cn_bodyLibrary' id="cn_container">
+              </div>
+              <div class='cn_footer'>
+                <button class="cn_saveBtn" style='width:130px' onclick='connectorLibrary.addClick()'>Add</button>
+                <button class="cn_saveBtn" onclick='connectorWizard.cancel()'>Cancel</button>
+                <button class="cn_saveBtn" style='width:130px' onclick='connectorLibrary.removeClick()'>Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="addToLibraryWizard" id="addToLibraryWizard">
+      <div class="atlInnerWindow">
+        <div class="atlContainer">
+          <div class='st_header'>
+            <p class='st_title'>Add to library</p>
+          </div>
+          <div class="atl_body" style="padding: 10px;">
+            <table style="height: 100%;">
+              <tbody><tr>
+                <th style="width: 30%;text-align: left;">Name</th>
+                <th style="text-align: left;">Description</th>
+              </tr>
+              <tr style="vertical-align: top;">
+                <td><input id="atl_name" style="width: 100%;"></td>
+                <td><textarea id="atl_description" style="margin: 0px;width: 100%;height: 100%;"></textarea></td>
+              </tr>
+            </tbody></table>
+          </div>
+          <div class='st_footer'>
+            <button class="st_saveBtn" onclick='addToLibraryWizard.close()'>Cancel</button>
+            <button class="st_saveBtn" onclick='addToLibraryWizard.save()'>Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id='banner'>
       <center>
         <label id='bannerText'>Saving...</label>
@@ -431,16 +542,18 @@
 
 
     <script type="text/javascript" src="eel.js"></script>
+    <script src="js/utilities.js"></script>
     <script src="js/jog.js" charset="utf-8"></script>
     <script src="js/serial.js" charset="utf-8"></script>
     <script src="js/gcodebox.js" charset="utf-8"></script>
     <script src="js/solderProfileWindow.js" charset="utf-8"></script>
     <script src="js/pinAndConnector.js" charset="utf-8"></script>
+    <script src="js/connectorWizard.js" charset="utf-8"></script>
     <script src="js/board.js" charset="utf-8"></script>
     <script src="js/inspector.js" charset="utf-8"></script>
     <script src="js/config.js" charset="utf-8"></script>
     <script src="js/preview.js" charset="utf-8"></script>
-    <script src="js/excecution.js" charset="utf-8"></script>
+    <script src="js/execution.js" charset="utf-8"></script>
     <script src="js/fileAndWindow.js" charset="utf-8"></script>
     <script src="js/allIsLoaded.js" charset="utf-8"></script>
   </body>

@@ -1,10 +1,3 @@
-HTMLElement.prototype.addOption = function(name,value){
-  this.innerHTML += "<option value='"+value+"'>"+name+"</option>";
-}
-HTMLElement.prototype.removeOptions = function(){
-  this.innerHTML = "";
-}
-
 class Inspector {
 	constructor() {
 		this.openPanels = [];

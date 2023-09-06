@@ -6,8 +6,8 @@ class Board {
 			y:10
 		}
 		this.size = {
-			x:100,
-			y:80,
+			x:70,
+			y:50,
 			z:4
 		}
 	}

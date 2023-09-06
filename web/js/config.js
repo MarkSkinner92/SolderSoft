@@ -12,13 +12,15 @@ class Config {
 			'endJob':'G0 X0 Y0',
 			'ironOn':'',
 			'ironOff':'',
-			'home':'',
-			'clean':'',
+			'tipChange':'G0 Z20\nM400\nG0 X0 Y0\nM400',
+			'home':'G0 Z20\nM400\nG0 X0 Y0\nM400',
+			'clean':'G0 Z20\nM400\nG0 X0 Y0\nM400',
 		}
 	}
 	setCoordinateMode(newMode){
 		let previouslyGlobalMode = this.globalMode;
 		this.globalMode = (newMode == 'global');
+		document.getElementById('coordMode').selectedIndex = this.globalMode ? 0 : 1;
 		if(previouslyGlobalMode == this.globalMode) return; //they are the same, nothing changed
 
 		if(this.globalMode){

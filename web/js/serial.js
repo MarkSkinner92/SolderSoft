@@ -11,6 +11,7 @@ class Serial {
 	}
 
 	async connect(){
+		if(!_usingeel) return;
 		this.attemptingToConnect = true;
 		this.setStatus("Connecting...","warning");
 		this.setActionButtonText();
@@ -21,9 +22,12 @@ class Serial {
 		}
 	}
 	async disconnect(){
+		if(!_usingeel) return;
 		this.attemptingToConnect = false;
 		this.attemptingToDisconnect = true;
 		this.setStatus("Disconnecting...","warning");
+		execution.disconnect();
+
 		await eel.disconnect()();
 		this.attemptingToDisconnect = false;
 		this.connected = false;
@@ -83,18 +87,20 @@ class Serial {
 	}
 
 	async fetchUSBPorts(){
+		if(!_usingeel) return;
 		let ports = await eel.fetchUSBPorts()();
 		this.updatePortDropdown(ports);
 	}
 
 	recieveLine(line){
 		if(line == "start" || line == "ok"){
-			excecution.recievedok = true;
 			this.connected = true;
 			this.attemptingToConnect = false;
-			console.log("setting status good");
 			this.setActionButtonText();
 			this.setStatus("Connected","good");
+
+			execution.recievedok = true;
+			if(!execution.connected) execution.connect();
 		}
 		this.sendToSerialMonitors(line);
 	}
@@ -107,7 +113,7 @@ class Serial {
 	}
 
 	writeLine(code){
-		if(window.hasOwnProperty('eel')) eel.sendGcode(code+'\n');
+		if(_usingeel) eel.sendGcode(code+'\n');
 	}
 }
 
@@ -158,6 +164,7 @@ class SerialMonitor {
 
 	put(line){
 		this.output.value += (line+'\n');
+		if(this.output.value.length > 7000) this.output.value = '';
 	}
 }
 
