@@ -32,12 +32,13 @@
 
     </div>
     <div style="position:absolute;right:10px;top:7px;background:#AAA">
+      <label class='bad' id='ironStatus'>Iron Off</label>
       <label>Device</label>
       <select id='portSelect' style="width:100px">
         <option>Fetching...</option>
       </select>
       <label>Baud</label>
-      <input id='baudRate' style="width:80px" value="9600">
+      <input id='baudRate' style="width:80px" value="250000">
       <button id='serialActionButton' onclick="serial.serialActionButtonClick()">Connect</button>
       <label>Status: </label><label id='statusElement' class='bad'>Disconnected</label>
     </div>
@@ -197,18 +198,21 @@
           <button onclick="openExecPanel('jogcontrols')" class='execButton'>Jog Controls</button>
           <button onclick="openExecPanel('executionPanel')" class='execButton'>Execution Controls</button>
           <button onclick="openExecPanel('serialMonitor')" class='execButton'>Serial Monitor</button>
+          <button onclick="openExecPanel('calibration')" class='execButton'>Calibration</button>
         </div>
         <div class="execContainer" id="execContainer">
           <div class='execControlPanel jogcontrols'>
-            <button onclick="jog.motorsOff()"class='execButton'>MOTORS OFF</button>
+            <button onclick="jog.enableMotors()"class='execButton'>Enable Motors</button>
+            <button onclick="jog.disableMotors()"class='execButton'>Disable Motors</button>
+            <button onclick="jog.enableServo()"class='execButton'>Enable Servo</button>
+            <button onclick="jog.disableServo()"class='execButton'>Disable Servo</button>
             <button onclick="jog.ironOn()"class='execButton'>Iron ON</button>
             <button onclick="jog.ironOff()"class='execButton'>Iron OFF</button>
             <button onclick="jog.fanOn()" class='execButton'>Fan ON</button>
             <button onclick="jog.fanOff()" class='execButton'>Fan OFF</button>
-            <button onclick="jog.servoOn()"class='execButton'>Servo ON</button>
-            <button onclick="jog.servoOff()"class='execButton'>Servo OFF</button>
+            <label id='jogStatus'></label>
           </div>
-          <div class='jogPanel jogcontrols'>
+          <div class='jogPanel jogcontrols calibration'>
             <button onclick="jog.jogY(100)" style="left:100px;top:0px;width:100px"class='jogBtn'>+Y</button>
             <button onclick="jog.jogY(10)" style="left:115px;top:35px;width:70px"class='jogBtn'>+Y</button>
             <button onclick="jog.jogY(1)" style="left:125px;top:70px;width:50px"class='jogBtn'>+Y</button>
@@ -229,10 +233,10 @@
             <button onclick="jog.jogX(10)" style="top:115px;left:235px;height:70px"class='jogBtn'>+X</button>
             <button onclick="jog.jogX(100)" style="top:100px;left:270px;height:100px"class='jogBtn'>+X</button>
 
-            <button style="left:0px;top:210px;width:90px;height:90px"class='jogBtn'>Home All</button>
-            <button style="left:210px;top:210px;width:90px;height:90px"class='jogBtn'>Home X</button>
-            <button style="left:0px;top:0px;width:90px;height:90px"class='jogBtn'>Home Y</button>
-            <button style="left:210px;top:0px;width:90px;height:90px"class='jogBtn'>Home Z</button>
+            <button onclick='jog.homeAll()'style="left:0px;top:210px;width:90px;height:90px"class='jogBtn'>Home All</button>
+            <button onclick='jog.homeX()' style="left:210px;top:210px;width:90px;height:90px"class='jogBtn'>Home X</button>
+            <button onclick='jog.homeY()' style="left:0px;top:0px;width:90px;height:90px"class='jogBtn'>Home Y</button>
+            <button onclick='jog.homeZ()' style="left:210px;top:0px;width:90px;height:90px"class='jogBtn'>Home Z</button>
 
             <button onclick="jog.jogZ(10)" style="left:325px;top:65px;width:70px"class='jogBtn'>+Z</button>
             <button onclick="jog.jogZ(1)" style="left:335px;top:100px;width:50px"class='jogBtn'>+Z</button>
@@ -250,11 +254,30 @@
             <button style="left:430px;top:230px;width:50px"class='jogBtn'>-E</button>
             <button style="left:420px;top:265px;width:70px"class='jogBtn'>-E</button>
 
-            <label style='position:absolute;left:320px;top:15px;width:170px'>Head Rotation</label>
-            <input id='servoAngleInput' value='90' onchange="jog.servoInputEvent(window.event)" style='position:absolute;left:430px;top:13px;width:60px;text-align:center'>
-            <input id='jogServoSlider' value='90' onchange="jog.servoSliderEvent(window.event)" style='position:absolute;left:320px;top:35px;width:170px' type="range" min="0" max="180" value="50" class="slider" id="myRange">
+            <label style='position:absolute;left:320px;top:-6px;width:170px'>Head Rotation</label>
+            <input id='servoAngleInput' placeholder="--" value='' onchange="jog.servoInputEvent(window.event)" style='position:absolute;left:430px;top:-7px;width:60px;text-align:center'>
+            <input id='jogServoSlider' value='0' onchange="jog.servoSliderEvent(window.event)" style='position:absolute;transform:rotate(180deg);left:320px;top:11px;width:170px' type="range" min="0" max="180" class="slider">
+
+            <label style='position:absolute;left:320px;top:32px;width:170px'>Iron Extension</label>
+            <input id='extensionAngleInput' placeholder="--" value='' onchange="jog.extensionInputEvent(window.event)" style='position:absolute;left:430px;top:29px;width:60px;text-align:center'>
+            <input id='jogExtensionSlider' value='0' onchange="jog.extensionSliderEvent(window.event)" style='position:absolute;left:320px;top:47px;width:170px' type="range" min="0" max="180" class="slider">
           </div>
-          <div class='serialMonitor jogcontrols'>
+          <div class='calibrationPanel calibration'>
+            <label style='position:realitive;left:320px;top:15px;width:170px'>Servo angle multiplier</label>
+            <input id='servoAngleMultiplier' value='0.8' onchange="jog.servoInputMultiplierEvent(window.event)" style='position:realitive;left:430px;top:13px;width:60px;text-align:center'>
+            <input id='jogServoMultiplierSlider' value='0.8' onchange="jog.servoSliderMultiplierEvent(window.event)" style='position:realitive;background: transparent;left:320px;top:35px;width:170px' type="range" min="0.5" step="0.01" max="1.5" class="slider">
+            <button style="display:none" onclick="jog.getCalibrationX()">Set calibration X</button>
+            <!-- <p class="calibrationInstructions">Step 3: Rotate head to front (90 degrees CCW), and jog so the tip is touching the frontmost side of the calibration pin. Click this button when done.</p> -->
+            <button style="display:none" onclick="jog.getCalibrationY()" style="display: block;">Set calibration Y</button>
+            <p style="display: none;">dX</p><input hidden id="dX" value="0">
+            <p style="display: none;">dY</p><input hidden id="dY" value="0">
+
+            <p class="calibrationInstructions">Home To Origin Vector: mm to move from home position, 90 extension, 90deg, to 40 extension bottom left corner</p>
+            <p style="display: inline;">X</p><input style="width:50px" id="htoX" value="5.17" onchange="config.updateHomeToOriginVector('x',window.event)">
+            <p style="display: inline;">Y</p><input style="width:50px" id="htoY" value="10.88" onchange="config.updateHomeToOriginVector('y',window.event)">
+            <p style="display: inline;">Z</p><input style="width:50px" id="htoZ" value="-6.5" onchange="config.updateHomeToOriginVector('z',window.event)">
+          </div>
+          <div class='serialMonitor'>
             <textarea id='sm_output' readonly class='serialOutput'></textarea>
             <input id='sm_input' placeholder = "G-code command (press Enter to submit, arrow keys for history)" class='serialInput'></input>
             <button id='sm_send' class='serialSendButton'>Send</button>
@@ -299,6 +322,7 @@
                 </td>
                 <td style='vertical-align:top'>
                   <div class='exWrapper exWrapperTable'>
+                    <input id='automaticTipCleaning' type="checkbox" checked><label>Automatic tip cleaning</label>
                     <button onclick="execution.pauseAfterInstruction()"class='exPauseBtn'>Pause after instruction</button>
                     <button onclick="execution.pauseAfterPin()"class='exPauseBtn expin'>Pause after pin</button>
                     <button onclick="execution.pauseAfterConnector()"class='exPauseBtn excon'>Pause after connector</button>
@@ -360,7 +384,12 @@
             <p style="margin: 5px 0px 0px 0px">Put variables inside {}. anything inside {} will be evaulated as JavaScript. ex. {height*2+5} or {Math.sin(rotation)*5}</p>
           </div>
           <div class="sp_gholder">
-            <label id='gTemplateError'></label>
+            <div class="cf_otherSettings" style="padding: 10px 0px 0px 10px;">
+              <label>Clean tip every</label>
+              <input onchange='solderProfileWindow.changeTipCleanInterval(window.event)' id='tipCleanInterval' style="width: 70px;" value='10'>
+              <label>pins
+            </label></div>
+            <label style='z-index:10' id='gTemplateError'></label>
             <code-input required id="sp_gcodeBox" class="line-numbers" style="width:100%;height:100%" lang="gcode" placeholder="Write G-code here" template="gcode">
           </div>
           <div class="sp_footer">
@@ -389,11 +418,30 @@
             <div class="cf_topic" id='cf_ironOff' onclick="config.clickTile(window.event)">
               <label class='cf_topicLabel'>Soldering Iron Off Procedure</label>
             </div>
-            <div class="cf_topic" id='cf_home' onclick="config.clickTile(window.event)">
-              <label class='cf_topicLabel'>Homing Procedure</label>
+            <div class="cf_topic" id='cf_enableMotors' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Enable Motors Procedure</label>
+            </div>
+            <div class="cf_topic" id='cf_disableMotors' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Disable Motors Procedure</label>
+            </div>
+            <div class="cf_topic" id='cf_servoAdjustment' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Servo Adjustment</label>
+            </div>
+            <div class="cf_topic" id='cf_disableServo' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Disable Servo Procedure</label>
+            </div>
+            <div class="cf_topic" id='cf_homeX' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>X Homing Procedure</label>
+            </div>
+            <div class="cf_topic" id='cf_homeY' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Y Homing Procedure</label>
+            </div>
+            <div class="cf_topic" id='cf_
+            ' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Z Homing Procedure</label>
             </div>
             <div class="cf_topic" id='cf_tipChange' onclick="config.clickTile(window.event)">
-              <label class='cf_topicLabel'>tip Change Procedure</label>
+              <label class='cf_topicLabel'>Tip Change Procedure</label>
             </div>
             <div class="cf_topic" id='cf_clean' onclick="config.clickTile(window.event)">
               <label class='cf_topicLabel'>Cleaning Procedure</label>

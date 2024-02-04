@@ -2,10 +2,11 @@ class SolderProfile {
 	constructor(cf) {
 		this.id = cf.id;
 		this.name = cf.name || 'Unnamed';
-		this.variables = cf.variables || []; //{id:,uiname:,gcodename:,defaultvalue:}
+		this.variables = cf.variables || [{id:"headAngleVar",uiname:"Head Angle",gcodename:"headAngle",defaultvalue:180}]; //{id:,uiname:,gcodename:,defaultvalue:}
 		this.gcode = cf.gcode || "G0 X{pinX} Y{pinY}; move to the pin's center position\n\n(put something here to move the Z up)\n(to avoid collisions as it moves to the next pin)";
 		this.solderingTipId = cf.solderingTipId || 'st_default';
 		this.color = cf.color || '#84009c';
+		this.tipCleanInterval = cf.tipCleanInterval || 10;
 	}
 	setColor(value) {
 		if(document.getElementById(this.id)) document.getElementById(this.id).querySelector('.sps_color').value = value;
@@ -41,6 +42,7 @@ class SolderProfile {
 		json.gcode = this.gcode;
 		json.solderingTipId = this.solderingTipId;
 		json.color = this.color;
+		json.tipCleanInterval = this.tipCleanInterval;
 		return json;
 	}
 	unpackage(pkg){
@@ -50,6 +52,7 @@ class SolderProfile {
 		this.gcode = pkg.gcode;
 		this.solderingTipId = pkg.solderingTipId;
 		this.color = json.color;
+		this.tipCleanInterval = json.tipCleanInterval;
 	}
 	getValueOfGParam(expression,vars){
 		let keys = Object.keys(vars);
@@ -84,8 +87,8 @@ class SolderProfile {
 
 		let globalPosition = pin.getGlobalPosition();
 
-		varObject.pinX = globalPosition.x;
-		varObject.pinY = globalPosition.y;
+		varObject.pinX = globalPosition.x + board.position.x;
+		varObject.pinY = globalPosition.y + board.position.y;
 
 		let code = this.gcode+'';
 		let subsitutions = code.match(/\{.+?\}/g);
@@ -95,7 +98,7 @@ class SolderProfile {
 			let exp = variable.substr(1,variable.length-2);
 			let result = this.getValueOfGParam(exp,varObject);
 			if(result.success){
-				code = code.replaceAll(variable,result.value);
+				code = code.replaceAll(variable,result.value.toFixed(3));
 			}
 			else{
 				errMsg = result.value;
@@ -149,6 +152,8 @@ class SolderProfileWindow {
 			id: this.selectedTipId,
 			name: 'Default'
 		})];
+
+		this.changeTipCleanInterval.bind(this);
 	}
 
 	//reduce class into necesary information to rebuild it
@@ -311,6 +316,7 @@ class SolderProfileWindow {
 
 		//load in the correct solder profile id
 		document.getElementById('solderingTipSelector').value = this.activeProfile.solderingTipId;
+		document.getElementById('tipCleanInterval').value = this.activeProfile.tipCleanInterval;
 	}
 	unpackageProfiles(pfs){
 		for(let i = 0; i < pfs.length; i++){
@@ -435,7 +441,7 @@ class SolderProfileWindow {
 
 	//variable menu
 	deleteSelectedVariable(){
-		if(!this.selectedVariableId) return;
+		if(!this.selectedVariableId || this.selectedVariableId == "headAngleVar") return; //if it's the mandatory head angle variable, we shouldn't delete it
 		let variableElement = document.getElementById(this.selectedVariableId);
 		console.log(variableElement);
 		let id = variableElement.id;
@@ -533,6 +539,14 @@ class SolderProfileWindow {
 	}
 	exposeGcodeError(errorMsg){
 		document.getElementById("gTemplateError").innerText = errorMsg;
+	}
+
+	changeTipCleanInterval(evt){
+		let value = Number(evt.target.value);
+		if(isNaN(value)) value = 10;
+		if(value < 1) value = 1;
+		evt.target.value = value;
+		this.activeProfile.tipCleanInterval = Number(evt.target.value);
 	}
 
 	//bottom menu

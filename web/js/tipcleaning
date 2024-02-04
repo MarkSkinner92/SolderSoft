@@ -1,0 +1,56 @@
+
+############################## TIP CLEAN
+G90
+G0 Z19 F300
+M280 P1 S180; rotate head to the left
+G4 P10
+G0 X270 Y76.88 F1000
+G4 P10
+G4 P10
+M280 P0 S125; extend iron to 125 degrees
+M106 S100
+G0 Y46.88 F400
+M400
+M107
+G4 P10
+M280 P0 S70; retract iron to 70 deg
+G4 P10
+G4 P10
+G0 Y14.8 F700
+G4 P10
+M280 P0 S40
+G4 P10
+
+############################# Basic 90 degrees solder profile
+G90; absolute positioning
+M280 P1 S90
+G0 X{pinX} Y{pinY} Z3 F800; move to the pin's center position
+G4 P10
+M280 P0 S46
+G4 P10
+G91
+G0 E0.3 F20
+G4 P150
+G0 E-0.1 F20
+G90
+G4 P10
+M280 P0 S28
+G4 P10
+G0 Z0.1 F200
+G4 P10
+M280 P0 S40
+G4 P300
+G91
+G0 E0.2 F20
+G4 P40
+G0 E0.15 F20
+G4 P40
+G0 E0.15F20
+G4 P40
+G0 E-0.2 F20
+G4 P1
+G90
+G4 P10
+G0 Z3 F900
+M280 P0 S30
+G0 Z3 F800

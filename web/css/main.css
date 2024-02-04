@@ -152,7 +152,7 @@ body {
 }
 .execControlPanel{
 	height: 100%;
-	width: 120px;
+	width: 150px;
 	border-right: 10px solid #eee;
 	margin-right: 10px;
 	overflow-x:auto;
@@ -218,6 +218,20 @@ body {
 .exWrapperTable button{
 	margin:5px;
 	display: block;
+}
+
+.calibrationPanel{
+	width: calc(100% - 520px);
+	height: 100%;
+	padding: 5px;
+}
+.calibrationInstructions{
+	font-size: 10px;
+}
+#dX,#dY{
+	width:60px;
+	height:20px;
+	margin-top:5px;
 }
 
 .treeContainer{
@@ -513,6 +527,7 @@ td{
 .cf_topicContainer{
 	padding:5px;
 	border-right: solid white 5px;
+  overflow-y: auto;
 }
 .cf_topic{
 	width:100%;

@@ -1,0 +1,153 @@
+{
+  "path": "/home/mark/Desktop/SolderSoft/base1.1.json",
+  "solderProfileWindow": {
+    "profiles": [
+      {
+        "id": "sp_default",
+        "name": "Default",
+        "variables": [
+          {
+            "id": "v-a07b3f",
+            "uiname": "Rotation",
+            "gcodename": "rot",
+            "defaultvalue": "0"
+          }
+        ],
+        "gcode": "G0 X{pinX} Y{pinY} F400; move to the pin's center position\nG4 P100",
+        "solderingTipId": "st_default",
+        "color": "#84009c",
+        "tipCleanInterval": 10
+      }
+    ],
+    "activeProfileId": "sp_default",
+    "defaultProfileId": "sp_default",
+    "selectedTipId": "st_default",
+    "selectedVariableId": false,
+    "tips": [
+      {
+        "id": "st_default",
+        "name": "Default"
+      }
+    ]
+  },
+  "tree": {
+    "packagedElements": [
+      {
+        "id": "p-2a1a22",
+        "type": "pin",
+        "name": "",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "rot": "0"
+        }
+      },
+      {
+        "id": "p-d991b2",
+        "type": "pin",
+        "name": "",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "rot": "0"
+        }
+      },
+      {
+        "id": "p-c3ec60",
+        "type": "pin",
+        "name": "coolbeans",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "rot": "0"
+        }
+      },
+      {
+        "id": "c-280109",
+        "type": "connector",
+        "name": "niiice",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "pinIds": [
+          "p-bd75d5"
+        ],
+        "expanded": false
+      },
+      {
+        "id": "p-bd75d5",
+        "type": "pin",
+        "name": "",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": "c-280109",
+        "solderProfileVariables": {
+          "rot": "0"
+        }
+      },
+      {
+        "id": "c-cafa57",
+        "type": "connector",
+        "name": "",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "pinIds": [],
+        "expanded": false
+      }
+    ]
+  },
+  "config": {
+    "config": {
+      "startJob": "G28 X Y Z",
+      "endJob": "M280 P1 S0\nG0 Z40 F500\nG0 X200 Y100 Z20 F1000",
+      "ironOn": "",
+      "ironOff": "",
+      "tipChange": "",
+      "enableMotors": "M17 (enable steppers)",
+      "disableMotors": "M18 (disable steppers)",
+      "enableServo": "M280 P1 S90",
+      "disableServo": "M282 P1 (detatch servo)",
+      "homeX": "G0 Z20\nM400\nG0 X0 Y0\nM400",
+      "homeY": "G0 Z20\nM400\nG0 X0 Y0\nM400",
+      "homeZ": "G0 Z20\nM400\nG0 X0 Y0\nM400",
+      "clean": "G90 ; Absolute positioning\nM280 P1 S147; rotate head to correct position\nG4 P500\nM302 S0;  Allow cold extrusion\nM280 P0 S21;get iron in place\nG4 P1\nG91\nG0 E1.4 F50;  Prime the solder, get a dab on the iron\nG0 E -0.3 F20\nG4 P1\nG90\nG4 P1\nG0 Y70 X267 F1000\nG4 P1\nG4 P1\nG0 Z 22 F400\nG4 P1\nM106 S125\nG4 P1\nM280 P0 S72\nG0 Y 40 F400\nG4 P1\nM107\nM280 P0 S50\nG4 P1\nG0 X266 Z24 F500\nG4 P1\nG0 Y 0 F700\nG4 P1\nM280 P0 S10\nG0 Z 28 F200\nG4 P1"
+    }
+  },
+  "board": {
+    "position": {
+      "x": 10,
+      "y": 9.75
+    },
+    "size": {
+      "x": 67,
+      "y": 80.5,
+      "z": 4
+    }
+  }
+}

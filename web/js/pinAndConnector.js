@@ -29,7 +29,7 @@
 			packagedElements.push(this.elements[i].package());
 		}
 		json.packagedElements = packagedElements;
-		return json;
+		return copyObject(json);
 	}
 	wipe(){
 		for(let i = 0; i < this.elements.length; i++){
@@ -47,24 +47,24 @@
 		}
 	}
 	unpackage(json){
-		this.wipe();
+		this.wipe(); //removes all existing tree elements
 		let packagedElements = json.packagedElements;
 		//unpackage all elements
 		for(let i = 0; i < packagedElements.length; i++){
 			this.elements.push(this.unpackageElement(packagedElements[i]));
 		}
 		//then link them together in a highrarchal way
+
 		for(let i = this.elements.length-1; i >= 0; i--){
 			let ele = this.elements[i];
 			if(ele.type == 'pin'){
-				if(packagedElements[i].parentConnectorId) ele.linkParent(this.fromId(packagedElements[i].parentConnectorId));
-			}else if(ele.type == 'connector'){
-				for(let k = 0; k < packagedElements[i].pinIds.length; k++){
-					ele.linkPins(packagedElements[i].pinIds);
+				if(packagedElements[i].parentConnectorId){
+					ele.setParent(this.fromId(packagedElements[i].parentConnectorId));
 				}
 			}
 		}
 	}
+
 	unpackageElement(json){
 		if(json.type == 'pin'){
 			return new Pin(json);
@@ -94,18 +94,26 @@
 					}
 					else if(instance.isConnector()){
 						//delete all chilren first
+						//find all pins with this connector as their parent. Detatch and remove them
 						for(let m = this.elements.length-1; m >= 0; m--){
-							for(let n = instance.pins.length-1; n >= 0; n--){
-								if(this.elements[m].id == instance.pins[n].id){
-									instance.pins[n].detatch();
-									this.elements[m].remove();
-									instance.pins.splice(n,1);
-									this.elements.splice(m,1);
-									break;
-								}
+							if(this.elements[m].parentConnector?.id == instance.id){
+								this.elements[m].detatch();
+								this.elements[m].remove();
+								this.elements.splice(m,1);
 							}
+							// for(let n = instance.pins.length-1; n >= 0; n--){
+							// 	if(this.elements[m].id == instance.pins[n].id){
+							// 		instance.pins[n].detatch();
+							// 		this.elements[m].remove();
+							// 		instance.pins.splice(n,1);
+							// 		this.elements.splice(m,1);
+							// 		break;
+							// 	}
+							// }
+							
 						}
 
+						//and finally remove the connector
 						this.elements[i].remove();
 						this.selectedElementsIds.splice(k,1);
 						this.elements.splice(i,1);
@@ -128,7 +136,7 @@
 				let childrenToPush = [];
 				for(let k = 0; k < instance.pins.length; k++){
 					let childinstance = instance.pins[k];
-					let childPackage = copyObject(childinstance.package(true));
+					let childPackage = childinstance.package(true);
 					parentPackage.pinIds.push(childPackage.id);
 					childPackage.parentConnectorId = parentPackage.id;
 					childrenToPush.push(childPackage);
@@ -145,7 +153,6 @@
 		for(let i = 0; i < selectedElementPackages.length; i++){
 			let unpackaged = this.unpackageElement(selectedElementPackages[i]);
 			let parentId = selectedElementPackages[i].parentConnectorId;
-			console.log(unpackaged);
 			tree.elements.push(unpackaged);
 			if(parentId) unpackaged.setParent(tree.fromId(parentId));
 		}
@@ -582,6 +589,8 @@
 					if(ytracker < box.bottom && ytracker > box.top+box.height*0.8 || (i==this.elements.length-1 && ytracker >= box.top+box.height*0.8)){
 						console.log("E");
 
+						if(i == this.elements.length-1) console.log("in bottom 20% of last connector");
+
 						this.showPlaceHolder();
 						this.setPlaceHolderPosition(slot,false);
 						this.dragState.neighbor = instance;
@@ -607,7 +616,7 @@
 	}
 
 	//this.setPlaceHolderPosition(document.getElementById(this.elements[4].id),true);
-	setPlaceHolderPosition(neighbor,above){
+	setPlaceHolderPosition(neighbor,above){ //TODO maybe children are null?
 		let placeHolder = document.getElementById("dragPlaceholder");
 		if(above){
 			neighbor.before(placeHolder);
@@ -615,7 +624,7 @@
 			//in the case of a closed connector, paceholder might need to be the lowest of the children
 			let instance = this.fromId(neighbor.id);
 			if(instance.isConnector()){
-				if(!instance.expanded){
+				if(!instance.expanded || instance.pins.length == 0){
 					if(instance.pins.length == 0){
 						neighbor.after(placeHolder);
 					}else{
@@ -678,7 +687,6 @@ class Connector {
 		this.expanded = cf.hasOwnProperty("expanded") ? cf.expanded : false;
 		this.selected = false;
 
-		//!! only used for unpackaging. USE THIS.PINS INSTEAD !!
 		this.createHTML(parent);
 	}
 
@@ -697,16 +705,10 @@ class Connector {
 		}
 
 		json.expanded = this.expanded;
-		return json;
+		return copyObject(json);
 	}
 	remove(){
 		this.element().remove();
-	}
-	//use on unpackaging. to be run after all pins have been created, so the tree has pins to reference
-	linkPins(pinIds){
-		pinIds.forEach((pinId) => {
-			this.pins.push(tree.fromId(pinId));
-		});
 	}
 
 	isPin(){
@@ -930,7 +932,7 @@ class Pin {
 			y:0
 		}
 		this.solderProfile = cf.hasOwnProperty("solderProfileId") ? solderProfileWindow.fromId(cf.solderProfileId) : solderProfileWindow.defaultProfile;
-		this.solderProfileVariables = cf.hasOwnProperty("solderProfileVariables") ? cf.solderProfileVariables : {};
+		this.solderProfileVariables = cf.hasOwnProperty("solderProfileVariables") ? cf.solderProfileVariables : (this.solderProfile.getVariableObject());
 
 		//internal
 		this.parentConnector = undefined;
@@ -951,12 +953,7 @@ class Pin {
 		json.solderProfileId = this.solderProfile.id;
 		json.parentConnectorId = this.parentConnector ? this.parentConnector.id : false;
 		json.solderProfileVariables = this.solderProfileVariables;
-		return json;
-	}
-	//to be run after
-	linkParent(parentId){
-		this.parentConnector = tree.fromId(parentId);
-		this.setIndent(true);
+		return copyObject(json);
 	}
 
 	getGlobalPosition(){

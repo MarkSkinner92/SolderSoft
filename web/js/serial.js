@@ -8,6 +8,9 @@ class Serial {
 		this.attemptingToDisconnect = false;
 
 		this.serialMonitors = [];
+		this.lastCode = '---';
+		this.lastKnownPosition = {x:undefined,y:undefined,z:undefined};
+		this.lastKnownHeadAngle = 0;
 	}
 
 	async connect(){
@@ -102,6 +105,17 @@ class Serial {
 			execution.recievedok = true;
 			if(!execution.connected) execution.connect();
 		}
+		if(this.lastCode == 'M114'){ //if we asked for position
+			console.log('position',line,new Date().getTime());
+			let coords = line.split(" ");
+			let pos = {
+				x:Number(coords[0].split(":")[1]),
+				y:Number(coords[1].split(":")[1]),
+				z:Number(coords[2].split(":")[1])
+			}
+			this.lastKnownPosition = pos;
+			this.lastCode = '---';
+		}
 		this.sendToSerialMonitors(line);
 	}
 
@@ -113,7 +127,22 @@ class Serial {
 	}
 
 	writeLine(code){
-		if(_usingeel) eel.sendGcode(code+'\n');
+		if(_usingeel){
+			this.lastCode = code;
+
+			//if it's a servo head movement M28 P1 S... multiply the desired angle by the servoAngleMultiplier
+			let fragments = code.split(' ');
+			if(fragments.length > 2){
+				if(fragments[0] == 'M280' && fragments[1] == 'P1'){
+					let desiredAngle = Number(fragments[2].replace(/[^0-9.]/g, ""));
+					this.lastKnownHeadAngle = desiredAngle;
+					fragments[2] = 'S' + (desiredAngle * jog.servoAngleMultiplier);
+					code = fragments.join(' ');
+				}
+			}
+
+			eel.sendGcode(code+'\n');
+		}
 	}
 }
 

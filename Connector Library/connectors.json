@@ -1,1 +1,972 @@
-[]
+[
+  {
+    "id": "cn-e72339",
+    "name": "5x5 header",
+    "description": "",
+    "prefabData": [
+      {
+        "id": "c-a60b3d",
+        "type": "connector",
+        "name": "",
+        "enabled": true,
+        "position": {
+          "x": 5,
+          "y": 5
+        },
+        "rotation": 0,
+        "pinIds": [
+          "p-03bf11",
+          "p-65497b",
+          "p-058c4c",
+          "p-a53117",
+          "p-c97622",
+          "p-72c62c",
+          "p-e215da",
+          "p-c0f794",
+          "p-70c11a",
+          "p-b5ed1a",
+          "p-07fb8d",
+          "p-74cb7d",
+          "p-890919",
+          "p-d738b4",
+          "p-873909",
+          "p-1cb8a0",
+          "p-432835",
+          "p-6b3664",
+          "p-d455f5",
+          "p-19251b",
+          "p-88230c",
+          "p-e71a76",
+          "p-1a231e",
+          "p-8d0d68",
+          "p-acc592"
+        ],
+        "expanded": true
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S1",
+        "enabled": true,
+        "position": {
+          "x": 5.000000000000002,
+          "y": 4.999999999999998
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 5,
+          "pinY": 5,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S2",
+        "enabled": true,
+        "position": {
+          "x": 5.000000000000002,
+          "y": 9.999999999999998
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 5,
+          "pinY": 10,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S3",
+        "enabled": true,
+        "position": {
+          "x": 5.000000000000002,
+          "y": 14.999999999999998
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 5.000000000000001,
+          "pinY": 15,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S4",
+        "enabled": true,
+        "position": {
+          "x": 5.000000000000009,
+          "y": 20.000000000000007
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 5.000000000000001,
+          "pinY": 20,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S5",
+        "enabled": true,
+        "position": {
+          "x": 5.000000000000002,
+          "y": 25
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 5.000000000000001,
+          "pinY": 25,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S6",
+        "enabled": true,
+        "position": {
+          "x": 10.000000000000002,
+          "y": 5
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 10,
+          "pinY": 5,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S7",
+        "enabled": true,
+        "position": {
+          "x": 10,
+          "y": 10
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 10,
+          "pinY": 10,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S8",
+        "enabled": true,
+        "position": {
+          "x": 10.000000000000004,
+          "y": 15
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 10.000000000000002,
+          "pinY": 15,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S9",
+        "enabled": true,
+        "position": {
+          "x": 10.000000000000004,
+          "y": 20
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 10,
+          "pinY": 20,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S10",
+        "enabled": true,
+        "position": {
+          "x": 9.999999999999996,
+          "y": 25
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 9.999999999999998,
+          "pinY": 25,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S11",
+        "enabled": true,
+        "position": {
+          "x": 14.999999999999991,
+          "y": 5
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 15,
+          "pinY": 5,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S12",
+        "enabled": true,
+        "position": {
+          "x": 14.999999999999995,
+          "y": 10
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 15,
+          "pinY": 10,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S13",
+        "enabled": true,
+        "position": {
+          "x": 15.000000000000002,
+          "y": 15
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 15.000000000000002,
+          "pinY": 15,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S14",
+        "enabled": true,
+        "position": {
+          "x": 15,
+          "y": 20
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 15,
+          "pinY": 20,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S15",
+        "enabled": true,
+        "position": {
+          "x": 15.000000000000002,
+          "y": 25
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 15.000000000000004,
+          "pinY": 25,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S16",
+        "enabled": true,
+        "position": {
+          "x": 19.999999999999996,
+          "y": 5
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 20,
+          "pinY": 5,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S17",
+        "enabled": true,
+        "position": {
+          "x": 20,
+          "y": 10.000000000000002
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 20,
+          "pinY": 10,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S18",
+        "enabled": true,
+        "position": {
+          "x": 20,
+          "y": 15.000000000000002
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 20,
+          "pinY": 14.999999999999998,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S19",
+        "enabled": true,
+        "position": {
+          "x": 20.000000000000004,
+          "y": 20
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 20,
+          "pinY": 20,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S20",
+        "enabled": true,
+        "position": {
+          "x": 20,
+          "y": 25
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 20,
+          "pinY": 25,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S21",
+        "enabled": true,
+        "position": {
+          "x": 25,
+          "y": 5.000000000000002
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 25,
+          "pinY": 5,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S22",
+        "enabled": true,
+        "position": {
+          "x": 25,
+          "y": 10
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 25,
+          "pinY": 10,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S23",
+        "enabled": true,
+        "position": {
+          "x": 25,
+          "y": 15.000000000000002
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 25,
+          "pinY": 15,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S24",
+        "enabled": true,
+        "position": {
+          "x": 25,
+          "y": 20
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 25,
+          "pinY": 20,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S25",
+        "enabled": true,
+        "position": {
+          "x": 25.000000000000004,
+          "y": 25
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 25.000000000000004,
+          "pinY": 25,
+          "headAngle": 180
+        }
+      }
+    ],
+    "element": {}
+  },
+  {
+    "id": "cn-2ea34b",
+    "name": "2x8 Header",
+    "description": "Just a standard 2x8 Header",
+    "prefabData": [
+      {
+        "id": "c-98a204",
+        "type": "connector",
+        "name": "2x8 Header",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "pinIds": [
+          "p-6db9f7",
+          "p-3113e5",
+          "p-f83c29",
+          "p-d4624e",
+          "p-e107d1",
+          "p-bc4ab3",
+          "p-221ccc",
+          "p-b9cdac",
+          "p-357059",
+          "p-d2ae40",
+          "p-45e3eb",
+          "p-bfccfc",
+          "p-3e69e3",
+          "p-7198f7",
+          "p-d67caf",
+          "p-6c186f"
+        ],
+        "expanded": false
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S1",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S2",
+        "enabled": true,
+        "position": {
+          "x": 1.5553014349171386e-16,
+          "y": 2.54
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S3",
+        "enabled": true,
+        "position": {
+          "x": 2.54,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S4",
+        "enabled": true,
+        "position": {
+          "x": 2.54,
+          "y": 2.5399999999999996
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S5",
+        "enabled": true,
+        "position": {
+          "x": 5.08,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S6",
+        "enabled": true,
+        "position": {
+          "x": 5.08,
+          "y": 2.54
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S7",
+        "enabled": true,
+        "position": {
+          "x": 7.62,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S8",
+        "enabled": true,
+        "position": {
+          "x": 7.620000000000001,
+          "y": 2.5400000000000005
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S9",
+        "enabled": true,
+        "position": {
+          "x": 10.16,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S10",
+        "enabled": true,
+        "position": {
+          "x": 10.16,
+          "y": 2.54
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S11",
+        "enabled": true,
+        "position": {
+          "x": 12.7,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S12",
+        "enabled": true,
+        "position": {
+          "x": 12.7,
+          "y": 2.54
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S13",
+        "enabled": true,
+        "position": {
+          "x": 15.239999999999998,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S14",
+        "enabled": true,
+        "position": {
+          "x": 15.239999999999998,
+          "y": 2.5399999999999996
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S15",
+        "enabled": true,
+        "position": {
+          "x": 17.779999999999998,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": false,
+        "type": "pin",
+        "name": "S16",
+        "enabled": true,
+        "position": {
+          "x": 17.779999999999998,
+          "y": 2.54
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": false,
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      }
+    ],
+    "element": {}
+  },
+  {
+    "id": "cn-8df80a",
+    "name": "4 pin JST",
+    "description": "With 2.5mm pitch",
+    "prefabData": [
+      {
+        "id": "c-d98b68",
+        "type": "connector",
+        "name": "4 pin JST",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "pinIds": [
+          "p-4ca39c",
+          "p-35fc9b",
+          "p-0cfc96",
+          "p-cd9d01"
+        ],
+        "expanded": false
+      },
+      {
+        "id": "p-4ca39c",
+        "type": "pin",
+        "name": "S1",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": "c-d98b68",
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": "p-35fc9b",
+        "type": "pin",
+        "name": "S2",
+        "enabled": true,
+        "position": {
+          "x": 1.5308084989341916e-16,
+          "y": 2.5
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": "c-d98b68",
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": "p-0cfc96",
+        "type": "pin",
+        "name": "S3",
+        "enabled": true,
+        "position": {
+          "x": 3.061616997868383e-16,
+          "y": 5
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": "c-d98b68",
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": "p-cd9d01",
+        "type": "pin",
+        "name": "S4",
+        "enabled": true,
+        "position": {
+          "x": 4.592425496802575e-16,
+          "y": 7.5
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": "c-d98b68",
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      }
+    ],
+    "element": {}
+  },
+  {
+    "id": "cn-22e4ba",
+    "name": "Grove Connector",
+    "description": "With 2mm pitch",
+    "prefabData": [
+      {
+        "id": "c-dd4322",
+        "type": "connector",
+        "name": "Grove Connector",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "rotation": 0,
+        "pinIds": [
+          "p-38a4ac",
+          "p-1bce25",
+          "p-070bea",
+          "p-6678a2"
+        ],
+        "expanded": false
+      },
+      {
+        "id": "p-38a4ac",
+        "type": "pin",
+        "name": "S1",
+        "enabled": true,
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": "c-dd4322",
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": "p-1bce25",
+        "type": "pin",
+        "name": "S2",
+        "enabled": true,
+        "position": {
+          "x": 1.2246467991473532e-16,
+          "y": 2
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": "c-dd4322",
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": "p-070bea",
+        "type": "pin",
+        "name": "S3",
+        "enabled": true,
+        "position": {
+          "x": 2.4492935982947064e-16,
+          "y": 4
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": "c-dd4322",
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      },
+      {
+        "id": "p-6678a2",
+        "type": "pin",
+        "name": "S4",
+        "enabled": true,
+        "position": {
+          "x": 3.6739403974420594e-16,
+          "y": 6
+        },
+        "solderProfileId": "sp_default",
+        "parentConnectorId": "c-dd4322",
+        "solderProfileVariables": {
+          "pinX": 0,
+          "pinY": 0,
+          "headAngle": 180
+        }
+      }
+    ],
+    "element": {}
+  }
+]

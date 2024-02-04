@@ -13,6 +13,7 @@ class Execution {
 		this.pinStackIndex = 0;
 		this.instructionStackIndex = 0;
 		this.tipCleanRequested = false;
+		this.tipLife = 1;
 		this.tipChangeRequested = false;
 		this.hasExecutedStartProcedure = false;
 		this.endJobRequest = false;
@@ -103,6 +104,7 @@ class Execution {
 		let lines = gcode.split('\n');
 		for(let i = 0; i < lines.length; i++){
 			let line = lines[i];
+
 			if(lines.length > 0){
 				this.gbuffer.push({
 					code:line,
@@ -112,12 +114,12 @@ class Execution {
 		}
 	}
 
-	async executeGbuffer(name){
+	async executeGbuffer(progressFunction){
 		let originalLengthOfGbuffer = this.gbuffer.length;
 
 		while(this.gbuffer.length > 0){
 			this.executeRichLine(this.gbuffer.shift());
-			this.setProgressBar('codeProgress',originalLengthOfGbuffer-this.gbuffer.length,originalLengthOfGbuffer,name || 'instructions');
+			progressFunction(originalLengthOfGbuffer-this.gbuffer.length,originalLengthOfGbuffer);
 			await this.waitUntilReady(this,100);
 		}
 	}
@@ -126,13 +128,17 @@ class Execution {
 		this.showClass('exStatusPanel');
 		this.hideClass('expinprogressstatus');
 		this.addStringCodeToGbuffer(config.gcodes.startJob);
-		await this.executeGbuffer('start job instructions');
+		await this.executeGbuffer((progress,cap)=>{
+			this.setProgressBar('codeProgress',progress,cap,'start job instructions');
+		});
 		this.gbuffer = [];
 		this.hasExecutedStartProcedure = true;
 	}
 	async executeEndOfJob(){
 		this.addStringCodeToGbuffer(config.gcodes.endJob);
-		await this.executeGbuffer('end job instructions');
+		await this.executeGbuffer((progress,cap)=>{
+			this.setProgressBar('codeProgress',progress,cap,'end job instructions');
+		});
 		this.hasExecutedStartProcedure = false;
 	}
 	async executeTipClean(){
@@ -143,7 +149,10 @@ class Execution {
 		this.enableClass('exStopBtn');
 		this.hideClass('expinprogressstatus');
 		this.addStringCodeToGbuffer(config.gcodes.clean);
-		await this.executeGbuffer('tip clean');
+		await this.executeGbuffer((progress,cap)=>{
+			this.setProgressBar('codeProgress',progress,cap,'tip clean');
+		});
+		this.tipLife = 1;
 		if(this.hasExecutedStartProcedure) this.showClass('expinprogressstatus');
 		this.setStatus('Finished tip cleaning','good','tipClean');
 	}
@@ -156,7 +165,9 @@ class Execution {
 		this.enableClass('exStopBtn');
 		this.hideClass('expinprogressstatus');
 		this.addStringCodeToGbuffer(config.gcodes.tipChange);
-		await this.executeGbuffer('tip change');
+		await this.executeGbuffer((progress,cap)=>{
+			this.setProgressBar('codeProgress',progress,cap,'tip change');
+		});
 		this.pauseStatusText = 'Change tip to: '+name;
 		if(this.hasExecutedStartProcedure) this.showClass('expinprogressstatus');
 		this.setStatus('Finished tip change','good','tipChange');
@@ -168,42 +179,42 @@ class Execution {
 	}
 
 
-	// //ms is interval to check
-	// waitUntilReady(instance,ms) {
-	// 	return new Promise((resolve, reject) => {
-	// 		// let timeoutCounter = 0;
-	// 		function checkReadyState(){
-	// 			console.log("checking...");
-	// 			if(instance.readyForNextLine()) {
-	// 				resolve(ms)
-	// 			}else{
-	// 				// timeoutCounter++;
-	// 				setTimeout(checkReadyState,ms);
-	// 			}
-	// 		}
-	// 		checkReadyState();
-	// 	})
-	// }
+	//ms is interval to check
+	waitUntilReady(instance,ms) {
+		return new Promise((resolve, reject) => {
+			// let timeoutCounter = 0;
+			function checkReadyState(){
+				console.log("checking...");
+				if(instance.readyForNextLine()) {
+					resolve(ms)
+				}else{
+					// timeoutCounter++;
+					setTimeout(checkReadyState,ms);
+				}
+			}
+			checkReadyState();
+		})
+	}
 
 
 	//debug mode
 	// ms is interval to check
-	waitUntilReady(instance,ms) {
-		return new Promise((resolve, reject) => {
-			function checkReadyState(){
-				resolve(ms)
-			}
-			setTimeout(checkReadyState,ms);
-		});
-	}
+	// waitUntilReady(instance,ms) {
+	// 	return new Promise((resolve, reject) => {
+	// 		function checkReadyState(){
+	// 			resolve(ms)
+	// 		}
+	// 		setTimeout(checkReadyState,ms);
+	// 	});
+	// }
 
 	readyForNextLine(){
 		console.log("checking ready state");
 		return this.recievedok;
 	}
 	executeRichLine(line){
-		// console.log(line.code);
 		serial.writeLine(line.code);
+		console.log("sending",line.code)
 		this.recievedok = false;
 	}
 
@@ -230,21 +241,31 @@ class Execution {
 				this.executeRichLine(this.gbuffer[this.instructionStackIndex]);
 				this.setProgressBar('codeProgress',this.instructionStackIndex,this.gbuffer.length,'instructions');
 				await this.waitUntilReady(this,100);
-
 				this.instructionStackIndex++;
 				this.setProgressBar('codeProgress',this.instructionStackIndex,this.gbuffer.length,'instructions');
 			}
+			//if pin is complete
 			if(this.instructionStackIndex == this.gbuffer.length){
-				//pin is complete
 				if(this.pauseInstructionIndex != -1) this.pauseInstructionIndex -= this.gbuffer.length;
-				this.pinStackIndex++;
-				this.gbuffer = [];
 				this.instructionStackIndex = 0;
+				this.gbuffer = [];
+				this.tipLife -= (1/Number(this.pinStack[this.pinStackIndex].solderProfile.tipCleanInterval));
+				console.log(this.tipLife,this.pinStack[this.pinStackIndex].solderProfile.tipCleanInterval,(1/Number(this.pinStack[this.pinStackIndex].solderProfile.tipCleanInterval)));
+				this.pinStackIndex++;
+
+				let nextTipCleanInterval = 0;
+				if(this.pinStackIndex < this.pinStack.length) nextTipCleanInterval = 1/(this.pinStack[this.pinStackIndex].solderProfile.tipCleanInterval);
+				let autoTipClean = document.getElementById('automaticTipCleaning').checked;
+				if(this.tipLife < nextTipCleanInterval && autoTipClean) this.tipCleanRequested = true;
 
 				//automatic tip change after pin
 				if(this.detectTipChangeToIndex(this.pinStackIndex)){
 					this.pausePinIndex = this.pinStackIndex;
 					await this.executeTipChange(this.pinStackIndex);
+				}
+				//automatic tip clean after pin
+				if(this.tipCleanRequested){
+					await this.executeTipClean();
 				}
 				this.setProgressBar('pinProgress',this.pinStackIndex,this.pinStack.length,'pins');
 			}else{
@@ -296,6 +317,7 @@ class Execution {
 			this.setStatus('Job ended','good','jobEnded');
 			this.tipCleanRequested = false;
 			this.tipChangeRequested = false;
+			this.tipLife = 1;
 			this.pinStackIndex = 0;
 			this.instructionStackIndex = 0;
 			this.hasExecutedStartProcedure = false;
@@ -407,13 +429,11 @@ class Execution {
 		if(!this.enabledToExecute()) return;
 		this.setStatus('Waiting to finish pin...','warning','tipClean');
 		if(this.pausePinIndex != this.pinStackIndex){ //otherwise we are already paused
-			console.log(this.pausePinIndex,this.pinStackIndex);
 			this.pausePinIndex = this.pinStackIndex+1;
 		}
-		if(this.pinStackIndex == 0 && this.instructionStackIndex == 0){
-			this.pausePinIndex = 0;
-		}
 		this.pauseInstructionIndex = -1;
+		this.pauseInstructionIndex = 0;
+		this.pausePinIndex = 0;
 
 		this.tipCleanRequested = true;
 		if(!this.inExecutionLoop) this.beginExecutionLoop();

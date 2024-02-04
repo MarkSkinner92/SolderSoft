@@ -155,7 +155,7 @@ class ConnectorPrefab {
 		this.id = options?.id || 'cn-'+randomIDstring();
 		this.name = options?.name || 'Unnamed';
 		this.description = options?.description || '';
-		this.prefabData = options?.prefabData || '';
+		this.prefabData = copyObject(options?.prefabData) || '';
 		this.element = this.createSlot();
 	}
 	createSlot(updateMasterLibrary){
@@ -183,17 +183,17 @@ class ConnectorPrefab {
 		let elements = [];
 
 		//make first element a clone of the connector
-		let conJSON = this.prefabData[0];
+		let conJSON = copyObject(this.prefabData[0]);
 		conJSON.pins = [];
 		conJSON.id = false;
-		elements.push(tree.unpackageElement(conJSON));
+		elements.push(tree.unpackageElement(copyObject(conJSON)));
 
 		//continue adding the pins, and linking them as children of the connector
 		for(let i = 1; i < this.prefabData.length; i++){
 			let elementJSON = this.prefabData[i];
 			elementJSON.id = false;
 			elementJSON.parentConnectorId = false;
-			elements.push(tree.unpackageElement(elementJSON));
+			elements.push(tree.unpackageElement(copyObject(elementJSON)));
 		}
 
 		for(let i = 0; i < elements.length; i++){

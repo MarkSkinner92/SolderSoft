@@ -175,18 +175,22 @@ class Preview{
 	drawPin(pin){
 		this.ctx.lineCap = "round";
 
+
 		let pos = pin.getGlobalPosition();
 		let x = pos.x;
 		let y = pos.y;
+
+		let worldX = this.boardXToWorldX(x);
+		let worldY = this.boardYToWorldY(y);
 
 		if(pin.enabled){
 			if(pin.selected || pin.parentConnector?.selected){
 				this.ctx.fillStyle = "#CCC";
 				this.ctx.beginPath();
 				this.ctx.arc(
-					this.boardXToWorldX(x),
-					this.boardYToWorldY(y),
-					1.5,
+					worldX,
+					worldY,
+					1.2,
 					0,
 					2 * Math.PI
 				);
@@ -199,14 +203,26 @@ class Preview{
 		else this.ctx.fillStyle = '#DDD';
 		this.ctx.beginPath();
 		this.ctx.arc(
-			this.boardXToWorldX(x),
-			this.boardYToWorldY(y),
+			worldX,
+			worldY,
 			0.7,
 			0,
 			2 * Math.PI
 		);
 		this.ctx.closePath();
 		this.ctx.fill();
+
+		let cosTheta = ((pin.solderProfileVariables.headAngle/180)*Math.PI);
+		let sinTheta = ((-pin.solderProfileVariables.headAngle/180)*Math.PI);
+		let offsetX = 1.1*Math.cos(cosTheta);
+		let offsetY = 1.1*Math.sin(sinTheta);
+		this.ctx.strokeStyle = "#000";
+		this.ctx.lineWidth = 0.1;
+		this.ctx.beginPath();
+		this.ctx.moveTo(worldX,worldY);
+		this.ctx.lineTo(worldX+offsetX,worldY-offsetY);
+		this.ctx.closePath();
+		this.ctx.stroke();
 	}
 
 	redraw(){
@@ -229,6 +245,7 @@ class Preview{
 
 		let path = this.getPathOfPins();
 		this.ctx.strokeStyle = '#F00';
+		this.ctx.lineWidth = 2*this.sm;
 		this.ctx.beginPath();
 		this.ctx.moveTo(path[0][0]-board.position.x,path[0][1]+board.position.y);
 		for(let i = 1; i < path.length; i++){
