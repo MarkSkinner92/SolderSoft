@@ -85,7 +85,7 @@ class ConnectorLibrary {
 	}
 	selectByClickEvent(evt){
 		let con = this.fromId(evt.target.closest('.cn_slot').id);
-		connectorLibrary.removeAllSelectedElements();
+		connectorLibrary.deselectAll();
 		con.select();
 	}
 	addClick(){
@@ -96,15 +96,17 @@ class ConnectorLibrary {
 	removeClick(){
 		for(let i = this.selectedConnectors.length-1; i >= 0; i--){
 			this.selectedConnectors[i].destroy();
+			this.deleteFromLibrary(this.selectedConnectors[i]);
 			this.selectedConnectors.splice(i,1);
 		}
+		
 	}
 	fromId(id){
 		for(let i = 0; i < this.connectors.length; i++){
 			if(this.connectors[i].id == id) return this.connectors[i];
 		}
 	}
-	removeAllSelectedElements(){
+	deselectAll(){
 		for(let i = this.selectedConnectors.length-1; i >= 0; i--){
 			this.selectedConnectors[i].deSelect();
 		}
@@ -116,6 +118,14 @@ class ConnectorLibrary {
 		for(let i = this.selectedConnectors.length-1; i >= 0; i--){
 			if(this.selectedConnectors[i].id == con.id){
 				this.selectedConnectors.splice(i,1);
+				break;
+			}
+		}
+	}
+	deleteFromLibrary(con){
+		for(let i = this.connectors.length-1; i >= 0; i--){
+			if(this.connectors[i].id == con.id){
+				this.connectors.splice(i,1);
 				break;
 			}
 		}
@@ -235,7 +245,7 @@ class AddToLibraryWizard {
 	save(){
 		this.close();
 		console.log(connectorLibrary);
-		connectorLibrary.removeAllSelectedElements();
+		connectorLibrary.deselectAll();
 		connectorLibrary.createNew(this.getOptions()).select();
 		connectorWizard.open();
 	}

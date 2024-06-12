@@ -1,6 +1,5 @@
 class Config {
 	constructor(element) {
-		this.globalMode = true; //global or local
 		this.menu = element;
 		this.selectedKey = false;
 		this.gcodeBox = new GcodeBox(document.getElementById('cf_gcodeBox'),()=>{
@@ -26,38 +25,6 @@ class Config {
 			y:10.88,
 			z:-6.5
 		}
-	}
-	setCoordinateMode(newMode){
-		let previouslyGlobalMode = this.globalMode;
-		this.globalMode = (newMode == 'global');
-		document.getElementById('coordMode').selectedIndex = this.globalMode ? 0 : 1;
-		if(previouslyGlobalMode == this.globalMode) return; //they are the same, nothing changed
-
-		if(this.globalMode){
-			//add connector position to each child
-			for(let i = 0; i < tree.elements.length; i++){
-				let thisElement = tree.elements[i];
-				if(thisElement.isConnector()){
-					for(let p = 0; p < thisElement.pins.length; p++){
-						let pin = thisElement.pins[p];
-						// this element is a connector, add the position and rotation of connector to pin
-						pin.applyConnectorTransformation(thisElement);
-					}
-				}
-			}
-		}else{
-			//remove connector position from each child
-			for(let i = 0; i < tree.elements.length; i++){
-				let thisElement = tree.elements[i];
-				if(thisElement.isConnector()){
-					for(let p = 0; p < thisElement.pins.length; p++){
-						let pin = thisElement.pins[p];
-						pin.retractConnectorTransformation(thisElement);
-					}
-				}
-			}
-		}
-		inspector.reset(); // pull all numbers in correct system
 	}
 
 	openConfigMenu(){

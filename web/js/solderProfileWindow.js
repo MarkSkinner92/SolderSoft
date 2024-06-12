@@ -2,7 +2,11 @@ class SolderProfile {
 	constructor(cf) {
 		this.id = cf.id;
 		this.name = cf.name || 'Unnamed';
-		this.variables = cf.variables || [{id:"headAngleVar",uiname:"Head Angle",gcodename:"headAngle",defaultvalue:180}]; //{id:,uiname:,gcodename:,defaultvalue:}
+
+		// I'm not sure we want to have the headAngle default. No variables is ok too.
+		// this.variables = cf.variables || [{id:"headAngleVar",uiname:"Head Angle",gcodename:"headAngle",defaultvalue:180}]; //{id:,uiname:,gcodename:,defaultvalue:}
+		this.variables = cf.variables; //{id:,uiname:,gcodename:,defaultvalue:}
+		
 		this.gcode = cf.gcode || "G0 X{pinX} Y{pinY}; move to the pin's center position\n\n(put something here to move the Z up)\n(to avoid collisions as it moves to the next pin)";
 		this.solderingTipId = cf.solderingTipId || 'st_default';
 		this.color = cf.color || '#84009c';
@@ -119,7 +123,7 @@ class SolderProfile {
 		let obj = {};
 		obj.pinX = 0;
 		obj.pinY = 0;
-		this.variables.forEach((variable) => {
+		if(this.variables) this.variables.forEach((variable) => {
 			obj[variable.gcodename] = variable.defaultvalue;
 		});
 		return obj;
@@ -441,7 +445,8 @@ class SolderProfileWindow {
 
 	//variable menu
 	deleteSelectedVariable(){
-		if(!this.selectedVariableId || this.selectedVariableId == "headAngleVar") return; //if it's the mandatory head angle variable, we shouldn't delete it
+		// if(!this.selectedVariableId || this.selectedVariableId == "headAngleVar") return; //if it's the mandatory head angle variable, we shouldn't delete it
+		if(!this.selectedVariableId) return; // maybe it's better to not make the headAngle mandatory
 		let variableElement = document.getElementById(this.selectedVariableId);
 		console.log(variableElement);
 		let id = variableElement.id;
@@ -477,6 +482,7 @@ class SolderProfileWindow {
 			variableRack.querySelector("[key=gcodename]").value = data.gcodename;
 			variableRack.querySelector("[key=defaultvalue]").value = data.defaultvalue;
 		}else{
+			if(!this.activeProfile.variables) this.activeProfile.variables = [];
 			this.activeProfile.variables.push({
 				id:rackId,
 				uiname: '',
@@ -496,8 +502,7 @@ class SolderProfileWindow {
 		this.testGcodeSyntax();
 	}
 	loadVariables(solderProfile){
-		console.log(solderProfile);
-		console.log(solderProfile.variables.length);
+		if(!solderProfile.variables) return;
 		for(let i = 0; i < solderProfile.variables.length; i++){
 			this.addVariable(solderProfile.variables[i]);
 		}

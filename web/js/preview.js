@@ -212,17 +212,18 @@ class Preview{
 		this.ctx.closePath();
 		this.ctx.fill();
 
-		let cosTheta = ((pin.solderProfileVariables.headAngle/180)*Math.PI);
-		let sinTheta = ((-pin.solderProfileVariables.headAngle/180)*Math.PI);
-		let offsetX = 1.1*Math.cos(cosTheta);
-		let offsetY = 1.1*Math.sin(sinTheta);
-		this.ctx.strokeStyle = "#000";
-		this.ctx.lineWidth = 0.1;
-		this.ctx.beginPath();
-		this.ctx.moveTo(worldX,worldY);
-		this.ctx.lineTo(worldX+offsetX,worldY-offsetY);
-		this.ctx.closePath();
-		this.ctx.stroke();
+		// Draw a line out from the pin indicating head angle
+		// let cosTheta = ((pin.solderProfileVariables.headAngle/180)*Math.PI);
+		// let sinTheta = ((-pin.solderProfileVariables.headAngle/180)*Math.PI);
+		// let offsetX = 1.1*Math.cos(cosTheta);
+		// let offsetY = 1.1*Math.sin(sinTheta);
+		// this.ctx.strokeStyle = "#000";
+		// this.ctx.lineWidth = 0.1;
+		// this.ctx.beginPath();
+		// this.ctx.moveTo(worldX,worldY);
+		// this.ctx.lineTo(worldX+offsetX,worldY-offsetY);
+		// this.ctx.closePath();
+		// this.ctx.stroke();
 	}
 
 	redraw(){

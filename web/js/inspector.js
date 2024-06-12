@@ -82,6 +82,7 @@ class Inspector {
 			}
 		}
 		if(commonProfileId){
+			if(!activeSource.solderProfile.variables) return;
 			for(let i = 0; i < activeSource.solderProfile.variables.length; i++){
 				let variable = activeSource.solderProfile.variables[i];
 				this.addKeyValuePairToSolderProfile(variable);
