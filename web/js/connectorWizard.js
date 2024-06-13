@@ -145,16 +145,12 @@ class ConnectorLibrary {
 		}
 	}
 	pullFromLibrary(){
-		if(_usingeel){
-			eel.fetchConnectorLibrary()().then(value => {
-				this.unpackage(value);
-			});
-		}
+		eel.fetchConnectorLibrary()().then(value => {
+			this.unpackage(value);
+		});
 	}
 	pushToLibrary(){
-		if(_usingeel){
-			eel.updateConnectorLibrary(this.package());
-		}
+		eel.updateConnectorLibrary(this.package());
 	}
 }
 

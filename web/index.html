@@ -34,11 +34,12 @@
     <div style="position:absolute;right:10px;top:7px;background:#AAA">
       <label class='bad' id='ironStatus'>Iron Off</label>
       <label>Device</label>
-      <select id='portSelect' style="width:100px">
+      <select class='pythonOnly' id='portSelect' style="width:100px">
         <option>Fetching...</option>
       </select>
+      <button class='webOnly' onclick="eel.chooseSerialDevice()">Choose</button>
       <label>Baud</label>
-      <input id='baudRate' style="width:80px" value="250000">
+      <input id='baudRate' style="width:80px" value="9600">
       <button id='serialActionButton' onclick="serial.serialActionButtonClick()">Connect</button>
       <label>Status: </label><label id='statusElement' class='bad'>Disconnected</label>
     </div>
@@ -527,7 +528,8 @@
               <div class='st_header'>
                 <p class='st_title' style="width: 250px;display: inline;">Choose from Library</p>
                 <button onclick="connectorLibrary.pushToLibrary()">Save Library</button>
-                <button onclick="connectorLibrary.pullFromLibrary()">Refresh</button>
+                <button class='pythonOnly' onclick="connectorLibrary.pullFromLibrary()">Refresh</button>
+                <button class='webOnly' onclick="connectorLibrary.pullFromLibrary()">Open Library</button>
               </div>
               <table class='cn_slot' id='cn_prefab' onclick='connectorLibrary.selectByClickEvent(window.event)'>
                 <tr>
@@ -580,8 +582,11 @@
       </center>
     </div>
 
-
-    <script type="text/javascript" src="eel.js"></script>
+    <!-- IMPORTANT: If the program is launched via python,
+     eel.js will be replaced with the python module's eel library.
+     Otherwise, it will use our backend abstraction layer and assume a native web app environment -->
+    <script src="eel.js"></script>
+    <script src="js/envSetup.js"></script>
     <script src="js/utilities.js"></script>
     <script src="js/jog.js" charset="utf-8"></script>
     <script src="js/serial.js" charset="utf-8"></script>

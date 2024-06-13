@@ -14,7 +14,6 @@ class Serial {
 	}
 
 	async connect(){
-		if(!_usingeel) return;
 		this.attemptingToConnect = true;
 		this.setStatus("Connecting...","warning");
 		this.setActionButtonText();
@@ -25,7 +24,6 @@ class Serial {
 		}
 	}
 	async disconnect(){
-		if(!_usingeel) return;
 		this.attemptingToConnect = false;
 		this.attemptingToDisconnect = true;
 		this.setStatus("Disconnecting...","warning");
@@ -90,7 +88,6 @@ class Serial {
 	}
 
 	async fetchUSBPorts(){
-		if(!_usingeel) return;
 		let ports = await eel.fetchUSBPorts()();
 		this.updatePortDropdown(ports);
 	}
@@ -127,22 +124,20 @@ class Serial {
 	}
 
 	writeLine(code){
-		if(_usingeel){
-			this.lastCode = code;
+		this.lastCode = code;
 
-			//if it's a servo head movement M28 P1 S... multiply the desired angle by the servoAngleMultiplier
-			let fragments = code.split(' ');
-			if(fragments.length > 2){
-				if(fragments[0] == 'M280' && fragments[1] == 'P1'){
-					let desiredAngle = Number(fragments[2].replace(/[^0-9.]/g, ""));
-					this.lastKnownHeadAngle = desiredAngle;
-					fragments[2] = 'S' + (desiredAngle * jog.servoAngleMultiplier);
-					code = fragments.join(' ');
-				}
+		//if it's a servo head movement M28 P1 S... multiply the desired angle by the servoAngleMultiplier
+		let fragments = code.split(' ');
+		if(fragments.length > 2){
+			if(fragments[0] == 'M280' && fragments[1] == 'P1'){
+				let desiredAngle = Number(fragments[2].replace(/[^0-9.]/g, ""));
+				this.lastKnownHeadAngle = desiredAngle;
+				fragments[2] = 'S' + (desiredAngle * jog.servoAngleMultiplier);
+				code = fragments.join(' ');
 			}
-
-			eel.sendGcode(code+'\n');
 		}
+
+		eel.sendGcode(code+'\n');
 	}
 }
 

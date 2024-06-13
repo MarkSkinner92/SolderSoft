@@ -1,5 +1,3 @@
-var _usingeel = window.hasOwnProperty('eel');
-
 //untility functions
 function randomIDstring() {
   return (((1+Math.random())*0x1000000)|0).toString(16).substring(1);

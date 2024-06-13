@@ -49,7 +49,6 @@ class Board {
 		}
 	}
 	valueChangeGetter(key){
-		console.log('ok',key);
 		if(key == 'positionx') return this.position.x;
 		else if(key == 'positiony') return this.position.y;
 		else if(key == 'sizex') return this.size.x;

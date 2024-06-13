@@ -7,13 +7,11 @@ document.addEventListener("DOMContentLoaded", function(event){
 	preview.ctx.setTransform(3,0,0,3,30,370);
 	redrawPreviewWindow();
 
-	if(_usingeel){
-		eel.expose(recieveSerialLine);
-	}
-  function recieveSerialLine(x) {
+	eel.expose(recieveSerialLine);
+	function recieveSerialLine(x) {
 		serial.recieveLine(x);
-  }
-	connectorLibrary.pullFromLibrary();
+	}
+	if(env != 'web') connectorLibrary.pullFromLibrary();
 });
 
 function redrawPreviewWindow(){
