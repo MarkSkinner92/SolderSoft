@@ -18,7 +18,6 @@ class ConnectorWizard {
 		}
 	}
 	addConnector(){
-		config.setCoordinateMode('global');
 		let vals = {
 			name:this.getValue('name'),
 			xorigin:Number(this.getValue('xorigin')),
