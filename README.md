@@ -2,16 +2,21 @@
 
 A GUI designed to operate a through-hole soldering machine (based on the MKS Gen L V1.0 hardware)
 
-#### Install
+NOW AVAILABLE AS A WEB APPLICATION!
+👉 https://markskinner92.github.io/SolderSoft/web/
+
+if you prefer to run it with a python backend (Eel GUI) follow the steps below:
+
+**Install**
 You must install Python3.8 https://www.python.org/downloads/release/python-380/
 Then install the dependancies using `pip3.8 install wxPython eel pyserial`
 
-#### Run
+**Run**
 Before running, ensure your MKS board is plugged in via USB.
 Launch the terminal, cd into the repository, and run `python3.8 app.py`
 A window will show up with the GUI
 
-#### Usage Guide
+## Usage Guide
 Once the program has been launched, select the apropriate device from the drop down. Ensure your baud rate is correct, then press "Connect".  You will see the Status indicator change to "connected" If it does not change, or hangs on connecting, you may have selected the wrong baud rate or device.
 
 **The left most panel** is a tree view of all the pins and connectors. A connector is essentially just a group of pins. You may also adjust the Board Setup here.
@@ -31,6 +36,4 @@ The **Config tab** is super important, and contains several spots for G-code sni
 *More documentation coming soon*
 
 #### Technical Details
-A python script (app.py) is responsible for managing the serial port, and creating the wx window. However, the vast majority of the functionality is done in a web-like way with javascript, with HTML providing the UI structure. I chose to use javascript because I'm framiliar with it's syntax. It's easiest for me to develop, and it works very well with UI oriented applications, while still being able to handle the syncronus requirements just fine.
-
-I am considering switching this whole project to a web applicaiton, based on the widely supported USB API, and hosting it with Github Pages. The downside would be needing an internet conenction to launch, and a downgraded connector library, but the benifits would be no download/instalation, platform independance, and live updates. It would probably attract more community support too if it's open source like this and available as a web tool! How cool would that be.
+A python script (app.py) is responsible for managing the serial port, and creating the wx window. However, the vast majority of the functionality is done in a web-like way with javascript, with HTML providing the UI structure. I chose to use javascript because I'm framiliar with it's syntax. It's easiest for me to develop, and it works very well with UI oriented applications, while still being able to handle the synchronous requirements just fine.
