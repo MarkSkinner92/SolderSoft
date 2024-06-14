@@ -23,6 +23,7 @@
 	}
 
 	package(){
+		config.setCoordinateMode('global');
 		let json = {};
 		let packagedElements = [];
 		for(let i = 0; i < this.elements.length; i++){
@@ -47,6 +48,7 @@
 		}
 	}
 	unpackage(json){
+		config.setCoordinateMode('global');
 		this.wipe(); //removes all existing tree elements
 		let packagedElements = json.packagedElements;
 		//unpackage all elements
@@ -54,7 +56,6 @@
 			this.elements.push(this.unpackageElement(packagedElements[i]));
 		}
 		//then link them together in a highrarchal way
-
 		for(let i = this.elements.length-1; i >= 0; i--){
 			let ele = this.elements[i];
 			if(ele.type == 'pin'){
