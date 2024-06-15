@@ -22,7 +22,7 @@
 
     <div class="topBar">
       <div style="float:left; padding:5px">
-        <label style="margin-left: 15px; margin-right:15px;">SolderSoft 1.0</label>
+        <label style="margin-left: 15px; margin-right:15px;">SolderSoft</label>
       </div>
       <select class='fileMenu' id='fileMenu'>
         <option>File</option>
@@ -311,7 +311,7 @@
                 <td style='vertical-align:top'>
                   <div class='exWrapper exWrapperTable'>
                     <button onclick="execution.startContinuous()" class='exStartBtn'>Start continuous</button>
-                    <button onclick="execution.startNextInstruction()" class='exStartBtn'>Start next instruction</button>
+                    <!-- <button onclick="execution.startNextInstruction()" class='exStartBtn'>Start next instruction</button> -->
                     <button onclick="execution.startNextPin()" class='exStartBtn'>Start next pin</button>
                     <button onclick="execution.startNextConnector()" class='exStartBtn'>Start next connector</button>
                     <button onclick="execution.startTipClean()" class='exTip'>Start a tip clean</button>
@@ -321,7 +321,7 @@
                 <td style='vertical-align:top'>
                   <div class='exWrapper exWrapperTable'>
                     <input id='automaticTipCleaning' type="checkbox"><label>Automatic tip cleaning</label>
-                    <button onclick="execution.pauseAfterInstruction()"class='exPauseBtn'>Pause after instruction</button>
+                    <!-- <button onclick="execution.pauseAfterInstruction()"class='exPauseBtn'>Pause after instruction</button> -->
                     <button onclick="execution.pauseAfterPin()"class='exPauseBtn expin'>Pause after pin</button>
                     <button onclick="execution.pauseAfterConnector()"class='exPauseBtn excon'>Pause after connector</button>
                     <button onclick="execution.endJob()"class='exStopBtn'>End job</button>

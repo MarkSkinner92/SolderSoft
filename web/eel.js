@@ -218,7 +218,8 @@ class BackendAbstractionLayer{
             // Connect to `port` or add it to the list of available ports.
             console.log(port);
             this.serialPort = port;
-            document.getElementById('serialActionButton').style.display = 'unset'
+            document.getElementById('serialActionButton').style.display = 'unset';
+            if(serial) serial.connect();
         })
         .catch((e) => {
             // The user didn't select a port.

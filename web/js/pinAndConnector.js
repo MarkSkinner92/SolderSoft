@@ -1,4 +1,4 @@
-	class Tree{
+class Tree{
 	constructor(treeContainer,ghostWrapper){
 		this.wrapper = treeContainer;
 		this.elements = [];
