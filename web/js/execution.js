@@ -21,7 +21,9 @@ class Execution {
 			tipCleanRequested : false,
 			tipChangeRequested : false,
 			endJobRequest : false,
-			numberOfPins : 0
+			numberOfPins : 0,
+			pinsSinceTipClean : 0,
+			routineClean : false
 		}
 	}
 
@@ -76,15 +78,19 @@ class Execution {
 				if(this.pinStack.length > 1){
 					nextPinIsFromADifferentConnector = (thisPinsParentID != this.pinStack[1].parentConnector.id); 
 				}
+				let pinCleanLimit = this.pinStack[0].solderProfile.tipCleanInterval;
 				// Do the pin procedure
 				await this.doPinProcedure();
 
 				if(this.state.endJobRequest){
 					this.state.request = 'endjob';
 				} 
-				else if(this.state.tipCleanRequested){
+				else if(this.state.tipCleanRequested || (this.state.pinsSinceTipClean >= pinCleanLimit && document.getElementById('automaticTipCleaning').checked)){
 					this.state.request = 'tipclean';
-				} 
+					if(this.state.pinsSinceTipClean >= pinCleanLimit){
+						this.state.routineClean = true;
+					}
+				}
 				else if(this.state.tipChangeRequested){
 					this.state.request = 'tipchange';
 				} 
@@ -108,9 +114,15 @@ class Execution {
 				if(this.state.tipCleanRequested){
 					this.state.request = 'tipclean';
 				}
-				else{
-					this.state.request = '';
+				else if(this.pinStack.length == 0){
+					this.state.request = 'endjob';
 				}
+				else if(this.state.routineClean){
+					this.state.routineClean = false;
+					this.state.request = 'pin';
+					this.disableClass('exStartBtn');
+				}
+				else this.state.request = '';
 			}
 
 			if(this.state.request == 'tipchange'){
@@ -135,6 +147,7 @@ class Execution {
 				this.state.shouldDoStartProcedure = true;
 				this.state.request = '';
 				this.enableClass('exSelect');
+				this.state.pinsSinceTipClean = 0;
 				tree.removeAllSelectedElements();
 			}
 		}
@@ -175,6 +188,7 @@ class Execution {
 		await this.executeGbuffer((progress,cap)=>{
 			this.setProgressBar('codeProgress',progress,cap,'pin instructions');
 		});
+		this.state.pinsSinceTipClean++;
 
 		this.setProgressBar('pinProgress',this.state.numberOfPins - this.pinStack.length,this.state.numberOfPins,'pins');
 
@@ -210,6 +224,7 @@ class Execution {
 			this.setProgressBar('codeProgress',progress,cap,'tip clean');
 		});
 
+		this.state.pinsSinceTipClean = 0;
 		this.setStatus('Tip Clean Complete','good');
 		this.showClass('expinprogressstatus');
 		this.hideClass('excodeprogressstatus');
