@@ -11,8 +11,9 @@ class Jog {
 		serial.writeLine("M107");
 	}
 	async ironOn(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
-			execution.addStringCodeToGbuffer(config.gcodes.ironOn);
+			execution.addStringCodeToGbuffer(config.getGcodeForJob('ironOn'));
 			document.getElementById('ironStatus').innerText = 'Turning iron on...';
 			document.getElementById('ironStatus').className = 'warning';
 			await execution.executeGbuffer((progress,cap)=>{
@@ -23,8 +24,9 @@ class Jog {
 		}
 	}
 	async ironOff(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
-			execution.addStringCodeToGbuffer(config.gcodes.ironOff);
+			execution.addStringCodeToGbuffer(config.getGcodeForJob('ironOff'));
 			document.getElementById('ironStatus').innerText = 'Turning iron off...';
 			document.getElementById('ironStatus').className = 'warning';
 			await execution.executeGbuffer((progress,cap)=>{
@@ -88,8 +90,9 @@ class Jog {
 		this.setHeadServo(Number(document.getElementById('servoAngleInput').value));
 	}
 	async homeX(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
-			execution.addStringCodeToGbuffer(config.gcodes.homeX);
+			execution.addStringCodeToGbuffer(config.getGcodeForJob('homeX'));
 
 			if(document.getElementById('htoX').value){
 				let component = parseFloat(document.getElementById('htoX').value)
@@ -104,8 +107,9 @@ class Jog {
 		}
 	}
 	async homeY(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
-			execution.addStringCodeToGbuffer(config.gcodes.homeY);
+			execution.addStringCodeToGbuffer(config.getGcodeForJob('homeY'));
 
 			if(document.getElementById('htoY').value){
 				let component = parseFloat(document.getElementById('htoY').value)
@@ -120,8 +124,9 @@ class Jog {
 		}
 	}
 	async homeZ(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
-			execution.addStringCodeToGbuffer(config.gcodes.homeZ);
+			execution.addStringCodeToGbuffer(config.getGcodeForJob('homeZ'));
 
 			if(document.getElementById('htoZ').value){
 				let component = parseFloat(document.getElementById('htoZ').value)
@@ -142,8 +147,9 @@ class Jog {
 		document.getElementById('jogStatus').innerText = 'Homing Complete';
 	}
 	async enableMotors(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
-			execution.addStringCodeToGbuffer(config.gcodes.enableMotors);
+			execution.addStringCodeToGbuffer(config.getGcodeForJob('enableMotors'));
 			document.getElementById('jogStatus').innerText = 'Enabling motors';
 			await execution.executeGbuffer((progress,cap)=>{
 				document.getElementById('jogStatus').innerText = `Enabling motors (${progress}/${cap})`;
@@ -152,8 +158,9 @@ class Jog {
 		}
 	}
 	async disableMotors(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
-			execution.addStringCodeToGbuffer(config.gcodes.disableMotors);
+			execution.addStringCodeToGbuffer(config.getGcodeForJob('disableMotors'));
 			document.getElementById('jogStatus').innerText = 'Disabling motors';
 			await execution.executeGbuffer((progress,cap)=>{
 				document.getElementById('jogStatus').innerText = `Disabling motors (${progress}/${cap})`;
@@ -162,8 +169,9 @@ class Jog {
 		}
 	}
 	async enableServo(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
-			execution.addStringCodeToGbuffer(config.gcodes.enableServo);
+			execution.addStringCodeToGbuffer(config.getGcodeForJob('enableServo'));
 			document.getElementById('jogStatus').innerText = 'Enabling servo';
 			await execution.executeGbuffer((progress,cap)=>{
 				document.getElementById('jogStatus').innerText = `Enabling servo (${progress}/${cap})`;
@@ -172,8 +180,9 @@ class Jog {
 		}
 	}
 	async disableServo(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
-			execution.addStringCodeToGbuffer(config.gcodes.disableServo);
+			execution.addStringCodeToGbuffer(config.getGcodeForJob('disableServo'));
 			document.getElementById('jogStatus').innerText = 'Disabling servo';
 			await execution.executeGbuffer((progress,cap)=>{
 				document.getElementById('jogStatus').innerText = `Disabling servo (${progress}/${cap})`;
@@ -183,6 +192,7 @@ class Jog {
 	}
 
 	async getCalibrationX(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
 			execution.addStringCodeToGbuffer('M114');
 			await execution.executeGbuffer((progress,cap)=>{});
@@ -193,6 +203,7 @@ class Jog {
 	}
 
 	async getCalibrationY(){
+		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
 			execution.addStringCodeToGbuffer('M114');
 			await execution.executeGbuffer((progress,cap)=>{});

@@ -388,7 +388,7 @@ class SolderProfileWindow {
 		clone.id = instance.id;
 		this.profileSlotContainer.appendChild(clone);
 		instance.setColor(instance.color);
-		instance.addColorChangeTrigger(clone);
+		instance.addColorChangeTrigger(clone.querySelector('.sps_color'));
 		clone.querySelector('.sps_name').value = instance.name;
 		if(templateSlot) templateSlot.after(clone);
 	}

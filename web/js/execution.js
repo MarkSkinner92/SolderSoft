@@ -17,6 +17,7 @@ class Execution {
 		this.tipChangeRequested = false;
 		this.hasExecutedStartProcedure = false;
 		this.endJobRequest = false;
+		this.emergency = false; // when emergency stop is called, this is set. it remains set until a start command is called.
 		this.pauseStatusText = 'Waiting for user action';
 
 		this.pauseInstructionIndex = -1;
@@ -29,7 +30,7 @@ class Execution {
 	}
 
 	enabledToExecute(){
-		return this.connected
+		return (this.connected && !this.emergency)
 	}
 	connect(){
 		this.connected = true;
@@ -118,6 +119,7 @@ class Execution {
 		let originalLengthOfGbuffer = this.gbuffer.length;
 
 		while(this.gbuffer.length > 0){
+			if(this.emergency) break;
 			this.executeRichLine(this.gbuffer.shift());
 			progressFunction(originalLengthOfGbuffer-this.gbuffer.length,originalLengthOfGbuffer);
 			await this.waitUntilReady(this,100);
@@ -125,9 +127,10 @@ class Execution {
 	}
 
 	async executeStartOfJob(){
+		if(!serial.connected) return;
 		this.showClass('exStatusPanel');
 		this.hideClass('expinprogressstatus');
-		this.addStringCodeToGbuffer(config.gcodes.startJob);
+		this.addStringCodeToGbuffer(config.getGcodeForJob('startJob'));
 		await this.executeGbuffer((progress,cap)=>{
 			this.setProgressBar('codeProgress',progress,cap,'start job instructions');
 		});
@@ -135,20 +138,22 @@ class Execution {
 		this.hasExecutedStartProcedure = true;
 	}
 	async executeEndOfJob(){
-		this.addStringCodeToGbuffer(config.gcodes.endJob);
+		if(!serial.connected) return;
+		this.addStringCodeToGbuffer(config.getGcodeForJob('endJob'));
 		await this.executeGbuffer((progress,cap)=>{
 			this.setProgressBar('codeProgress',progress,cap,'end job instructions');
 		});
 		this.hasExecutedStartProcedure = false;
 	}
 	async executeTipClean(){
+		if(!serial.connected) return;
 		this.tipCleanRequested = false;
 		this.setStatus('Cleaning tip...','good','tipClean');
 		this.disableClass('exTip');
 		this.disableClass('exStartBtn');
 		this.enableClass('exStopBtn');
 		this.hideClass('expinprogressstatus');
-		this.addStringCodeToGbuffer(config.gcodes.clean);
+		this.addStringCodeToGbuffer(config.getGcodeForJob('clean'));
 		await this.executeGbuffer((progress,cap)=>{
 			this.setProgressBar('codeProgress',progress,cap,'tip clean');
 		});
@@ -157,6 +162,7 @@ class Execution {
 		this.setStatus('Finished tip cleaning','good','tipClean');
 	}
 	async executeTipChange(index){
+		if(!serial.connected) return;
 		let name = index < this.pinStack.length ? this.pinStack[index].solderProfile.getSolderTipName() : "";
 		this.tipChangeRequested = false;
 		this.setStatus('Changing tip...','warning','tipChange');
@@ -164,7 +170,7 @@ class Execution {
 		this.disableClass('exStartBtn');
 		this.enableClass('exStopBtn');
 		this.hideClass('expinprogressstatus');
-		this.addStringCodeToGbuffer(config.gcodes.tipChange);
+		this.addStringCodeToGbuffer(config.getGcodeForJob('tipChange'));
 		await this.executeGbuffer((progress,cap)=>{
 			this.setProgressBar('codeProgress',progress,cap,'tip change');
 		});
@@ -210,6 +216,7 @@ class Execution {
 
 	readyForNextLine(){
 		console.log("checking ready state");
+		if(this.emergency) return true;
 		return this.recievedok;
 	}
 	executeRichLine(line){
@@ -354,6 +361,7 @@ class Execution {
 	}
 
 	startContinuous(){
+		this.emergency = false;
 		if(!this.enabledToExecute()) return;
 		this.ensureLock();
 		this.setStatus('Running continuously','good','startContinuous');
@@ -369,6 +377,7 @@ class Execution {
 	}
 
 	startNextInstruction(){
+		this.emergency = false;
 		if(!this.enabledToExecute()) return;
 		this.ensureLock();
 		this.setStatus('Running next instruction','good','startNextInstruction');
@@ -384,6 +393,7 @@ class Execution {
 		this.beginExecutionLoop();
 	}
 	startNextPin(){
+		this.emergency = false;
 		if(!this.enabledToExecute()) return;
 		this.ensureLock();
 		this.setStatus('Running next pin','good','startNextPin');
@@ -401,6 +411,7 @@ class Execution {
 		this.beginExecutionLoop();
 	}
 	startNextConnector(){
+		this.emergency = false;
 		if(!this.enabledToExecute()) return;
 		this.ensureLock();
 		this.setStatus('Running next connector','good','startNextConnector');
@@ -426,6 +437,7 @@ class Execution {
 	}
 	startTipClean(){
 		// debugger;
+		this.emergency = false;
 		if(!this.enabledToExecute()) return;
 		this.setStatus('Waiting to finish pin...','warning','tipClean');
 		if(this.pausePinIndex != this.pinStackIndex){ //otherwise we are already paused
@@ -439,6 +451,7 @@ class Execution {
 		if(!this.inExecutionLoop) this.beginExecutionLoop();
 	}
 	startTipChange(){
+		this.emergency = false;
 		if(!this.enabledToExecute()) return;
 		this.setStatus('Waiting to finish pin...','warning','tipChange');
 		if(this.pausePinIndex != this.pinStackIndex){ //otherwise we are already paused
@@ -484,6 +497,29 @@ class Execution {
 		this.disableClass('exStopBtn');
 		this.endJobRequest = true;
 		if(!this.inExecutionLoop) this.beginExecutionLoop();
+	}
+
+	emergencyStop(){ // stop and cancel any running execution loops, and send emergency stop command M410
+		// this.endJobRequest = false;
+		this.emergency = true;
+		// this.setStatus('EMERGENCY STOP','good','executingEmStop');
+		// this.hideClass('expinprogressstatus');
+		// this.hideClass('exStatusPanel');
+		// this.enableClass('exStartBtn');
+		// this.disableClass('exPauseBtn');
+		// this.disableClass('exStopBtn');
+		// this.enableClass('exTip');
+		// this.enableClass('exSelect');
+		// this.tipCleanRequested = false;
+		// this.tipChangeRequested = false;
+		// this.tipLife = 1;
+		// this.pinStackIndex = 0;
+		// this.instructionStackIndex = 0;
+		// this.hasExecutedStartProcedure = false;
+		// this.gbuffer = []; //[{code:,flag:}]
+		// this.recievedok = true;
+		// this.locked = false;
+		// serial.writeLine("M114"); // Stop all steppers instantly
 	}
 
 	disableClass(className){

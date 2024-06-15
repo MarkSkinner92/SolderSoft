@@ -124,6 +124,8 @@ class Serial {
 	}
 
 	writeLine(code){
+		if(!serial.connected) return;
+		
 		this.lastCode = code;
 
 		//if it's a servo head movement M28 P1 S... multiply the desired angle by the servoAngleMultiplier

@@ -39,14 +39,10 @@ class FileManager {
 	constructor() {
 		this.fileMenu = document.getElementById('fileMenu');
 		this.fileMenu.addEventListener('mousedown',(e)=>{
-			this.fileMenu.innerHTML = "<option value='new'>New</option><option value='save'>Save</option><option value='saveas'>Save as...</option><option value='open'>Open</option>";
-			this.fileMenu.value = '';
+			this.fileMenu.innerHTML = "<option value='file' style='display:none'>File</option><option value='save'>Save</option><option value='saveas'>Save as...</option><option value='open'>Open</option>";
 		});
 		this.fileMenu.addEventListener('change',(e)=>{
 			switch (e.target.value) {
-				case 'new':
-					this.newFile();
-					break;
 				case 'save':
 					this.saveFile();
 					break;

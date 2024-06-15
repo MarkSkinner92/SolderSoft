@@ -74,6 +74,11 @@
 
       <div id='middlePanel' class="middlePanel">
         <div class="middleMenu">
+          <label>Coordinates</label>
+          <select id='coordMode' onchange="config.setCoordinateMode(this.value)">
+            <option value='global'>Global</option>
+            <option value='local'>Local</option>
+          </select>
         </div>
         <div id='boardSetupPanel' class='inspectorPanel'>
           <label class='panelLabel'>Board Setup</label>
@@ -315,11 +320,12 @@
                 </td>
                 <td style='vertical-align:top'>
                   <div class='exWrapper exWrapperTable'>
-                    <input id='automaticTipCleaning' type="checkbox" checked><label>Automatic tip cleaning</label>
+                    <input id='automaticTipCleaning' type="checkbox"><label>Automatic tip cleaning</label>
                     <button onclick="execution.pauseAfterInstruction()"class='exPauseBtn'>Pause after instruction</button>
                     <button onclick="execution.pauseAfterPin()"class='exPauseBtn expin'>Pause after pin</button>
                     <button onclick="execution.pauseAfterConnector()"class='exPauseBtn excon'>Pause after connector</button>
                     <button onclick="execution.endJob()"class='exStopBtn'>End job</button>
+                    <!-- <button onclick="execution.emergencyStop()"class='exEmStopBtn'>Emergency Stop</button> -->
                   </div>
                 </td>
               </tr>
@@ -429,8 +435,7 @@
             <div class="cf_topic" id='cf_homeY' onclick="config.clickTile(window.event)">
               <label class='cf_topicLabel'>Y Homing Procedure</label>
             </div>
-            <div class="cf_topic" id='cf_
-            ' onclick="config.clickTile(window.event)">
+            <div class="cf_topic" id='cf_homeZ' onclick="config.clickTile(window.event)">
               <label class='cf_topicLabel'>Z Homing Procedure</label>
             </div>
             <div class="cf_topic" id='cf_tipChange' onclick="config.clickTile(window.event)">
@@ -439,6 +444,14 @@
             <div class="cf_topic" id='cf_clean' onclick="config.clickTile(window.event)">
               <label class='cf_topicLabel'>Cleaning Procedure</label>
             </div>
+            <div class="cf_topic" id='cf_sandbox' onclick="config.clickTile(window.event)">
+              <label class='cf_topicLabel'>Sandbox</label>
+            </div>
+          </div>
+          <div class="cf_top">
+            <p class="cf_infotext" id="cf_infotext">Info about the procedure will go here</p>
+            <button class="cf_execute" onclick="config.executeNow()">Execute Now</button>
+            <p class="cf_status" id="cf_status"></p>
           </div>
           <div class="cf_gholder">
             <code-input required id="cf_gcodeBox" class="line-numbers" style="width:100%;height:100%" lang="gcode" placeholder="Write G-code here" template="gcode">

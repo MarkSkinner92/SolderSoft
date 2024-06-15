@@ -14,6 +14,9 @@ function setupForWeb(){
     Array.from(document.getElementsByClassName('pythonOnly')).forEach(element => {
         element.style.display = 'none';
     });
+    
+    // Hide the connect button until a port has been chosen
+    document.getElementById('serialActionButton').style.display = 'none';
 }
 function setupForPython(){
     console.log('setting up environment for python');

@@ -1,10 +1,11 @@
 class Config {
 	constructor(element) {
+		this.globalMode = true; //global or local
 		this.menu = element;
 		this.selectedKey = false;
 		this.gcodeBox = new GcodeBox(document.getElementById('cf_gcodeBox'),()=>{
 			//onchange
-			this.gcodes[this.selectedKey] = this.gcodeBox.getCode();
+			this.gcodes[this.selectedKey].code = this.gcodeBox.getCode();
 		});
 		this.gcodes = {
 			'startJob':'G0 Z40\nG0 X0 Y0',
@@ -20,11 +21,106 @@ class Config {
 			'homeZ':'G28 Z',
 			'clean':'G0 Z20\nM400\nG0 X0 Y0\nM400',
 		}
+		this.gcodes = {
+			'startJob': {
+				code: 'G0 Z40\nG0 X0 Y0',
+				description: 'Runs once before execution is started'
+			},
+			'endJob': {
+				code: 'G0 X0 Y0',
+				description: 'Runs after the execution is completed'
+			},
+			'ironOn': {
+				code: '',
+				description: ''
+			},
+			'ironOff': {
+				code: '',
+				description: ''
+			},
+			'tipChange': {
+				code: 'G0 Z20\nM400\nG0 X0 Y0\nM400',
+				description: 'Runs every time the tip change procedure is called'
+			},
+			'enableMotors': {
+				code: 'M17 (enable steppers)',
+				description: ''
+			},
+			'disableMotors': {
+				code: 'M18 (disable steppers)',
+				description: ''
+			},
+			'disableServo': {
+				code: 'M282 P0 (detach servo)',
+				description: ''
+			},
+			'homeX': {
+				code: 'G28 X',
+				description: 'Homes the X axis'
+			},
+			'homeY': {
+				code: 'G28 Y',
+				description: 'Homes the Y axis'
+			},
+			'homeZ': {
+				code: 'G28 Z',
+				description: 'Homes the Z axis'
+			},
+			'clean': {
+				code: 'G0 Z20\nM400\nG0 X0 Y0\nM400',
+				description: 'Runs when the tip cleaning procedure is called'
+			},
+			'sandbox': {
+				code: '',
+				description: 'Code here is just for testing'
+			}
+
+		}
 		this.homeToOrigin = {
 			x:5.17,
 			y:10.88,
 			z:-6.5
 		}
+	}
+
+	getGcodeForJob(jobName){
+		return this.gcodes[jobName].code;
+	}
+	setGcode(name,code){
+		this.gcodes[name].code = code;
+	}
+
+	setCoordinateMode(newMode){
+		let previouslyGlobalMode = this.globalMode;
+		this.globalMode = (newMode == 'global');
+		document.getElementById('coordMode').selectedIndex = this.globalMode ? 0 : 1;
+		if(previouslyGlobalMode == this.globalMode) return; //they are the same, nothing changed
+
+		if(this.globalMode){
+			//add connector position to each child
+			for(let i = 0; i < tree.elements.length; i++){
+				let thisElement = tree.elements[i];
+				if(thisElement.isConnector()){
+					for(let p = 0; p < thisElement.pins.length; p++){
+						let pin = thisElement.pins[p];
+						// this element is a connector, add the position and rotation of connector to pin
+						pin.applyConnectorTransformation(thisElement);
+					}
+				}
+			}
+		}else{
+			//remove connector position from each child
+			for(let i = 0; i < tree.elements.length; i++){
+				let thisElement = tree.elements[i];
+				if(thisElement.isConnector()){
+					for(let p = 0; p < thisElement.pins.length; p++){
+						let pin = thisElement.pins[p];
+						pin.retractConnectorTransformation(thisElement);
+					}
+				}
+			}
+		}
+		inspector.reset(); // pull all numbers in correct system
 	}
 
 	openConfigMenu(){
@@ -50,7 +146,11 @@ class Config {
 		tile.addOutline();
 		this.selectedKey = tile.id.substr(3,tile.id.length);
 		console.log(tile.id.substr(2,tile.id.length));
-		this.gcodeBox.setCode(this.gcodes[this.selectedKey]);
+
+		let gcode = this.gcodes[this.selectedKey];
+
+		this.gcodeBox.setCode(gcode.code);
+		document.getElementById('cf_infotext').innerText = gcode.description;
 	}
 
 	updateHomeToOriginVector(axis,evt){
@@ -60,16 +160,43 @@ class Config {
 
 	package(){
 		return {
-			configGcodes:this.gcodes,
+			configGcodes:this.packageGcodes(),
 			homeToOrigin:this.homeToOrigin
 		}
 	}
+	packageGcodes(){
+		let keys = Object.keys(this.gcodes);
+		let returnObject = {};
+		keys.forEach(key => {
+			returnObject[key] = this.gcodes[key].code;
+		})
+		return returnObject;
+	}
 	unpackage(json){
-		this.gcodes = json.configGcodes;
+		this.unpackageGcodes(json.configGcodes);
 		this.homeToOrigin = json?.homeToOrigin || this.homeToOrigin;
 		document.getElementById("htoX").value = this.homeToOrigin.x;
 		document.getElementById("htoY").value = this.homeToOrigin.y;
 		document.getElementById("htoZ").value = this.homeToOrigin.z;
+	}
+
+	unpackageGcodes(gcodes){
+		let keys = Object.keys(gcodes);
+		keys.forEach(key => {
+			this.setGcode(key,gcodes[key]);
+		})
+	}
+
+	async executeNow(){
+		if(!serial.connected) return;
+		let code = this.gcodeBox.getCode();
+		if(execution.gbuffer.length == 0){
+			execution.addStringCodeToGbuffer(code);
+			await execution.executeGbuffer((progress,cap)=>{
+				document.getElementById('cf_status').innerText = `Running... (${progress}/${cap})`;
+			});
+			document.getElementById('cf_status').innerText = 'Done';
+		}
 	}
 }
 
