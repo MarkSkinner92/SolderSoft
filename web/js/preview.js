@@ -150,7 +150,7 @@ class Preview{
 		this.ctx.lineWidth = 2*this.sm;
 		this.ctx.strokeStyle = "#000";
 		this.ctx.strokeRect(this.boardXToWorldX(0),this.boardYToWorldY(board.size.y),board.size.x,board.size.y);
-	}
+}
 
 	boardYToWorldY(y){
 		return board.position.y*-1-y;
@@ -253,6 +253,21 @@ class Preview{
 			this.ctx.lineTo(this.boardXToWorldX(path[i][0]),this.boardYToWorldY(path[i][1]));
 		}
 		this.ctx.stroke();
+
+		// If enabled, draw calibration reference point on board
+		if(board.selected){
+			this.ctx.fillStyle = "#000";
+			this.ctx.beginPath();
+			this.ctx.arc(
+				this.boardXToWorldX(config.referencePosition.x),
+				this.boardYToWorldY(config.referencePosition.y),
+				0.5,
+				0,
+				2 * Math.PI
+			);
+			this.ctx.closePath();
+			this.ctx.fill();
+		}
 
 	}
 	resizeCanvas(w,h){

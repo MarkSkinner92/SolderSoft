@@ -10,6 +10,7 @@ class Board {
 			y:50,
 			z:4
 		}
+		this.selected = false;
 	}
 	package(){
 		return {
@@ -24,10 +25,14 @@ class Board {
 	select(){
 		Tree.addClassToElement(this.element,'selected');
 		inspector.openPanel('boardSetupPanel',this);
+		inspector.openPanel('referencePanel',this);
+		this.selected = true;
 	}
 	deSelect(){
 		Tree.removeClassFromElement(this.element,'selected');
 		inspector.closePanel('boardSetupPanel');
+		inspector.closePanel('referencePanel');
+		this.selected = false;
 	}
 
 
@@ -47,6 +52,15 @@ class Board {
 		else if(key == 'sizez'){
 			this.size.z = Number(newValue);
 		}
+		else if(key == 'refx'){
+			config.referencePosition.x = Number(newValue);
+		}
+		else if(key == 'refy'){
+			config.referencePosition.y = Number(newValue);
+		}
+		else if(key == 'refz'){
+			config.referencePosition.z = Number(newValue);
+		}
 	}
 	valueChangeGetter(key){
 		if(key == 'positionx') return this.position.x;
@@ -54,6 +68,9 @@ class Board {
 		else if(key == 'sizex') return this.size.x;
 		else if(key == 'sizey') return this.size.y;
 		else if(key == 'sizez') return this.size.z;
+		else if(key == 'refx') return config.referencePosition.x;
+		else if(key == 'refy') return config.referencePosition.y;
+		else if(key == 'refz') return config.referencePosition.z;
 	}
 }
 

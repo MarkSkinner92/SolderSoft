@@ -77,9 +77,24 @@ class Config {
 
 		}
 		this.homeToOrigin = {
-			x:5.17,
-			y:10.88,
-			z:-6.5
+			x:0,
+			y:0,
+			z:0
+		}
+
+		// After sending the homing Gcode commands, this vector will store the head's coordinates
+		// Typically it would be 0,0,0 but it could be different depending on how the firmware is configured
+		this.homeLocation = {
+			x:0,
+			y:0,
+			z:0
+		}
+
+		// The location target (In board space) where the head is moved during calibration.
+		this.referencePosition = {
+			x:0,
+			y:0,
+			z:0
 		}
 	}
 
@@ -153,15 +168,12 @@ class Config {
 		document.getElementById('cf_infotext').innerText = gcode.description;
 	}
 
-	updateHomeToOriginVector(axis,evt){
-		this.homeToOrigin[axis] = evt.target.value;
-		console.log("setting",axis,evt)
-	}
-
 	package(){
 		return {
 			configGcodes:this.packageGcodes(),
-			homeToOrigin:this.homeToOrigin
+			homeToOrigin:this.homeToOrigin,
+			homeLocation:this.homeLocation,
+			referencePosition:this.referencePosition
 		}
 	}
 	packageGcodes(){
@@ -175,9 +187,8 @@ class Config {
 	unpackage(json){
 		this.unpackageGcodes(json.configGcodes);
 		this.homeToOrigin = json?.homeToOrigin || this.homeToOrigin;
-		document.getElementById("htoX").value = this.homeToOrigin.x;
-		document.getElementById("htoY").value = this.homeToOrigin.y;
-		document.getElementById("htoZ").value = this.homeToOrigin.z;
+		this.homeLocation = json?.homeLocation || this.homeLocation;
+		this.referencePosition = json?.referencePosition || this.referencePosition;
 	}
 
 	unpackageGcodes(gcodes){

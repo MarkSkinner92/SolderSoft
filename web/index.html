@@ -106,6 +106,24 @@
           </table>
         </div>
 
+        <div id='referencePanel' class='inspectorPanel'>
+          <label class='panelLabel'>Tip Reference</label>
+          <table>
+            <tr>
+              <td>X Position</td>
+              <td><input key='refx'></td>
+            </tr>
+            <tr>
+              <td>Y Position</td>
+              <td><input key='refy'></td>
+            </tr>
+            <tr>
+              <td>Z Position</td>
+              <td><input key='refz'></td>
+            </tr>
+          </table>
+        </div>
+
         <div id='controlPanel' class='inspectorPanel'>
           <table>
             <tr>
@@ -264,16 +282,14 @@
             <label style='position:realitive;left:320px;top:15px;width:170px'>Servo angle multiplier</label>
             <input id='servoAngleMultiplier' value='0.8' onchange="jog.servoInputMultiplierEvent(window.event)" style='position:realitive;left:430px;top:13px;width:60px;text-align:center'>
             <input id='jogServoMultiplierSlider' value='0.8' onchange="jog.servoSliderMultiplierEvent(window.event)" style='position:realitive;background: transparent;left:320px;top:35px;width:170px' type="range" min="0.5" step="0.01" max="1.5" class="slider">
-            <button style="display:none" onclick="jog.getCalibrationX()">Set calibration X</button>
-            <!-- <p class="calibrationInstructions">Step 3: Rotate head to front (90 degrees CCW), and jog so the tip is touching the frontmost side of the calibration pin. Click this button when done.</p> -->
-            <button style="display:none" onclick="jog.getCalibrationY()" style="display: block;">Set calibration Y</button>
-            <p style="display: none;">dX</p><input hidden id="dX" value="0">
-            <p style="display: none;">dY</p><input hidden id="dY" value="0">
-
-            <p class="calibrationInstructions">Home To Origin Vector: mm to move from home position, 90 extension, 90deg, to 40 extension bottom left corner</p>
-            <p style="display: inline;">X</p><input style="width:50px" id="htoX" value="5.17" onchange="config.updateHomeToOriginVector('x',window.event)">
-            <p style="display: inline;">Y</p><input style="width:50px" id="htoY" value="10.88" onchange="config.updateHomeToOriginVector('y',window.event)">
-            <p style="display: inline;">Z</p><input style="width:50px" id="htoZ" value="-6.5" onchange="config.updateHomeToOriginVector('z',window.event)">
+            <p class="calibrationInstructions">
+              <b>Step 1</b> Home all axes<br>
+              <b>Step 2</b>: Jog the head rotation to 90deg with a 40deg extension<br>
+              <b>Step 3</b>: Jog the head until tip is touching the Tip Reference (see board inspector)<br>
+              <b>Step 4</b>: click "Update Origin Reference"<br>
+              Note: The origin only needs to be updated once. Homing does not require redoing this calibration
+            </p>
+            <button onclick="jog.tipAtReferencePosition()" style="color:red">Update Origin Reference</button>
           </div>
           <div class='serialMonitor'>
             <textarea id='sm_output' readonly class='serialOutput'></textarea>

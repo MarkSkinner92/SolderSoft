@@ -7,7 +7,7 @@ class SolderProfile {
 		// this.variables = cf.variables || [{id:"headAngleVar",uiname:"Head Angle",gcodename:"headAngle",defaultvalue:180}]; //{id:,uiname:,gcodename:,defaultvalue:}
 		this.variables = cf.variables; //{id:,uiname:,gcodename:,defaultvalue:}
 		
-		this.gcode = cf.gcode || "G0 X{pinX} Y{pinY}; move to the pin's center position\n\n(put something here to move the Z up)\n(to avoid collisions as it moves to the next pin)";
+		this.gcode = cf.gcode || "G0 X{pinX} Y{pinY} Z{pinZ+20}; move to the pin's center position\n\n(put something here to move the Z up)\n(to avoid collisions as it moves to the next pin)";
 		this.solderingTipId = cf.solderingTipId || 'st_default';
 		this.color = cf.color || '#84009c';
 		this.tipCleanInterval = cf.tipCleanInterval || 10;
@@ -91,8 +91,9 @@ class SolderProfile {
 
 		let globalPosition = pin.getGlobalPosition();
 
-		varObject.pinX = globalPosition.x + board.position.x;
-		varObject.pinY = globalPosition.y + board.position.y;
+		varObject.pinX = config.homeToOrigin.x + board.position.x + globalPosition.x;
+		varObject.pinY = config.homeToOrigin.y + board.position.y + globalPosition.y;
+		varObject.pinZ = config.homeToOrigin.z + board.size.z;
 
 		let code = this.gcode+'';
 		let subsitutions = code.match(/\{.+?\}/g);
@@ -123,6 +124,7 @@ class SolderProfile {
 		let obj = {};
 		obj.pinX = 0;
 		obj.pinY = 0;
+		obj.pinZ = 0;
 		if(this.variables) this.variables.forEach((variable) => {
 			obj[variable.gcodename] = variable.defaultvalue;
 		});

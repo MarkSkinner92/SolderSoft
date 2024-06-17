@@ -93,51 +93,42 @@ class Jog {
 		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
 			execution.addStringCodeToGbuffer(config.getGcodeForJob('homeX'));
-
-			if(document.getElementById('htoX').value){
-				let component = parseFloat(document.getElementById('htoX').value)
-				execution.addStringCodeToGbuffer("M206 X"+component); //Apply the HomeToOrigin Vector in the X direction
-			}
+			execution.addStringCodeToGbuffer("M114");
 
 			document.getElementById('jogStatus').innerText = 'Homing X';
 			await execution.executeGbuffer((progress,cap)=>{
 				document.getElementById('jogStatus').innerText = `Homing X (${progress}/${cap})`;
 			});
 			document.getElementById('jogStatus').innerText = 'X homed';
+			config.homeLocation.x = serial.lastKnownPosition.x;
 		}
 	}
 	async homeY(){
 		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
 			execution.addStringCodeToGbuffer(config.getGcodeForJob('homeY'));
-
-			if(document.getElementById('htoY').value){
-				let component = parseFloat(document.getElementById('htoY').value)
-				execution.addStringCodeToGbuffer("M206 Y"+component); //Apply the HomeToOrigin Vector in the X direction
-			}
+			execution.addStringCodeToGbuffer("M114");
 
 			document.getElementById('jogStatus').innerText = 'Homing Y';
 			await execution.executeGbuffer((progress,cap)=>{
 				document.getElementById('jogStatus').innerText = `Homing Y (${progress}/${cap})`;
 			});
 			document.getElementById('jogStatus').innerText = 'Y homed';
+			config.homeLocation.y = serial.lastKnownPosition.y;
 		}
 	}
 	async homeZ(){
 		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
 			execution.addStringCodeToGbuffer(config.getGcodeForJob('homeZ'));
-
-			if(document.getElementById('htoZ').value){
-				let component = parseFloat(document.getElementById('htoZ').value)
-				execution.addStringCodeToGbuffer("M206 Z"+(component+board.size.z)); //Apply the HomeToOrigin Vector in the X direction
-			}
+			execution.addStringCodeToGbuffer("M114");
 
 			document.getElementById('jogStatus').innerText = 'Homing Z';
 			await execution.executeGbuffer((progress,cap)=>{
 				document.getElementById('jogStatus').innerText = `Homing Z (${progress}/${cap})`;
 			});
 			document.getElementById('jogStatus').innerText = 'Z homed';
+			config.homeLocation.z = serial.lastKnownPosition.z;
 		}
 	}
 	async homeAll(){
@@ -191,29 +182,41 @@ class Jog {
 		}
 	}
 
-	async getCalibrationX(){
-		if(!serial.connected) return;
-		if(execution.gbuffer.length == 0){
-			execution.addStringCodeToGbuffer('M114');
-			await execution.executeGbuffer((progress,cap)=>{});
-			this.calPos1.x = serial.lastKnownPosition.x;
-			this.calPos1.y = serial.lastKnownPosition.y;
-			console.log(this.calPos1);
-		}
-	}
+	// async getCalibrationX(){
+	// 	if(!serial.connected) return;
+	// 	if(execution.gbuffer.length == 0){
+	// 		execution.addStringCodeToGbuffer('M114');
+	// 		await execution.executeGbuffer((progress,cap)=>{});
+	// 		this.calPos1.x = serial.lastKnownPosition.x;
+	// 		this.calPos1.y = serial.lastKnownPosition.y;
+	// 		console.log(this.calPos1);
+	// 	}
+	// }
 
-	async getCalibrationY(){
+	// async getCalibrationY(){
+	// 	if(!serial.connected) return;
+	// 	if(execution.gbuffer.length == 0){
+	// 		execution.addStringCodeToGbuffer('M114');
+	// 		await execution.executeGbuffer((progress,cap)=>{});
+	// 	}
+	// 	this.calibrationOffset = {
+	// 		x: (serial.lastKnownPosition.x - this.calPos1.x),
+	// 		y: (serial.lastKnownPosition.y - this.calPos1.y)
+	// 	}
+	// 	document.getElementById('dX').value = this.calibrationOffset.x;
+	// 	document.getElementById('dY').value = this.calibrationOffset.y;
+	// }
+
+	async tipAtReferencePosition(){
 		if(!serial.connected) return;
 		if(execution.gbuffer.length == 0){
 			execution.addStringCodeToGbuffer('M114');
 			await execution.executeGbuffer((progress,cap)=>{});
+			config.homeToOrigin.x = serial.lastKnownPosition.x - config.homeLocation.x - board.position.x - config.referencePosition.x;
+			config.homeToOrigin.y = serial.lastKnownPosition.y - config.homeLocation.y - board.position.y - config.referencePosition.x;
+			config.homeToOrigin.z = serial.lastKnownPosition.z - config.homeLocation.z - board.size.z - config.referencePosition.z;
 		}
-		this.calibrationOffset = {
-			x: (serial.lastKnownPosition.x - this.calPos1.x),
-			y: (serial.lastKnownPosition.y - this.calPos1.y)
-		}
-		document.getElementById('dX').value = this.calibrationOffset.x;
-		document.getElementById('dY').value = this.calibrationOffset.y;
+		projectManager.showBanner(`Set HomeToOrigin Vector to (${config.homeToOrigin.x},${config.homeToOrigin.y},${config.homeToOrigin.z})`,{timeout:5000});
 	}
 }
 

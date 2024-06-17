@@ -28,6 +28,9 @@ class ProjectManager {
 	showBanner(text,options){
 		document.getElementById('bannerText').innerText = text;
 		document.getElementById('banner').style.top = '10px';
+		if(options?.timeout){
+			setTimeout(this.hideBanner,options.timeout);
+		}
 	}
 	hideBanner(){
 		document.getElementById('banner').style.top = '-80px';
@@ -39,7 +42,13 @@ class FileManager {
 	constructor() {
 		this.fileMenu = document.getElementById('fileMenu');
 		this.fileMenu.addEventListener('mousedown',(e)=>{
-			this.fileMenu.innerHTML = "<option value='file' style='display:none'>File</option><option value='save'>Save</option><option value='saveas'>Save as...</option><option value='open'>Open</option>";
+			this.fileMenu.innerHTML = 
+			"<option value='file' style='display:none'>File</option>"+
+			"<option value='save'>Save</option>"+
+			"<option value='saveas'>Save as...</option>"+
+			"<option value='open'>Open</option>"+
+			"<option value='gcodehelp'>Gcode help</option>"+
+			"<option value='reportabug'>Report a Bug</option>";
 		});
 		this.fileMenu.addEventListener('change',(e)=>{
 			switch (e.target.value) {
@@ -51,6 +60,12 @@ class FileManager {
 					break;
 				case 'open':
 					this.openFile();
+					break;
+				case 'gcodehelp':
+					window.open("https://marlinfw.org/meta/gcode/", '_blank').focus();
+					break;
+				case 'reportabug':
+					window.open("https://github.com/MarkSkinner92/SolderSoft/issues", '_blank').focus();
 					break;
 			}
 			e.target.innerHTML = "<option value='default'>File</option>";
@@ -72,7 +87,7 @@ class FileManager {
 			this.saveFileAs();
 			return;
 		}
-		projectManager.showBanner('Saving...','saveBanner');
+		projectManager.showBanner('Saving...');
 		let filejson = projectManager.package();
 		eel.savePackage(filejson)(status=>{
 			if(status == 'success'){
@@ -83,7 +98,7 @@ class FileManager {
 		});
 	}
 	saveFileAs(){
-		projectManager.showBanner('Saving...','saveBanner');
+		projectManager.showBanner('Saving...');
 		let filejson = projectManager.package();
 		eel.savePackageAs(filejson)(info=>{
 			if(info.status == 'success'){
