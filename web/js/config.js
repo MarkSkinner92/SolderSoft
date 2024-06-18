@@ -50,8 +50,12 @@ class Config {
 				code: 'M18 (disable steppers)',
 				description: ''
 			},
+			'enableServo': {
+				code: 'M280 P0 (read servo)\nM280 P1 (read servo)',
+				description: ''
+			},
 			'disableServo': {
-				code: 'M282 P0 (detach servo)',
+				code: 'M282 P0 (detach servo)\nM282 P1 (detach servo)',
 				description: ''
 			},
 			'homeX': {

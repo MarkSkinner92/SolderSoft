@@ -332,19 +332,31 @@ class Execution {
 	}
 
 	async executeGbuffer(progressFunction){
+		this.gbuffer = this.cleanGStrings(this.gbuffer);
 		let originalLengthOfGbuffer = this.gbuffer.length;
-
 		while(this.gbuffer.length > 0){
 			if(this.emergency) break;
 			this.executeRichLine(this.gbuffer.shift());
 			progressFunction(originalLengthOfGbuffer-this.gbuffer.length,originalLengthOfGbuffer);
-			await this.waitUntilReady(this,100);
+			await this.waitUntilReady(this,1);
 		}
 	}
+
+	// Simply writes the line.code out the serial port
 	executeRichLine(line){
 		serial.writeLine(line.code);
 		console.log("sending",line.code)
 		this.recievedok = false;
+	}
+
+	// Remove all the bad stuff from the line
+	cleanGStrings(strings){
+		let newBuffer = [];
+		strings.forEach(line => {
+			if(line.length != 0 && line.code[0] != ';' && !/^\([^()]*\)$/.test(line.code)) // The regex means if it it's a (comment)
+				newBuffer.push(line);
+		})
+		return newBuffer;
 	}
 
 	
@@ -364,7 +376,7 @@ class Execution {
 		return new Promise((resolve, reject) => {
 			// let timeoutCounter = 0;
 			function checkReadyState(){
-				console.log("checking...");
+				// console.log("checking...");
 				if(instance.readyForNextLine()) {
 					resolve(ms)
 				}else{

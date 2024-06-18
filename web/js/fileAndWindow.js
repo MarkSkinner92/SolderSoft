@@ -72,9 +72,14 @@ class FileManager {
 			e.target.value = 'default';
 		});
 		document.addEventListener("keydown", (event) => {
-		  if (event.keyCode == 83 && (navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey)) {
-				event.preventDefault();
-				this.saveFile();
+			if (event.ctrlKey && event.key.length === 1 && event.key.match(/[a-z]/i)) {
+				if (event.key == 's') {
+					event.preventDefault();
+					this.saveFile();
+				}else if (event.key == 'o') {
+					event.preventDefault();
+					this.openFile();
+				}
 			}
 		});
 	}

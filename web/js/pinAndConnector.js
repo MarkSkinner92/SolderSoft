@@ -870,8 +870,8 @@ class Connector {
 	valueChangeGetter(key){
 		if(key == "enabled") return this.enabled;
 		else if(key == "name") return this.name;
-		else if(key == "positionx") return this.position.x;
-		else if(key == "positiony") return this.position.y;
+		else if(key == "positionx") return Math.round(this.position.x * 1000) / 1000;
+		else if(key == "positiony") return Math.round(this.position.y * 1000) / 1000;
 		else if(key == "rotation") return this.rotation;
 	}
 	valueChangeSetter(key,oldValue,newValue,backgroundSources){
@@ -932,7 +932,12 @@ class Pin {
 			x:0,
 			y:0
 		}
-		this.solderProfile = cf.hasOwnProperty("solderProfileId") ? solderProfileWindow.fromId(cf.solderProfileId) : solderProfileWindow.defaultProfile;
+
+		this.solderProfile = solderProfileWindow.defaultProfile;
+		if(cf.hasOwnProperty("solderProfileId")){
+			if(solderProfileWindow.fromId(cf.solderProfileId)) solderProfileWindow.fromId(cf.solderProfileId);
+		}
+
 		this.solderProfileVariables = cf.hasOwnProperty("solderProfileVariables") ? cf.solderProfileVariables : (this.solderProfile.getVariableObject());
 
 		//internal
@@ -1128,8 +1133,8 @@ class Pin {
 		}
 		else if(key == "enabled") return this.enabled;
 		else if(key == "name") return this.name;
-		else if(key == "positionx") return this.position.x;
-		else if(key == "positiony") return this.position.y;
+		else if(key == "positionx") return Math.round(this.position.x * 1000) / 1000;
+		else if(key == "positiony") return Math.round(this.position.y * 1000) / 1000;
 	}
 	valueChangeSetter(key,oldValue,newValue,backgroundSources){
 		if(key.substr(0,2) == 'v-'){

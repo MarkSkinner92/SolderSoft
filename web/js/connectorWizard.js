@@ -183,17 +183,18 @@ class ConnectorPrefab {
 	destroy(){
 		this.element.remove();
 	}
+
 	//construct actual connector object from data and attatch it to tree
 	insertConnector(){
 		let elements = [];
 
-		//make first element a clone of the connector
+		// First, clone the connector itself
 		let conJSON = copyObject(this.prefabData[0]);
 		conJSON.pins = [];
 		conJSON.id = false;
 		elements.push(tree.unpackageElement(copyObject(conJSON)));
 
-		//continue adding the pins, and linking them as children of the connector
+		// Then add pins, linking them as children of the connector
 		for(let i = 1; i < this.prefabData.length; i++){
 			let elementJSON = this.prefabData[i];
 			elementJSON.id = false;

@@ -296,6 +296,7 @@ class SolderProfileWindow {
 		for(let i = 0; i < this.profiles.length; i++){
 			if(this.profiles[i].id == id) return this.profiles[i];
 		}
+		return false;
 	}
 	openEditor(){
 		this.windowElement.style.display = 'block';

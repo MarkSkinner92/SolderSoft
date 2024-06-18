@@ -40,6 +40,13 @@ class Preview{
 		}
 		this.mouseup = function(evt){
 			this.dragStart = null;
+
+			this.lastX = evt.offsetX || (evt.pageX - this.canvas.offsetLeft);
+			this.lastY = evt.offsetY || (evt.pageY - this.canvas.offsetTop);
+
+			if(!this.dragged){ // Just a click
+				this.selectClosestPin(evt, this.ctx.transformedPoint(this.lastX,this.lastY));
+			}
 		}
 		this.handleScroll = function(evt){
 			var delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
@@ -157,6 +164,13 @@ class Preview{
 	}
 	boardXToWorldX(x){
 		return board.position.x+x;
+	}
+
+	worldToBoard(worldPos){
+		return {
+			x: worldPos.x - board.position.x,
+			y: -worldPos.y-board.position.y
+		}
 	}
 
 	getPathOfPins(){
@@ -279,6 +293,27 @@ class Preview{
 	fillElement(ele){
 		let box = ele.getBoundingClientRect();
 		this.resizeCanvas(box.width,box.height-2);
+	}
+
+	selectClosestPin(e, clickPos){
+		let minDist = 1;
+		let pinToSelect = null;
+		tree.elements.forEach(pin => {
+			if(pin.isPin()){
+				let dist = distance(pin.getGlobalPosition(),this.worldToBoard(clickPos));
+				console.log(dist);
+				if(dist < minDist){
+					minDist = dist;
+					pinToSelect = pin;
+				}
+			}
+		});
+		if(pinToSelect){
+			let selectedElement = pinToSelect.element();
+			tree.clickElement(e,selectedElement);
+		}else{
+			tree.removeAllSelectedElements();
+		}
 	}
 }
 
