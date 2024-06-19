@@ -6,25 +6,7 @@ class Execution {
 
 		this.connected = false;
 
-		this.jobMode = 'all';
-		this.pinStack = [];
-
-		this.gbuffer = []; //[{code:,flag:}]
-		this.recievedok = true;
-
-		this.state = {
-			request : '',
-			inExecutionLoop : false,
-			shouldDoStartProcedure : true,
-			pauseAfterPin : false,
-			pauseAfterConnector : false,
-			tipCleanRequested : false,
-			tipChangeRequested : false,
-			endJobRequest : false,
-			numberOfPins : 0,
-			pinsSinceTipClean : 0,
-			routineClean : false
-		}
+		this.setDefaultExecutionState();
 	}
 
 	unableToExecute(){
@@ -73,12 +55,13 @@ class Execution {
 					this.state.shouldDoStartProcedure = false;
 				}
 
-				let thisPinsParentID = this.pinStack[0].parentConnector.id;
+				let thisPinsParentID = this.pinStack[0]?.parentConnector?.id;
 				let nextPinIsFromADifferentConnector = false;
-				if(this.pinStack.length > 1){
+				if(this.pinStack.length > 1 && thisPinsParentID){
 					nextPinIsFromADifferentConnector = (thisPinsParentID != this.pinStack[1].parentConnector.id); 
 				}
 				let pinCleanLimit = this.pinStack[0].solderProfile.tipCleanInterval;
+				
 				// Do the pin procedure
 				await this.doPinProcedure();
 
@@ -96,6 +79,7 @@ class Execution {
 				} 
 				else if(this.state.pauseAfterPin || (this.state.pauseAfterConnector && nextPinIsFromADifferentConnector)){
 					this.state.request = '';
+					this.disableClass('exPauseBtn');
 				}
 				else if(this.pinStack.length == 0){
 					this.state.request = 'endjob';
@@ -155,6 +139,12 @@ class Execution {
 		this.state.inExecutionLoop = false;
 
 		if(this.pinStack.length != 0 || this.state.shouldDoStartProcedure) this.enableClass('exStartBtn');
+
+		// Party's over
+		if(this.emergencyStopRequested){
+			await this.emergencyStopRoutine();
+			console.log("emergency stopped");
+		}
 	}
 
 	async doStartProcedure(){
@@ -335,7 +325,7 @@ class Execution {
 		this.gbuffer = this.cleanGStrings(this.gbuffer);
 		let originalLengthOfGbuffer = this.gbuffer.length;
 		while(this.gbuffer.length > 0){
-			if(this.emergency) break;
+			if(this.emergencyStopRequested) break;
 			this.executeRichLine(this.gbuffer.shift());
 			progressFunction(originalLengthOfGbuffer-this.gbuffer.length,originalLengthOfGbuffer);
 			await this.waitUntilReady(this,1);
@@ -377,7 +367,7 @@ class Execution {
 			// let timeoutCounter = 0;
 			function checkReadyState(){
 				// console.log("checking...");
-				if(instance.readyForNextLine()) {
+				if(instance.readyForNextLine() || instance.emergencyStopRequested) {
 					resolve(ms)
 				}else{
 					// timeoutCounter++;
@@ -390,7 +380,6 @@ class Execution {
 
 	readyForNextLine(){
 		console.log("checking ready state");
-		if(this.emergency) return true;
 		return this.recievedok;
 	}
 
@@ -533,7 +522,41 @@ class Execution {
 		this.launchExecutionLoop();
 	}
 
-	emergencyStop(){ // stop and cancel any running execution loops, and send emergency stop command M410
+	setDefaultExecutionState(){
+		this.jobMode = 'all';
+		this.pinStack = [];
+
+		this.gbuffer = []; //[{code:,flag:}]
+		this.recievedok = true;
+
+		this.emergencyStopRequested = false;
+
+		this.state = {
+			request : '',
+			inExecutionLoop : false,
+			shouldDoStartProcedure : true,
+			pauseAfterPin : false,
+			pauseAfterConnector : false,
+			tipCleanRequested : false,
+			tipChangeRequested : false,
+			endJobRequest : false,
+			numberOfPins : 0,
+			pinsSinceTipClean : 0,
+			routineClean : false
+		}
+	}
+
+	async emergencyStopRoutine(){ // stop and cancel any running execution loops, and send emergency stop command M410
+		await this.executeRichLine({code:"M410"});
+		this.setDefaultExecutionState();
+		this.setStatus("Emergency Stopped", "bad");
+		this.emergencyStopRequested = false;
+	}
+
+	emergencyStop(){
+		this.emergencyStopRequested = true;
+		this.state.request = '';
+		this.launchExecutionLoop();
 	}
 
 	disableClass(className){

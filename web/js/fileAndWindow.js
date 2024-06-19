@@ -72,13 +72,16 @@ class FileManager {
 			e.target.value = 'default';
 		});
 		document.addEventListener("keydown", (event) => {
-			if (event.ctrlKey && event.key.length === 1 && event.key.match(/[a-z]/i)) {
+			if (event.ctrlKey && event.key.length === 1 && event.key.match(/[a-z ]/i)) {
 				if (event.key == 's') {
 					event.preventDefault();
 					this.saveFile();
 				}else if (event.key == 'o') {
 					event.preventDefault();
 					this.openFile();
+				}else if (event.key == ' '){
+					event.preventDefault();
+					execution.emergencyStop();
 				}
 			}
 		});

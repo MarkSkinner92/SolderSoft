@@ -1,6 +1,6 @@
 <!-- Created by Mark Skinner, Aug 2023 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width">
@@ -28,10 +28,11 @@
         <option>File</option>
       </select>
       <button class='topBarButton' onclick="config.openConfigMenu()">Config</button>
+      <button class='topBarButton' onclick="toggleTheme()">Theme</button>
       <label id='editingInfo' style="position:relative;top:-5px;">Editing: Unsaved project</label>
 
     </div>
-    <div style="position:absolute;right:10px;top:7px;background:#AAA">
+    <div class="connectionTextHolder">
       <label class='bad' id='ironStatus'>Iron Off</label>
       <label>Device</label>
       <select class='pythonOnly' id='portSelect' style="width:100px">
@@ -341,7 +342,7 @@
                     <button onclick="execution.pauseAfterPin()"class='exPauseBtn expin'>Pause after pin</button>
                     <button onclick="execution.pauseAfterConnector()"class='exPauseBtn excon'>Pause after connector</button>
                     <button onclick="execution.endJob()"class='exStopBtn'>End job</button>
-                    <!-- <button onclick="execution.emergencyStop()"class='exEmStopBtn'>Emergency Stop</button> -->
+                    <button onclick="execution.emergencyStop()"class='exEmStopBtn'>Emergency Stop (Ctrl+Space)</button>
                   </div>
                 </td>
               </tr>
@@ -364,7 +365,7 @@
             <button onclick="solderProfileWindow.setAsDefaultProfile()" class='sp_ctrlMenuOption'>Set as Default</button>
             <button class='sp_ctrlMenuOption' onclick="solderProfileWindow.deleteActiveProfile()">Delete Profile</button>
           </div>
-          <div id="sp_prefab" class="profileSlot" onclick="solderProfileWindow.profileClick(window.event)" style="display:none;padding:5px;background:#ddd;border-radius:5px">
+          <div id="sp_prefab" class="profileSlot" onclick="solderProfileWindow.profileClick(window.event)" style="display: none;">
             <input class="sps_name" onchange="solderProfileWindow.profileNameChangeTrigger(window.event)" style="margin:0px;width:100px" value="Default">
             <input class="sps_color" type="color" value='#84009c'></input>
           </div>
@@ -374,7 +375,7 @@
             <button class='sp_ctrlMenuOption' onclick="solderProfileWindow.addVariable()">Add Variable</button>
             <button class='sp_ctrlMenuOption' onclick="solderProfileWindow.deleteSelectedVariable()">Delete Variable</button>
             <div>
-              <table style="background:#ccc;">
+              <table style="background:var(--panel)">
                 <tr>
                   <td><p style="text-align: center;margin:0px;">UI name</p></td>
                   <td><p style="text-align: center;margin:0px;line-height:0.75">G-code name</p></td>
@@ -489,7 +490,7 @@
             <button onclick='solderProfileWindow.addTip()'>Add Tip</button>
             <button onclick='solderProfileWindow.removeSelectedTip()'>Remove Tip</button>
           </div>
-          <div id="st_prefab" class="st_tipslot" onclick="solderProfileWindow.tipClick(window.event)" style="display:none;padding:5px;background:#ddd;border-radius:5px">
+          <div id="st_prefab" class="st_tipslot" onclick="solderProfileWindow.tipClick(window.event)" style="display:none">
             <input class="t_name" style="margin:0px;width:150px" value="Default">
           </div>
           <div class='st_body' id='solderTipBody'>
@@ -614,6 +615,7 @@
     <!-- IMPORTANT: If the program is launched via python,
      eel.js will be replaced with the python module's eel library.
      Otherwise, it will use our backend abstraction layer and assume a native web app environment -->
+    <script src="libraries/hacktimer.min.js"></script>
     <script src="eel.js"></script>
     <script src="js/envSetup.js"></script>
     <script src="js/utilities.js"></script>

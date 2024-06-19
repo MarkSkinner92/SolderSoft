@@ -14,7 +14,7 @@ HTMLElement.prototype.removeOptions = function(){
   this.innerHTML = "";
 }
 HTMLElement.prototype.addOutline = function(){
-	this.style.boxShadow = "0px 0px 0px 2px black";
+	this.style.boxShadow = "0px 0px 0px 2px var(--text-color)";
 }
 HTMLElement.prototype.removeOutline = function(){
   this.style.boxShadow = "none";
@@ -37,4 +37,14 @@ function highlightLines(element, linesToHighlight) {
           line.classList.add('line-highlight');
       }
   });
+}
+
+function toggleTheme(){
+  let theme = document.documentElement.getAttribute("data-theme");
+
+  if(theme == 'light'){
+    document.documentElement.setAttribute("data-theme","dark")
+  }else{
+    document.documentElement.setAttribute("data-theme","light")
+  }
 }
