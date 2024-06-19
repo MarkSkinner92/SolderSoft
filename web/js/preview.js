@@ -5,6 +5,7 @@ class Preview{
 	constructor(canvas){
 		this.canvas = canvas;
 		this.ctx = canvas.getContext('2d');
+		this.getUpdatedColors(document.documentElement.getAttribute('data-theme'));
 		this.trackTransforms(this.ctx);
 
 		this.lastX = canvas.width/2;
@@ -126,9 +127,6 @@ class Preview{
 	}
 
 	drawBackground(){
-		this.ctx.lineWidth = 2*this.sm;
-		this.ctx.strokeStyle = "#DDD";
-
 		//Draw Axis lines
 		this.ctx.lineWidth = 2*this.sm;
 		this.ctx.strokeStyle = "#F00";
@@ -155,7 +153,7 @@ class Preview{
 
 	drawboard(){
 		this.ctx.lineWidth = 2*this.sm;
-		this.ctx.strokeStyle = "#000";
+		this.ctx.strokeStyle = this.colors.boardColor;
 		this.ctx.strokeRect(this.boardXToWorldX(0),this.boardYToWorldY(board.size.y),board.size.x,board.size.y);
 }
 
@@ -199,7 +197,7 @@ class Preview{
 
 		if(pin.enabled){
 			if(pin.selected || pin.parentConnector?.selected){
-				this.ctx.fillStyle = "#CCC";
+				this.ctx.fillStyle = this.colors.selected;
 				this.ctx.beginPath();
 				this.ctx.arc(
 					worldX,
@@ -214,7 +212,7 @@ class Preview{
 		}
 
 		if(pin.enabled) this.ctx.fillStyle = pin.solderProfile.color;
-		else this.ctx.fillStyle = '#DDD';
+		else this.ctx.fillStyle = this.color.disabled;
 		this.ctx.beginPath();
 		this.ctx.arc(
 			worldX,
@@ -259,8 +257,9 @@ class Preview{
 		}
 
 		let path = this.getPathOfPins();
-		this.ctx.strokeStyle = '#F00';
-		this.ctx.lineWidth = 2*this.sm;
+		this.ctx.strokeStyle = this.colors.line;
+		this.ctx.lineWidth = 0.1;
+		this.ctx.lineJoin = "round";
 		this.ctx.beginPath();
 		this.ctx.moveTo(path[0][0]-board.position.x,path[0][1]+board.position.y);
 		for(let i = 1; i < path.length; i++){
@@ -270,7 +269,7 @@ class Preview{
 
 		// If enabled, draw calibration reference point on board
 		if(board.selected){
-			this.ctx.fillStyle = "#000";
+			this.ctx.fillStyle = this.colors.refpoint;
 			this.ctx.beginPath();
 			this.ctx.arc(
 				this.boardXToWorldX(config.referencePosition.x),
@@ -314,6 +313,27 @@ class Preview{
 		}else{
 			tree.removeAllSelectedElements();
 		}
+	}
+
+	getUpdatedColors(theme){
+		this.colors = theme == "light" ? {
+			refpoint : "#000",
+			line : "#00F",
+			disabled : '#DDD',
+			selected : "#CCC",
+			boardColor : "#000"
+		}
+		: {
+			refpoint : "#EEE",
+			line : "#00F",
+			disabled : '#DDD',
+			selected : "#444",
+			boardColor : "#EEE"
+		}
+	}
+
+	themeChange(theme){
+		this.getUpdatedColors(theme);
 	}
 }
 

@@ -37,6 +37,7 @@ class Execution {
 
 	async launchExecutionLoop(){
 		if(this.state.inExecutionLoop) return;
+		config.setCoordinateMode("global");
 
 		while(this.state.request != ''){
 			this.state.inExecutionLoop = true;

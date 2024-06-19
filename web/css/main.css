@@ -3,13 +3,16 @@
 	--background: #191919;
 	--panel: #313131;
 	--panel-inside-panel: #393939;
-	--text-color: rgb(200, 200, 200);
+	--text-color: rgb(221, 221, 221);
+	--text-color-disabled: #5e5e5e;
 	--button-color: #404040;
 	--button-outline: #4f4f4f;
-	--input-color: #191919;
+	--input-color: #272727;
 	--config-inner-window: #292929;
 	--solder-profile-panel: #161616;
 	--solder-tip-window: #222222;
+	--canvas-background: #1d1d1d;
+	--control: #1f1f1f;
 	color: var(--text-color)
 }
 
@@ -24,9 +27,10 @@
 	color: var(--text-color);
 	border: solid var(--button-outline) 1px; 
 }
-
-[data-theme="dark"] canvas{
-	background-color: var(--background);
+[data-theme="dark"] button:disabled{
+	background-color: var(--button-color);
+	color: var(--text-color-disabled);
+	border: solid var(--button-outline) 1px; 
 }
 
 [data-theme="dark"] select{
@@ -52,6 +56,8 @@
 	--solder-profile-panel: white;
 	--text-color: black;
 	--solder-tip-window: #f3f3f3;
+	--canvas-background: white;
+	--control: #DEDEDE;
 }
 
 body {
@@ -178,8 +184,12 @@ body {
 	height: calc(100% - 350px);
 }
 
+#previewCanvas{
+	background: var(--canvas-background);
+}
+
 .execPanel{
-	background: var(--panel);
+	background: var(--control);
 	position: absolute;
 	right:0px;
 	bottom:0px;
@@ -284,7 +294,6 @@ body {
 	display: block;
 }
 .exEmStopBtn{
-	color:red
 }
 
 .calibrationPanel{
@@ -738,7 +747,7 @@ td{
 	width: 350px;
 	height: 70%;
 	margin-right: 10px;
-	background-color: #f3f3f3;
+	background-color: var(--solder-tip-window);
 	box-shadow: 1px 5px 17px 3px rgba(0,0,0,0.42);
 }
 .connectorContainer {
@@ -752,7 +761,7 @@ td{
 }
 .cn_body{
 	margin: 5px;
-	background: white;
+	background: var(--solder-profile-panel);
 	padding:5px;
 	overflow-y: auto;
 }
@@ -775,7 +784,7 @@ td{
 .connectorLibraryInnerWindow{
 	width: 500px;
 	height: 70vh;
-	background-color: #f3f3f3;
+	background-color: var(--solder-tip-window);
 	box-shadow: 1px 5px 17px 3px rgba(0,0,0,0.42);
 }
 .connectorLibraryContainer {
@@ -789,13 +798,13 @@ td{
 }
 .cn_bodyLibrary{
 	margin: 5px;
-	background: white;
+	background: var(--solder-profile-panel);
 	padding:5px;
 	overflow-y: auto;
 }
 .cn_slot{
 	display: none;
-	background:#EEE;
+	background:var(--panel);
 	border-radius: 5px;
 	padding: 5px;
 	min-height: 40px;

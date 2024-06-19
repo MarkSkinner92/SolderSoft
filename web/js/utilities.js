@@ -43,8 +43,12 @@ function toggleTheme(){
   let theme = document.documentElement.getAttribute("data-theme");
 
   if(theme == 'light'){
-    document.documentElement.setAttribute("data-theme","dark")
+    document.documentElement.setAttribute("data-theme","dark");
+    theme = "dark";
   }else{
     document.documentElement.setAttribute("data-theme","light")
+    theme = "light";
   }
+
+  preview.themeChange(theme);
 }
