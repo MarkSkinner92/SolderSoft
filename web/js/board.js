@@ -2,13 +2,13 @@ class Board {
 	constructor() {
 		this.element = document.getElementById('boardElement');
 		this.position = {
-			x:10,
-			y:10
+			x:0,
+			y:0
 		}
 		this.size = {
 			x:70,
 			y:50,
-			z:4
+			z:0
 		}
 		this.selected = false;
 	}

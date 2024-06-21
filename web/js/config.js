@@ -85,6 +85,7 @@ class Config {
 			y:0,
 			z:0
 		}
+		this.updateHomeToOriginText();
 
 		// After sending the homing Gcode commands, this vector will store the head's coordinates
 		// Typically it would be 0,0,0 but it could be different depending on how the firmware is configured
@@ -99,6 +100,22 @@ class Config {
 			x:0,
 			y:0,
 			z:0
+		}
+	}
+
+	updateHomeToOriginText(){
+		document.getElementById('homeToOriginVector').innerText = `Home To Origin Vector: (${parseFloat(this.homeToOrigin.x.toFixed(3))},${parseFloat(this.homeToOrigin.y.toFixed(3))},${parseFloat(this.homeToOrigin.z.toFixed(3))})`;
+	}
+	async goToHomeToOrigin(axis){
+		if(!serial.connected) return;
+		if(execution.gbuffer.length == 0){
+			execution.addStringCodeToGbuffer('G28 O');
+			execution.addStringCodeToGbuffer('G90');
+			execution.addStringCodeToGbuffer(`G0 ${axis}${this.homeToOrigin[axis.toLowerCase()]} F400`);
+			await execution.executeGbuffer((progress,cap)=>{
+				document.getElementById('cf_status').innerText = `Running... (${progress}/${cap})`;
+			});
+			document.getElementById('cf_status').innerText = 'Done';
 		}
 	}
 
@@ -193,6 +210,7 @@ class Config {
 		this.homeToOrigin = json?.homeToOrigin || this.homeToOrigin;
 		this.homeLocation = json?.homeLocation || this.homeLocation;
 		this.referencePosition = json?.referencePosition || this.referencePosition;
+		document.getElementById('homeToOriginVector').innerText = `Home To Origin Vector: (${this.homeToOrigin.x},${this.homeToOrigin.y},${this.homeToOrigin.z})`;
 	}
 
 	unpackageGcodes(gcodes){

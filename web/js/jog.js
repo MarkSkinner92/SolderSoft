@@ -216,7 +216,8 @@ class Jog {
 			config.homeToOrigin.y = serial.lastKnownPosition.y - board.position.y - config.referencePosition.x;
 			config.homeToOrigin.z = serial.lastKnownPosition.z - board.size.z - config.referencePosition.z;
 		}
-		projectManager.showBanner(`Set HomeToOrigin Vector to (${config.homeToOrigin.x},${config.homeToOrigin.y},${config.homeToOrigin.z})`,{timeout:5000});
+		projectManager.showBanner(`Set HomeToOrigin Vector to (${config.homeToOrigin.x},${config.homeToOrigin.y},${config.homeToOrigin.z})`,{timeout:2000});
+		config.updateHomeToOriginText();
 	}
 }
 

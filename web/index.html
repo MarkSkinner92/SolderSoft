@@ -85,7 +85,7 @@
         <div id='boardSetupPanel' class='inspectorPanel'>
           <label class='panelLabel'>Board Setup</label>
           <table>
-            <tr>
+            <!-- <tr>
               <td>X Position</td>
               <td><input key='positionx'></td>
             </tr>
@@ -93,7 +93,7 @@
               <td>Y Position</td>
               <td><input key='positiony'></td>
             </tr>
-            <tr>
+            <tr> -->
               <td>X Size</td>
               <td><input key='sizex'></td>
             </tr>
@@ -101,10 +101,10 @@
               <td>Y Size</td>
               <td><input key='sizey'></td>
             </tr>
-            <tr>
+            <!-- <tr>
               <td>Z Size</td>
               <td><input key='sizez'></td>
-            </tr>
+            </tr> -->
           </table>
         </div>
 
@@ -293,6 +293,8 @@
               Note: The origin only needs to be updated once. Homing does not require redoing this calibration
             </p>
             <button onclick="jog.tipAtReferencePosition()" style="color:red">Update Origin Reference</button>
+            <p id="homeToOriginVector">Home to Origin Vector: </p>
+            <button onclick="config.goToHomeToOrigin('X')">Go to X</button><button onclick="config.goToHomeToOrigin('Y')">Go to Y</button><button onclick="config.goToHomeToOrigin('Z')">Go to Z</button>
           </div>
           <div class='serialMonitor'>
             <textarea id='sm_output' readonly class='serialOutput'></textarea>

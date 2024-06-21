@@ -605,6 +605,18 @@ td{
 	background:var(--config-inner-window);
 	padding: 14px;
 }
+.cf_execute{
+	float:right;
+}
+.cf_saveBtn{
+	margin-top:5px;
+	margin-right:5px;
+	width:70px;
+	height:30px;
+}
+.cf_infotext{
+	display: inline;
+}
 .cf_top { 
 	grid-area: 2 / 2 / 2 / 2;
 	background:var(--config-inner-window);
