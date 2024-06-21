@@ -13,6 +13,8 @@ class Preview{
 		this.dragStart = undefined;
 		this.dragged = undefined;
 		this.scaleFactor = 1.1;
+		this.dragEnd = {x:0,y:0};
+		this.dragSelecting = false;
 
 		this.mousedown = function(evt){
 			document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
@@ -28,7 +30,12 @@ class Preview{
 			this.dragged = true;
 			if (this.dragStart){
 				var pt = this.ctx.transformedPoint(this.lastX,this.lastY);
-				this.ctx.translate(pt.x-this.dragStart.x,pt.y-this.dragStart.y);
+				if(evt.shiftKey){
+					this.dragSelecting = true;
+					this.dragEnd = pt;
+				}else{
+					this.ctx.translate(pt.x-this.dragStart.x,pt.y-this.dragStart.y);
+				}
 			}
 		};
 
@@ -40,14 +47,18 @@ class Preview{
 			this.ctx.translate(-pt.x,-pt.y);
 		}
 		this.mouseup = function(evt){
-			this.dragStart = null;
-
 			this.lastX = evt.offsetX || (evt.pageX - this.canvas.offsetLeft);
 			this.lastY = evt.offsetY || (evt.pageY - this.canvas.offsetTop);
 
 			if(!this.dragged){ // Just a click
 				this.selectClosestPin(evt, this.ctx.transformedPoint(this.lastX,this.lastY));
 			}
+
+			if(this.dragSelecting){
+				this.selectAllPinsInDragBox();
+				this.dragSelecting = false;
+			}
+			this.dragStart = null;
 		}
 		this.handleScroll = function(evt){
 			var delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
@@ -171,6 +182,28 @@ class Preview{
 		}
 	}
 
+	selectAllPinsInDragBox(){
+		console.log(this.dragStart,this.dragEnd);
+		let dragStartBoard = this.worldToBoard(this.dragStart);
+		let dragEndBoard =  this.worldToBoard(this.dragEnd);
+
+		tree.removeAllSelectedElements();
+
+		for(let i = 0; i < tree.elements.length; i++){
+			let thisElement = tree.elements[i];
+			if(thisElement.isPin()){
+				let pos = thisElement.getGlobalPosition();
+				
+				if(Math.abs(dragEndBoard.x - dragStartBoard.x) > Math.abs(dragStartBoard.x + dragEndBoard.x - 2*pos.x)){
+					if(Math.abs(dragEndBoard.y - dragStartBoard.y) > Math.abs(dragStartBoard.y + dragEndBoard.y - 2*pos.y)){
+						tree.addToSelectedElements(thisElement.id);
+					}
+				}
+			}
+		}
+
+	}
+
 	getPathOfPins(){
 		let path = [[this.boardXToWorldX(0),this.boardYToWorldY(0)]];
 		for(let i = 0; i < tree.elements.length; i++){
@@ -195,24 +228,22 @@ class Preview{
 		let worldX = this.boardXToWorldX(x);
 		let worldY = this.boardYToWorldY(y);
 
-		if(pin.enabled){
-			if(pin.selected || pin.parentConnector?.selected){
-				this.ctx.fillStyle = this.colors.selected;
-				this.ctx.beginPath();
-				this.ctx.arc(
-					worldX,
-					worldY,
-					1.2,
-					0,
-					2 * Math.PI
-				);
-				this.ctx.closePath();
-				this.ctx.fill();
-			}
+		if(pin.selected || pin.parentConnector?.selected){
+			this.ctx.fillStyle = this.colors.selected;
+			this.ctx.beginPath();
+			this.ctx.arc(
+				worldX,
+				worldY,
+				1.2,
+				0,
+				2 * Math.PI
+			);
+			this.ctx.closePath();
+			this.ctx.fill();
 		}
 
 		if(pin.enabled) this.ctx.fillStyle = pin.solderProfile.color;
-		else this.ctx.fillStyle = this.color.disabled;
+		else this.ctx.fillStyle = this.colors.disabled;
 		this.ctx.beginPath();
 		this.ctx.arc(
 			worldX,
@@ -280,6 +311,17 @@ class Preview{
 			);
 			this.ctx.closePath();
 			this.ctx.fill();
+		}
+
+		// Draw drag select rect
+		if(this.dragSelecting){
+			this.ctx.strokeStyle = this.colors.boardColor;
+			this.ctx.strokeRect(
+				this.dragStart.x,
+				this.dragStart.y,
+				this.dragEnd.x - this.dragStart.x,
+				this.dragEnd.y - this.dragStart.y
+			);
 		}
 
 	}

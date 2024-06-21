@@ -642,25 +642,94 @@ td{
 	grid-area: 4 / 1 / 4 / span 2;
 	text-align: right;
 }
-.cf_saveBtn{
+.im_saveBtn{
 	margin-top:5px;
 	margin-right:5px;
 	width:70px;
 	height:30px;
 }
-.cf_infotext{
+.im_addbtn{
+	margin-top:5px;
+	margin-right:5px;
+	height:30px;
+}
+.im_infotext{
 	display: inline;
 }
-.cf_execute{
+.im_execute{
 	float:right;
 }
-.cf_status{
+.im_status{
 	display: inline;
     float: right;
     margin: 0px;
     margin-right: 10px;
 }
 
+.importWindow{
+	display: none;
+	position: fixed;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	background-color: rgba(0, 0, 0, 0.1);
+	border-radius: 5px;
+}
+.importInnerWindow{
+	position: fixed;
+	left:10%;
+	top:50px;
+	width: 80%;
+	height: calc(100% - 100px);
+	background-color: var(--config-inner-window);
+	box-shadow: 1px 5px 17px 3px rgba(0,0,0,0.42);
+}
+.importContainer {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 50px 50px 1fr 40px;
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	height:100%;
+	width:100%;
+}
+.im_header { 
+	grid-area: 1 / 1 / 2 / 4;
+	background:var(--config-inner-window);
+	padding: 14px;
+}
+.im_top { 
+	grid-area: 2 / 1 / 2 / 2;
+	background:var(--config-inner-window);
+	padding: 14px;
+}
+.im_title{
+	font-size: 20px;
+	margin:0px;
+}
+.im_middle{
+	grid-area: 3 / 1 / 3 / 2;
+	overflow: hidden;
+	background-color: var(--panel);
+	margin: 10px;
+}
+#im_canvas{
+	background-color: var(--panel);
+}
+[data-theme="dark"] .im_gholder{
+	filter:invert(1);
+}
+.im_footer {
+	grid-area: 4 / 1 / 4 / span 2;
+	text-align: right;
+}
+.im_saveBtn{
+	margin-top:5px;
+	margin-right:5px;
+	width:70px;
+	height:30px;
+}
 .solderTipWizard{
 	display: none;
 	position: fixed;

@@ -28,6 +28,7 @@
         <option>File</option>
       </select>
       <button class='topBarButton' onclick="config.openConfigMenu()">Config</button>
+      <button class='topBarButton' onclick="importer.openMenu()">Import</button>
       <button class='topBarButton' onclick="toggleTheme()">Theme</button>
       <label id='editingInfo' style="position:relative;top:-5px;">Editing: Unsaved project</label>
 
@@ -40,7 +41,7 @@
       </select>
       <button class='webOnly' onclick="eel.chooseSerialDevice()">Choose</button>
       <label>Baud</label>
-      <input id='baudRate' style="width:80px" value="9600">
+      <input id='baudRate' style="width:80px" value="250000">
       <button id='serialActionButton' onclick="serial.serialActionButtonClick()">Connect</button>
       <label>Status: </label><label id='statusElement' class='bad'>Disconnected</label>
     </div>
@@ -201,6 +202,7 @@
               </td>
             </tr>
           </table>
+          <td><button onclick="solderProfileWindow.restoreVaraibleDefaults()" style="margin-top:5px;margin-bottom: 5px;">Restore Variable Defaults</button></td>
           <hr id="hline" style="display:none">
           <table style="margin-top: 5px;" id="spkeyvalues">
           </table>
@@ -480,6 +482,35 @@
       </div>
     </div>
 
+    <div class="importWindow" id="importMenu">
+      <div class="importInnerWindow">
+        <div class="importContainer">
+          <div class='im_header'>
+            <p class="im_title">Import Menu</p>
+          </div>
+          <div class="im_top">
+            <input type="file" class="im_file">
+           <button onclick="importer.mirror()">Mirror &harr;</button>
+           <button onclick="importer.rotate()">Rotate &circlearrowright;</button>
+           <select class="im_selectTool">
+              <option>Select Tool</option>
+           </select>
+           <p style="display:inline">Width</p>
+           <input style="width:50px" class="im_width" value="67">
+           <p style="display:inline">Height</p>
+           <input style="width:50px" class="im_height" value="80.5">
+          </div>
+          <div class="im_middle">
+            <canvas id="im_canvas"></canvas>
+          </div>
+          <div class="im_footer">
+            <button class="im_saveBtn" onclick='importer.closeMenu()'>Close</button>
+            <button class="im_addbtn" onclick='importer.addToBoard()'>Add to Board</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="solderTipWizard" id="solderTipWizard">
       <div class="solderTipInnerWindow">
         <div class="solderTipContainer">
@@ -631,6 +662,7 @@
     <script src="js/preview.js" charset="utf-8"></script>
     <script src="js/execution.js" charset="utf-8"></script>
     <script src="js/fileAndWindow.js" charset="utf-8"></script>
+    <script src="js/ncdrill.js" charset="utf-8"></script>
     <script src="js/allIsLoaded.js" charset="utf-8"></script>
   </body>
 </html>

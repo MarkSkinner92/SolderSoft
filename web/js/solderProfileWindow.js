@@ -562,6 +562,18 @@ class SolderProfileWindow {
 		inspector.reset();
 		this.windowElement.style.display = 'none';
 	}
+
+	restoreVaraibleDefaults(){
+		tree.selectedElementsIds.forEach(id => {
+			let pin = tree.fromId(id);
+			if(pin.solderProfile.variables.length > 0){
+				pin.solderProfile.variables.forEach(vb => {
+					pin.solderProfileVariables[vb.gcodename] = vb.defaultvalue;
+				});
+			}
+		});
+		inspector.reset();
+	}
 }
 
 let solderProfileWindow = new SolderProfileWindow();

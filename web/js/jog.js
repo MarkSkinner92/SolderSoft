@@ -212,9 +212,9 @@ class Jog {
 		if(execution.gbuffer.length == 0){
 			execution.addStringCodeToGbuffer('M114');
 			await execution.executeGbuffer((progress,cap)=>{});
-			config.homeToOrigin.x = serial.lastKnownPosition.x - config.homeLocation.x - board.position.x - config.referencePosition.x;
-			config.homeToOrigin.y = serial.lastKnownPosition.y - config.homeLocation.y - board.position.y - config.referencePosition.x;
-			config.homeToOrigin.z = serial.lastKnownPosition.z - config.homeLocation.z - board.size.z - config.referencePosition.z;
+			config.homeToOrigin.x = serial.lastKnownPosition.x - board.position.x - config.referencePosition.x;
+			config.homeToOrigin.y = serial.lastKnownPosition.y - board.position.y - config.referencePosition.x;
+			config.homeToOrigin.z = serial.lastKnownPosition.z - board.size.z - config.referencePosition.z;
 		}
 		projectManager.showBanner(`Set HomeToOrigin Vector to (${config.homeToOrigin.x},${config.homeToOrigin.y},${config.homeToOrigin.z})`,{timeout:5000});
 	}
